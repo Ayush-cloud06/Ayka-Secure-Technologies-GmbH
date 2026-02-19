@@ -1,32 +1,49 @@
-'''
-cloud-security-enterprise-sim/
+```
+Ayka-Secure-Technologies-GmbH/
 │
-├── iac/
-│   ├── terraform/
-│   └── modules/
+├── organization/
+│   ├── business-model.md
+│   ├── org-structure.md
+│   ├── roles-and-responsibilities.md
+│   └── training-and-awareness.md
 │
-├── policies/
-│   ├── opa/
-│   ├── rego/
-│   └── framework-mapping/
+├── isms/
+│   ├── scope.md
+│   ├── risk-management-methodology.md
+│   ├── risk-register/
+│   ├── asset-inventory/
+│   ├── policies/
+│   ├── procedures/
+│   └── statement-of-applicability.md
 │
-├── pipeline/
-│   ├── github-actions/
-│   ├── checkov/
-│   ├── prowler/
-│   └── gates/
+├── gdpr/
+│   ├── data-classification.md
+│   ├── data-flow-diagrams/
+│   ├── ropA.md
+│   ├── retention-policy.md
+│   └── technical-and-organizational-measures.md
 │
-├── drift/
-│   ├── detector/
-│   └── remediation/
+├── internal-it/
+│   ├── cloud-platform/
+│   │   ├── aws-organization/
+│   │   ├── ou-structure/
+│   │   ├── scp/
+│   │   └── landing-zone/
+│   │
+│   ├── iam/
+│   ├── logging-monitoring/
+│   ├── ci-cd/
+│   ├── policy-as-code/
+│   ├── drift-detection/
+│   └── evidence-automation/
 │
-├── automation/
-│   ├── lambda/
-│   ├── step-functions/
-│   └── eventbridge/
+├── product-ot/         ← intentionally light for now
+│   ├── risk-model/
+│   ├── compliance-mapping/
+│   ├── zone-and-conduit-model/
+│   ├── supplier-security-requirements/
+│   └── roadmap/
 │
-├── evidence/
-│   ├── audit-logs/
-│   └── compliance-reports/
-│
-└── README.md  ← the story
+└── README.md
+
+```
