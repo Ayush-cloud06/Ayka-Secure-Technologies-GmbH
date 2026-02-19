@@ -56,15 +56,11 @@ Revenue streams include:
 
 Primary customers include:
 
-Automotive Tier-2 and Tier-3 suppliers
-
-EU-based SaaS startups
-
-Manufacturing SMEs undergoing digital transformation
-
-Organizations preparing for ISO 27001 certification
-
-Companies facing GDPR enforcement risk
+1. Automotive Tier-2 and Tier-3 suppliers
+2. EU-based SaaS startups
+3. Manufacturing SMEs undergoing digital transformation
+4. Organizations preparing for ISO 27001 certification
+5. Companies facing GDPR enforcement risk
 ---
 
 ## Competitive Differentiation
