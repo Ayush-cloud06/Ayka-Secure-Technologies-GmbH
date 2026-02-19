@@ -1,0 +1,107 @@
+##################################
+# Terraform Core
+##################################
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform.tfvars
+terraform.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+backend.tfvars
+backend.hcl
+
+##################################
+# Terraform Plans & Artifacts
+##################################
+*.tfplan
+*.plan
+*.out
+
+##################################
+# Sensitive Files (Just In Case)
+##################################
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.csr
+*.kubeconfig
+kubeconfig
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+##################################
+# AWS / Cloud Credentials
+##################################
+.aws/
+**/.aws/
+.aws-sam/
+.saml2aws
+.env
+.env.*
+*.env
+credentials
+config
+
+##################################
+# Python / Lambda
+##################################
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache/
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+dist/
+build/
+.eggs/
+*.egg-info/
+
+##################################
+# Node (If Ever Used For Lambda)
+##################################
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+##################################
+# Reports / Generated Evidence
+##################################
+reports/*
+!reports/.gitkeep
+evidence/*
+!evidence/.gitkeep
+
+##################################
+# Logs
+##################################
+*.log
+logs/
+*.log.*
+
+##################################
+# OS / Editor
+##################################
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
