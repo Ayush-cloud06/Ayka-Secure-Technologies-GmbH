@@ -8,22 +8,22 @@ module "security_landing_zone" {
   environment = "security"
 }
 
-module "security_landing_zone" {
+module "dev_landing_zone" {
   source = "git::https://github.com/Ayush-cloud06/cloud-platform-control-plane.git"
 
   providers = {
-    aws = aws.security
+    aws = aws.dev
   }
 
-  environment = "security"
+  environment = "dev"
 }
 
-module "security_landing_zone" {
+module "prod_landing_zone" {
   source = "git::https://github.com/Ayush-cloud06/cloud-platform-control-plane.git"
 
   providers = {
-    aws = aws.security
+    aws = aws.prod
   }
 
-  environment = "security"
+  environment = "prod"
 }
