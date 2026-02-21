@@ -4,7 +4,7 @@ Ayka Secure Technologies GmbH operates as a cloud-native SaaS startup providing 
 
 The company maintains a lean organizational structure designed for agility, accountability, and clear separation of governance responsibilities.
 
-## High-Level Structure
+## 1. High-Level Structure
 
 Managing Director (CEO)
 └── Chief Information Security Officer (CISO)
@@ -18,7 +18,7 @@ Head of Product
 Head of Sales & Customer Success
 └── Sales & Client Support
 
-## Governance Separation
+## 2. Governance Separation
 
 Ayka maintains functional separation between:
 
@@ -29,7 +29,7 @@ Ayka maintains functional separation between:
 
 The Information Security function reports directly to executive leadership to ensure independence in risk decisions and compliance oversight.
 
-## Role Consolidation (Startup Model)
+## 3. Role Consolidation (Startup Model)
 
 Due to startup size, certain individuals may hold multiple roles. However:
 

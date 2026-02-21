@@ -4,7 +4,7 @@
 ### Industry: Cloud Security & Regulatory Compliance SaaS
 ### Target Market: EU-based SMEs and automotive suppliers
 
-## Company Overview
+## 1. Company Overview
 Ayka Secure Technologies GmbH is a stuttgart-based SaaS compnay that provides cloud-native security governance and regulatory compliance solutions for organizations operating within the European Union.
 
 The company specializes in enabling businesses to achieve and maintain compliance with framworks such as :
@@ -17,7 +17,7 @@ The company specializes in enabling businesses to achieve and maintain complianc
 Ayka delivers structured compliance automation, risk visibility, and audit-readiness tooling through a secure cloud-based-platform
 ---
 
-## Problem Statement
+## 2. Problem Statement
 Small and mid-sized enterprises face increasing regulatory pressure due to:
 
 1. Strict EU data protection requirements (GDPR)
@@ -36,7 +36,7 @@ Most organizations struggle with:
 Ayka Secure Technologies GmbH addresses this gap by providing structured compliance enablement and automated governance workflows.
 ---
 
-## Revenue Model
+## 3. Revenue Model
 Ayka operates under a SaaS subscription model:
 
 1. Tier 1: Compliance Foundation (GDPR readiness)
@@ -52,7 +52,7 @@ Revenue streams include:
 
 ---
 
-## Target Customers
+## 4. Target Customers
 
 Primary customers include:
 
@@ -63,7 +63,7 @@ Primary customers include:
 5. Companies facing GDPR enforcement risk
 ---
 
-## Competitive Differentiation
+## 5. Competitive Differentiation
 
 Ayka differentiates itself through:
 
@@ -76,7 +76,7 @@ Ayka differentiates itself through:
 Unlike generic GRC platforms, Ayka focuses on technical-to-regulatory translation for cloud-centric organizations.
 ---
 
-## Long-Term Vision
+## 6. Long-Term Vision
 
 Ayka Secure Technologies GmbH aims to become a trusted compliance enablement partner within the German automotive and industrial ecosystem.
 
