@@ -8,3 +8,10 @@ resource "azuread_group" "tier_groups" {
   description = "Privilege tier group ${each.value}"
 
 }
+
+/*
+grp-tier-tier0
+grp-tier-tier1
+grp-tier-tier2
+grp-tier-tier3
+*/
