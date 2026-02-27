@@ -19,7 +19,7 @@ resource "azuread_group_member" "admin_tier_membership" {
   member_object_id = azuread_user.admin_users[each.key].id
 }
 
-resource "azuread_group_member" "admin_security_role_membership" {
+resource "azuread_group_member" "admin_security_role_memberships" {
 
   for_each = local.privileged_personnel
 
