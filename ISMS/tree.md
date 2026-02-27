@@ -36,6 +36,7 @@ isms/
 ├── 03-risk-management/
 │   ├── risk-management-methodology.md
 │   ├── risk-register.md
+    ├── risk-criteria.md
 │   ├── risk-treatment-plan.md
 │   ├── risk-acceptance-log.md
 │   ├── risk-assessment-results/
@@ -50,6 +51,7 @@ isms/
 │   └── justification-for-exclusions.md
 │
 ├── 05-operational-policies/
+│   ├── incident-response-policy.md
 │   ├── access-control-policy.md
 │   ├── password-policy.md
 │   ├── mfa-policy.md
@@ -93,6 +95,7 @@ isms/
 │   ├── backup-test-results/
 │   ├── vulnerability-scan-reports/
 │   └── penetration-test-report.md
+    └── control-evidence-index.md
 │
 ├── 08-monitoring-and-measurement/
 │   ├── kpi-and-metrics.md
