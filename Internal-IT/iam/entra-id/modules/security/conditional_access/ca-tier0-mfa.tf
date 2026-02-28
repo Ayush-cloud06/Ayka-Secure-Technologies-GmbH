@@ -1,5 +1,6 @@
 resource "azuread_conditional_access_policy" "tier0_mfa" {
   display_name = "CA - Tier0 - Require MFA"
+  count        = var.enable_conditional_access ? 1 : 0
   state        = "enabled"
 
   conditions {
