@@ -7,8 +7,8 @@ Old Outlook clients
 resource "azuread_conditional_access_policy" "block_legacy_auth" {
 
   display_name = "CA-Block-Legacy-Authentication"
-
-  state = "enabled"
+  count        = var.enable_conditional_access ? 1 : 0
+  state        = "enabled"
 
   conditions {
     client_app_types = [
