@@ -9,6 +9,6 @@ resource "azuread_user" "break_glass_1" {
 }
 
 resource "azuread_group_member" "break_glass_tier0" {
-  group_object_id  = azuread_group.tier_groups["tier0"].id
+  group_object_id  = var.tier_groups["tier0"].id
   member_object_id = azuread_user.break_glass_1.id
 }
