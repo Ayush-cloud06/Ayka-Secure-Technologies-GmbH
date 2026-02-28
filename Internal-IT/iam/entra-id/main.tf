@@ -10,8 +10,11 @@ module "privileged" {
   security_role_groups = module.core.security_role_groups
 }
 
-module "security" {
-  source = "./modules/security"
+module "conditional_access" {
+  source = "./modules/security/conditional_access"
+
+  tier_groups         = module.core.tier_groups
+  break_glass_user_id = module.privileged.break_glass_user_id
 }
 
 module "output" {
