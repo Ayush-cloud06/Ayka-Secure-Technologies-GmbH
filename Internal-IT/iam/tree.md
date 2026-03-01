@@ -11,7 +11,12 @@ Internal-IT/
     │   │   ├── trust-boundary-definition.md
     │   │   └── identity-data-flow.md
     │   │
-    │   ├── 01-policies-and-models/
+    │   ├── 01-federation/
+    │   │   ├── federation-architecture.md
+    │   │   ├── saml-flow.md
+    │   │   └── attribute-mapping.md
+    │   │
+    │   ├── 02-policies-and-models/
     │   │   ├── rbac-abac-strategy.md
     │   │   ├── least-privilege-principle.md
     │   │   ├── segregation-of-duties-matrix.md
@@ -19,14 +24,14 @@ Internal-IT/
     │   │   ├── zero-trust-alignment.md
     │   │   └── access-control-mapping-to-iso-controls.md
     │   │
-    │   ├── 02-human-identity-lifecycle/
+    │   ├── 03-human-identity-lifecycle/
     │   │   ├── joiner-mover-leaver-process.md
     │   │   ├── onboarding-checklist.md
     │   │   ├── offboarding-checklist.md
     │   │   ├── access-request-process.md
     │   │   └── temporary-access-policy.md
     │   │
-    │   ├── 03-entra-id-idp/
+    │   ├── 04-entra-id-idp/
     │   │   ├── configuration-notes.md
     │   │   ├── conditional-access-policies.md
     │   │   ├── mfa-enforcement-strategy.md
@@ -34,7 +39,7 @@ Internal-IT/
     │   │   ├── group-structure-design.md
     │   │   └── scim-provisioning-model.md
     │   │
-    │   ├── 04-aws-identity-center/
+    │   ├── 05-aws-identity-center/
     │   │   ├── permission-set-design.md
     │   │   ├── role-mapping-matrix.md
     │   │   ├── cross-account-access-model.md
@@ -42,20 +47,20 @@ Internal-IT/
     │   │   ├── session-control-policy.md
     │   │   └── mfa-enforcement-at-aws-layer.md
     │   │
-    │   ├── 05-machine-identities/
+    │   ├── 06-machine-identities/
     │   │   ├── service-account-policy.md
     │   │   ├── workload-identity-model.md
     │   │   ├── key-rotation-procedure.md
     │   │   ├── short-lived-credential-strategy.md
     │   │   └── ci-cd-identity-governance.md
     │   │
-    │   ├── 06-access-review-and-certification/
+    │   ├── 76-access-review-and-certification/
     │   │   ├── quarterly-access-review-process.md
     │   │   ├── certification-workflow.md
     │   │   ├── review-criteria.md
     │   │   └── revocation-timelines.md
     │   │
-    │   └── 07-monitoring-and-response/
+    │   └── 08-monitoring-and-response/
     │       ├── identity-logging-strategy.md
     │       ├── anomaly-detection-rules.md
     │       ├── suspicious-login-response-playbook.md
