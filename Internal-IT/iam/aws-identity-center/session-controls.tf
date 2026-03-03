@@ -2,27 +2,9 @@
 # Note: MFA enforcement is primarily managed in the Identity Center Console 
 # or via Entra ID Conditional Access, but we define session constraints here.
 
-resource "aws_ssoadmin_permission_set_inline_policy" "mfa_enforcement" {
-  instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
-  permission_set_arn = aws_ssoadmin_permission_set.platform_admin.arn
+# ---- MFA belongs at the IdP layer. ----
 
-  inline_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid      = "DenyIfNoMFA"
-        Effect   = "Deny"
-        Action   = "*"
-        Resource = "*"
-        /*Condition = {
-          BoolIfExists = {
-            "aws:MultiFactorAuthPresent" = "false"
-          }
-        }*/
-      }
-    ]
-  })
-}
+
 
 # Tag-Based Access Control (ABAC)
 # This allows users to manage resources only if the resource tag matches their Identity Center user attributes
