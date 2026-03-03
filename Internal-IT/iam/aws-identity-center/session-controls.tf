@@ -14,11 +14,11 @@ resource "aws_ssoadmin_permission_set_inline_policy" "mfa_enforcement" {
         Effect   = "Deny"
         Action   = "*"
         Resource = "*"
-        Condition = {
+        /*Condition = {
           BoolIfExists = {
             "aws:MultiFactorAuthPresent" = "false"
           }
-        }
+        }*/
       }
     ]
   })
