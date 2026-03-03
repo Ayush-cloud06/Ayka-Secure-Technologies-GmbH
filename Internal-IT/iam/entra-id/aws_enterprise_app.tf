@@ -1,5 +1,18 @@
-# -------- VARIABLES --------
+# --------------------------------------------------------
+# NOTE:
+# Federation was initially established via Entra GUI
+# due to provider limitations and licensing constraints.
+# This module now references the existing Enterprise App
+# instead of creating a new one.
+# --------------------------------------------------------
 
+
+data "azuread_service_principal" "aws_sso" {
+  display_name = "AWS IAM Identity Center (successor to AWS Single Sign-On)"
+}
+
+# -------- VARIABLES --------
+/*
 variable "aws_reply_urls" {
   description = "AWS Identity Center ACS URLs (populated after AWS side is created)"
   type        = list(string)
@@ -67,3 +80,4 @@ output "service_principal_object_id" {
   description = "Object ID of the Enterprise Application"
   value       = azuread_service_principal.aws_sso.object_id
 }
+*/
