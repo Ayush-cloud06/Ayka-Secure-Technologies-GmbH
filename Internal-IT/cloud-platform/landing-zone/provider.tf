@@ -1,6 +1,15 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0"
+    }
+  }
+}
+
 provider "aws" {
   alias  = "security"
-  region = "ap-south-1"
+  region = var.aws_region
 
   assume_role {
     role_arn = local.security_role_arn
@@ -9,18 +18,18 @@ provider "aws" {
 
 provider "aws" {
   alias  = "dev"
-  region = "ap-south-1"
+  region = var.aws_region
 
   assume_role {
-    role_arn = local.security_role_arn
+    role_arn = local.dev_role_arn
   }
 }
 
 provider "aws" {
   alias  = "prod"
-  region = "ap-south-1"
+  region = var.aws_region
 
   assume_role {
-    role_arn = local.security_role_arn
+    role_arn = local.prod_role_arn
   }
 }
