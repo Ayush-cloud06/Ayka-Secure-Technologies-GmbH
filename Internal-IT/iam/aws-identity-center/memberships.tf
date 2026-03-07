@@ -1,15 +1,44 @@
 locals {
+
   group_memberships = {
+
     Tier0 = [
+      "emp-001@ayushgta175outlook.onmicrosoft.com",
       "admin-emp-002@ayushgta175outlook.onmicrosoft.com"
     ]
 
     Tier1 = [
-      "emp-001@ayushgta175outlook.onmicrosoft.com"
+      "emp-001@ayushgta175outlook.onmicrosoft.com",
+      "emp-002@ayushgta175outlook.onmicrosoft.com",
+      "emp-003@ayushgta175outlook.onmicrosoft.com",
+      "emp-004@ayushgta175outlook.onmicrosoft.com",
+      "emp-013@ayushgta175outlook.onmicrosoft.com",
+      "emp-014@ayushgta175outlook.onmicrosoft.com"
     ]
 
-    Tier2 = []
+    Tier2 = [
+      "emp-005@ayushgta175outlook.onmicrosoft.com",
+      "emp-006@ayushgta175outlook.onmicrosoft.com",
+      "emp-007@ayushgta175outlook.onmicrosoft.com",
+      "emp-008@ayushgta175outlook.onmicrosoft.com",
+      "emp-009@ayushgta175outlook.onmicrosoft.com",
+      "emp-010@ayushgta175outlook.onmicrosoft.com",
+      "emp-011@ayushgta175outlook.onmicrosoft.com",
+      "emp-012@ayushgta175outlook.onmicrosoft.com",
+      "emp-015@ayushgta175outlook.onmicrosoft.com",
+      "emp-016@ayushgta175outlook.onmicrosoft.com",
+      "emp-017@ayushgta175outlook.onmicrosoft.com",
+      "emp-018@ayushgta175outlook.onmicrosoft.com",
+      "emp-019@ayushgta175outlook.onmicrosoft.com",
+      "emp-020@ayushgta175outlook.onmicrosoft.com",
+      "emp-021@ayushgta175outlook.onmicrosoft.com",
+      "emp-022@ayushgta175outlook.onmicrosoft.com",
+      "emp-023@ayushgta175outlook.onmicrosoft.com",
+      "emp-024@ayushgta175outlook.onmicrosoft.com"
+    ]
+
   }
+
 }
 
 data "aws_identitystore_user" "users" {

@@ -6,8 +6,14 @@ resource "azuread_user" "users" {
   display_name        = each.value.display_name
   mail_nickname       = lower(each.key)
 
-  password                    = "TempP@ssw0rd123!"
-  force_password_change       = true
-  disable_password_expiration = false
+  given_name = each.value.first_name
+  surname    = each.value.last_name
+
+  department    = each.value.department
+  job_title     = each.value.primary_role
+  employee_type = each.value.employment_type
+
+  password              = "TempP@ssw0rd123!"
+  force_password_change = true
 
 }
