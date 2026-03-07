@@ -53,7 +53,7 @@
         "security_role": "Internal Auditor",
         "start_date": "2026-01-12",
         "privileged": false,
-        "tier": "tier2"
+        "tier": "tier1"
     },
     "EMP-005": {
         "first_name": "Daniel",
@@ -95,7 +95,7 @@
         "security_role": "Standard User",
         "start_date": "2026-01-20",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-008": {
         "first_name": "Emma",
@@ -109,7 +109,7 @@
         "security_role": "Standard User",
         "start_date": "2026-01-20",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-009": {
         "first_name": "Felix",
@@ -123,7 +123,7 @@
         "security_role": "Standard User",
         "start_date": "2026-01-22",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-010": {
         "first_name": "Laura",
@@ -137,7 +137,7 @@
         "security_role": "Standard User",
         "start_date": "2026-01-22",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-011": {
         "first_name": "Tobias",
@@ -207,7 +207,7 @@
         "security_role": "Standard User",
         "start_date": "2026-01-30",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-016": {
         "first_name": "Leon",
@@ -235,7 +235,7 @@
         "security_role": "Standard User",
         "start_date": "2026-02-05",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-018": {
         "first_name": "Clara",
@@ -263,7 +263,7 @@
         "security_role": "Standard User",
         "start_date": "2026-02-08",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-020": {
         "first_name": "Laura",
@@ -277,7 +277,7 @@
         "security_role": "Standard User",
         "start_date": "2026-02-09",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-021": {
         "first_name": "Tobias",
@@ -305,7 +305,7 @@
         "security_role": "Standard User",
         "start_date": "2026-02-11",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-023": {
         "first_name": "Ben",
@@ -319,7 +319,7 @@
         "security_role": "Standard User",
         "start_date": "2026-02-12",
         "privileged": false,
-        "tier": "tier3"
+        "tier": "tier2"
     },
     "EMP-024": {
         "first_name": "Katharina",
