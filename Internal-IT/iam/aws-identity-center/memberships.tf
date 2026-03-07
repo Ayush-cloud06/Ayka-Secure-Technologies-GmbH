@@ -38,7 +38,6 @@ locals {
     ]
 
   }
-
 }
 
 data "aws_identitystore_user" "users" {

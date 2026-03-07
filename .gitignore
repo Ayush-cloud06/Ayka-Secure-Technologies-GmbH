@@ -17,7 +17,9 @@ terraform.tfvars.json
 *.auto.tfvars.json
 backend.tfvars
 backend.hcl
+
 plan.md
+futureplan.md
 ##################################
 # Terraform Plans & Artifacts
 ##################################
