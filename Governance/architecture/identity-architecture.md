@@ -36,3 +36,21 @@ Groups → Permission Sets → AWS Accounts
 Tier 0 – Security Administration
 Tier 1 – Infrastructure Operators
 Tier 2 – Developers
+
+---
+
+User
+↓
+Entra ID
+↓
+SSO Login
+↓
+Permission Set
+↓
+Assume Role
+↓
+IAM Core Role
+↓
+Permission Boundary
+↓
+AWS Services
