@@ -19,12 +19,12 @@ resource "aws_iam_role_policy_attachment" "security_audit_attachment" {
 }
 
 
-# Platform Operations Role (Cross Account)
+# Platform Operations Role 
 resource "aws_iam_role" "platform_ops_role" {
 
   name               = "PlatformOperationsRole"
   description        = "Role assumed by the platform account to manage infrastructure"
-  assume_role_policy = data.aws_iam_policy_document.security_account_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.identity_center_assume_role.json
 
   max_session_duration = 3600
 

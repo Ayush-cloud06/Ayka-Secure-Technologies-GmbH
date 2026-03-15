@@ -1,73 +1,77 @@
 # Tier0 — Platform Admin
 resource "aws_ssoadmin_permission_set" "platform_admin" {
-  name         = "Platform-Admin"
-  instance_arn = data.aws_ssoadmin_instances.this.arns[0]
-
+  name             = "Platform-Admin"
+  instance_arn     = data.aws_ssoadmin_instances.this.arns[0]
   session_duration = "PT8H"
 }
 
-resource "aws_ssoadmin_managed_policy_attachment" "platform_admin_policy" {
+data "aws_iam_policy_document" "tier0_assume_breakglass" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/BreakGlassRole"
+    ]
+  }
+}
+
+resource "aws_ssoadmin_permission_set_inline_policy" "tier0_assume_breakglass" {
   instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
   permission_set_arn = aws_ssoadmin_permission_set.platform_admin.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  inline_policy      = data.aws_iam_policy_document.tier0_assume_breakglass.json
 }
 
-
-# Tier1 — Operations
+# Tier1 — Platform Operations
 resource "aws_ssoadmin_permission_set" "tier1_ops" {
-  name         = "Tier1-Ops"
-  instance_arn = data.aws_ssoadmin_instances.this.arns[0]
 
+  name             = "Tier1-Ops"
+  instance_arn     = data.aws_ssoadmin_instances.this.arns[0]
   session_duration = "PT8H"
 }
 
-resource "aws_ssoadmin_managed_policy_attachment" "tier1_readonly" {
-  instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
-  permission_set_arn = aws_ssoadmin_permission_set.tier1_ops.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+data "aws_iam_policy_document" "tier1_assume_platform_role" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/PlatformOperationsRole",
+      "arn:aws:iam::*:role/SecurityAuditRole"
+    ]
+  }
 }
 
-resource "aws_ssoadmin_managed_policy_attachment" "tier1_iam_readonly" {
+resource "aws_ssoadmin_permission_set_inline_policy" "tier1_assume_platform_role" {
   instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
   permission_set_arn = aws_ssoadmin_permission_set.tier1_ops.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
-}
-
-resource "aws_ssoadmin_managed_policy_attachment" "tier1_billing_readonly" {
-  instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
-  permission_set_arn = aws_ssoadmin_permission_set.tier1_ops.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/AWSBillingReadOnlyAccess"
-}
-
-resource "aws_ssoadmin_managed_policy_attachment" "tier1_security_audit" {
-  instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
-  permission_set_arn = aws_ssoadmin_permission_set.tier1_ops.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
+  inline_policy      = data.aws_iam_policy_document.tier1_assume_platform_role.json
 }
 
 
-# Tier2 — Workload operators
+# Tier2 — Workload Operators
 resource "aws_ssoadmin_permission_set" "tier2_workload" {
-  name         = "Tier2-Workload"
-  instance_arn = data.aws_ssoadmin_instances.this.arns[0]
-
+  name             = "Tier2-Workload"
+  instance_arn     = data.aws_ssoadmin_instances.this.arns[0]
   session_duration = "PT8H"
 }
 
-resource "aws_ssoadmin_managed_policy_attachment" "tier2_ec2" {
-  instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
-  permission_set_arn = aws_ssoadmin_permission_set.tier2_workload.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+data "aws_iam_policy_document" "tier2_assume_workload_role" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/WorkloadOperatorRole"
+    ]
+  }
 }
 
-resource "aws_ssoadmin_managed_policy_attachment" "tier2_s3" {
+resource "aws_ssoadmin_permission_set_inline_policy" "tier2_assume_workload_role" {
   instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
   permission_set_arn = aws_ssoadmin_permission_set.tier2_workload.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
-resource "aws_ssoadmin_managed_policy_attachment" "tier2_rds" {
-  instance_arn       = data.aws_ssoadmin_instances.this.arns[0]
-  permission_set_arn = aws_ssoadmin_permission_set.tier2_workload.arn
-  managed_policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
+  inline_policy      = data.aws_iam_policy_document.tier2_assume_workload_role.json
 }

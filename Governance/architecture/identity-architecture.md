@@ -1,56 +1,42 @@
-User Lifecycle
+# Identity Architecture
 
-HR → Personnel Register
-        ↓
-Entra ID user creation
-        ↓
-Group membership assignment
-        ↓
-SCIM provisioning
-        ↓
-AWS Identity Center
-        ↓
-Permission Sets
-        ↓
-IAM Roles in AWS accounts
+## Tiers
 
----
-personnel.json
-      ↓
-Terraform
-      ↓
-Entra ID
- ├ Users
- ├ Department groups
- └ Security roles
-      ↓
-SCIM
-      ↓
-AWS Identity Center
- ├ Users
- └ Tier groups
- 
-Groups → Permission Sets → AWS Accounts
----
+- **Tier 0 – Security Administration**
+- **Tier 1 – Infrastructure Operators**
+- **Tier 2 – Developers**
 
-Tier 0 – Security Administration
-Tier 1 – Infrastructure Operators
-Tier 2 – Developers
+## User Lifecycle
 
----
+```mermaid
+flowchart TD
+    A[personnel.json] --> B[Entra ID users]
+    B --> C[SCIM]
+    C --> D[AWS Identity Center users]
+    D --> E[Tier groups]
+    E --> F[Permission sets]
+    F --> G[sts:AssumeRole]
+    G --> H[IAM roles]
+    H --> I[Custom IAM policies]
+    I --> J[AWS resources]
+```
 
-User
-↓
-Entra ID
-↓
-SSO Login
-↓
-Permission Set
-↓
-Assume Role
-↓
-IAM Core Role
-↓
-Permission Boundary
-↓
-AWS Services
+## Components
+
+```
+entra-id/
+   ├── identity provider
+   ├── HR source
+   └── user lifecycle
+
+aws-identity-center/
+   ├── login layer
+   ├── permission sets
+   └── group mapping
+
+aws-iam-core/
+   ├── real permissions
+   ├── IAM roles
+   ├── boundaries
+   └── policies
+```
