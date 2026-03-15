@@ -6,20 +6,32 @@
 - **Tier 1 – Infrastructure Operators**
 - **Tier 2 – Developers**
 
-## User Lifecycle
+## High-Level Identity Flow
+
+The identity model follows a **multi-layer architecture** similar to enterprise cloud platforms.
 
 ```mermaid
 flowchart TD
-    A[personnel.json] --> B[Entra ID users]
-    B --> C[SCIM]
-    C --> D[AWS Identity Center users]
-    D --> E[Tier groups]
-    E --> F[Permission sets]
+    A[HR Dataset (personnel.json)] --> B[Microsoft Entra ID (Identity Provider)]
+    B --> C[SCIM Provisioning]
+    C --> D[AWS Identity Center Users]
+    D --> E[Tier Groups (RBAC)]
+    E --> F[Permission Sets]
     F --> G[sts:AssumeRole]
-    G --> H[IAM roles]
-    H --> I[Custom IAM policies]
-    I --> J[AWS resources]
+    G --> H[IAM Roles (aws-iam-core)]
+    H --> I[ABAC Policies + Permission Boundaries]
+    I --> J[Resource Tag Evaluation]
+    J --> K[AWS Resources]
 ```
+
+This layered model ensures:
+
+- **Identity lifecycle management**
+- **RBAC enforcement**
+- **ABAC resource isolation**
+- **Least-privilege permissions**
+- **Controlled privilege escalation**
+- **Multi-account security**
 
 ## Components
 

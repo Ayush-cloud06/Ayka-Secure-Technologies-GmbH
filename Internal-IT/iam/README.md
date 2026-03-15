@@ -4,12 +4,13 @@ This directory implements the **full identity and access management architecture
 
 It models how a real company manages:
 
-* workforce identities
-* federated login
-* role-based access control
-* cloud permissions
-* privilege escalation protection
-* cross-account security access
+- workforce identities  
+- federated login  
+- role-based access control (RBAC)  
+- attribute-based access control (ABAC)  
+- cloud permissions  
+- privilege escalation protection  
+- cross-account security access  
 
 The system is designed so that **identity, authentication, authorization, and infrastructure permissions are separated into clean layers**.
 
@@ -28,7 +29,7 @@ SCIM Provisioning
         ↓
 AWS Identity Center Users
         ↓
-Tier Groups
+Tier Groups (RBAC)
         ↓
 Permission Sets
         ↓
@@ -36,18 +37,21 @@ sts:AssumeRole
         ↓
 IAM Roles (aws-iam-core)
         ↓
-Custom Policies + Permission Boundaries
+ABAC Policies + Permission Boundaries
+        ↓
+Resource Tag Evaluation
         ↓
 AWS Resources
 ```
 
 This layered model ensures:
 
-* **identity lifecycle management**
-* **RBAC enforcement**
-* **least-privilege permissions**
-* **controlled privilege escalation**
-* **multi-account security**
+- **identity lifecycle management**
+- **RBAC enforcement**
+- **ABAC resource isolation**
+- **least-privilege permissions**
+- **controlled privilege escalation**
+- **multi-account security**
 
 ---
 
@@ -66,10 +70,7 @@ iam/
 ├── aws-identity-center/
 │
 ├── aws-iam-core/
-│
-├── futureplan.md
-├── plan.md
-└── tree.md
+
 ```
 
 Each directory represents a **separate identity layer**.
@@ -88,12 +89,14 @@ iam/entra-id/
 
 Purpose:
 
-* Identity provider for the organization
-* User lifecycle management
-* Group-based role modeling
-* Federation into AWS
+- Identity provider for the organization
+- User lifecycle management
+- Group-based role modeling
+- Federation into AWS
 
-### HR Source of Truth
+---
+
+## HR Source of Truth
 
 ```
 entra-id/modules/core/personnel.json
@@ -105,24 +108,25 @@ Example record:
 
 ```
 EMP-003
-  Name: Lukas Weber
-  Department: Engineering
-  Security Role: Privileged Administrator
-  Tier: tier1
+Name: Lukas Weber
+Department: Engineering
+Security Role: Privileged Administrator
+Tier: tier1
 ```
 
 Attributes define:
 
-* department
-* security role
-* privilege tier
-* manager relationships
+- department
+- security role
+- privilege tier
+- manager relationships
+- employment status
 
-Terraform converts these into identity objects.
+Terraform converts these attributes into identity objects.
 
 ---
 
-### User Creation
+## User Creation
 
 File:
 
@@ -138,13 +142,15 @@ resource "azuread_user"
 
 Users are automatically mapped to:
 
-* department groups
-* security role groups
-* privilege tier groups
+- department groups
+- security role groups
+- privilege tier groups
+
+This ensures identity access is **data-driven from the HR dataset**.
 
 ---
 
-### Group Architecture
+## Group Architecture
 
 Defined in:
 
@@ -154,7 +160,7 @@ groups_departments.tf
 groups_tiers.tf
 ```
 
-Group examples:
+Example groups:
 
 ```
 grp-tier-tier0
@@ -173,7 +179,7 @@ This structure enables **RBAC modeling at the identity layer**.
 
 ---
 
-### Conditional Access
+## Conditional Access
 
 Directory:
 
@@ -204,9 +210,9 @@ This configures the **AWS enterprise application** inside Entra ID.
 
 Responsibilities:
 
-* federation setup
-* SAML authentication
-* SCIM user provisioning
+- federation setup
+- SAML authentication
+- SCIM user provisioning
 
 Identity flow becomes:
 
@@ -232,10 +238,10 @@ aws-identity-center/
 
 This layer controls:
 
-* login sessions
-* permission sets
-* group access
-* AWS account assignments
+- login sessions
+- permission sets
+- group access
+- AWS account assignments
 
 Identity Center does **not define real permissions**.
 
@@ -385,9 +391,9 @@ Emergency administrative access.
 
 Used when:
 
-* SSO fails
-* identity provider compromised
-* disaster recovery operations required
+- SSO fails
+- identity provider compromised
+- disaster recovery operations required
 
 Security controls include:
 
@@ -421,63 +427,176 @@ These policies replace overly broad AWS managed policies.
 
 ---
 
-## Permission Boundaries
+# Attribute-Based Access Control (ABAC)
 
-File:
+In addition to RBAC, the platform implements **Attribute-Based Access Control (ABAC)**.
 
-```
-permissions-boundaries.tf
-```
+RBAC determines **which roles a user can assume**, while ABAC determines **which resources that role can operate on**.
 
-Implements **privilege escalation protection**.
-
-Prevents roles from performing dangerous IAM actions such as:
-
-```
-CreatePolicyVersion
-AttachUserPolicy
-PutRolePolicy
-organizations:*
-```
-
-Effective permission becomes:
-
-```
-Role Policy
-    ∩
-Permission Boundary
-```
-
-This ensures developers cannot escalate privileges even if misconfigured policies are attached.
+This approach allows the platform to scale access management without creating large numbers of IAM roles.
 
 ---
 
-## Cross Account Roles
-
-File:
+## ABAC Policy Model
 
 ```
-cross-account-roles.tf
+User Attributes
+      ↓
+Principal Session Tags
+      ↓
+IAM Policy Conditions
+      ↓
+Resource Tags
+      ↓
+Access Decision
 ```
 
-These roles allow **other AWS accounts to access this account**.
+Example evaluation logic:
+
+```
+ResourceTag:Department
+        ==
+PrincipalTag:Department
+```
+
+If the values match → access allowed  
+If they differ → access denied
+
+---
+
+## ABAC Attribute Source
+
+User attributes originate from:
+
+```
+entra-id/modules/core/personnel.json
+```
+
+Example attributes:
+
+```
+Department
+Tier
+SecurityRole
+EmploymentType
+Manager
+```
+
+These attributes are mapped to **Principal Tags** during AWS Identity Center sessions.
 
 Example:
 
 ```
-Security Account
-    ↓
-AssumeRole
-    ↓
-SecurityAuditRole
+PrincipalTag:Department = Engineering
+PrincipalTag:Tier = tier2
 ```
 
-Used for:
+These tags are then evaluated by IAM policies.
+
+---
+
+## Mandatory Resource Tagging
+
+To ensure ABAC works reliably, the platform enforces **mandatory resource tagging**.
+
+All infrastructure must include:
 
 ```
-centralized security monitoring
-incident response
-compliance auditing
+Department
+Environment
+Owner
+```
+
+Enforced by:
+
+```
+ABACMandatoryTags
+MandatoryResourceTags
+```
+
+If a resource is created without required tags:
+
+```
+Create Resource
+      ↓
+Missing Department Tag
+      ↓
+AccessDenied
+```
+
+---
+
+## Department Isolation Policy
+
+Policy:
+
+```
+ABACDepartmentIsolation
+```
+
+Behavior:
+
+```
+User Department = Engineering
+      ↓
+Can only modify resources where
+ResourceTag:Department = Engineering
+```
+
+This prevents cross-team interference between departments such as:
+
+```
+Engineering
+Finance
+Security
+Platform
+```
+
+---
+
+## Cross-Department Visibility
+
+Policy:
+
+```
+ABACCrossDepartmentReadOnly
+```
+
+Allows safe visibility across departments:
+
+```
+DescribeInstances
+DescribeDBInstances
+ListBuckets
+```
+
+This allows engineers to observe infrastructure without modifying it.
+
+---
+
+## Platform Resource Protection
+
+Policy:
+
+```
+ABACProtectPlatformResources
+```
+
+Resources tagged:
+
+```
+Owner = PlatformTeam
+```
+
+cannot be modified or deleted by workload users.
+
+Protects critical infrastructure such as:
+
+```
+logging systems
+security tooling
+shared networking
+identity infrastructure
 ```
 
 ---
@@ -510,24 +629,26 @@ PlatformOperationsRole
     ↓
 PlatformEngineerPolicy
     ↓
-Access AWS resources
+ABAC Policy Evaluation
+    ↓
+Resource Access Granted
 ```
 
 ---
 
 # Security Controls in the System
 
-This architecture provides multiple security layers.
+The architecture implements layered defense:
 
 ```
 Identity provider MFA
 SCIM lifecycle automation
-RBAC group model
-Permission sets
-IAM roles
-Custom policies
+RBAC tier model
+ABAC tag-based access control
+Mandatory resource tagging
 Permission boundaries
-Cross account isolation
+Cross-account role isolation
+Conditional access enforcement
 ```
 
 These controls ensure that **compromise of a single identity cannot destroy the platform**.
@@ -536,9 +657,7 @@ These controls ensure that **compromise of a single identity cannot destroy the 
 
 # Design Principles
 
-The architecture follows several principles.
-
-### Separation of Concerns
+## Separation of Concerns
 
 ```
 Identity Provider → who you are
@@ -549,7 +668,7 @@ Policies → exact permissions
 
 ---
 
-### Least Privilege
+## Least Privilege
 
 Roles only receive permissions required for their function.
 
@@ -557,7 +676,7 @@ Overly broad AWS managed policies are avoided.
 
 ---
 
-### Defense in Depth
+## Defense in Depth
 
 Multiple layers protect the environment:
 
@@ -567,6 +686,44 @@ session controls
 role permissions
 permission boundaries
 cross account isolation
+ABAC resource isolation
+```
+
+---
+
+# Identity Lifecycle (Future Work)
+
+The next phase will implement **Joiner-Mover-Leaver automation**.
+
+Planned lifecycle flow:
+
+```
+Joiner
+    HR entry created in personnel.json
+        ↓
+    Entra ID user provisioned
+        ↓
+    SCIM sync to AWS Identity Center
+        ↓
+    Group membership assigned
+        ↓
+    Access automatically granted
+
+Mover
+    Department or role change
+        ↓
+    personnel.json updated
+        ↓
+    Terraform apply
+        ↓
+    IAM access updated automatically
+
+Leaver
+    User disabled in Entra ID
+        ↓
+    SCIM deprovisioning
+        ↓
+    AWS access revoked
 ```
 
 ---
@@ -575,11 +732,28 @@ cross account isolation
 
 This IAM system models a realistic enterprise cloud environment.
 
-It demonstrates how identity flows from **HR data → identity provider → cloud access → infrastructure permissions** while maintaining strict governance and security boundaries.
+It demonstrates how identity flows from:
+
+```
+HR data
+    ↓
+Identity provider
+    ↓
+Cloud federation
+    ↓
+Role-based access
+    ↓
+Attribute-based enforcement
+    ↓
+Infrastructure permissions
+```
+
+while maintaining strict governance and security boundaries.
 
 ```
 Identity Center grants access to roles.
 Roles contain permissions.
 Policies define actions.
+ABAC controls resource scope.
 Boundaries limit privilege escalation.
 ```
