@@ -62,3 +62,23 @@ resource "aws_iam_role_policy_attachment" "workload_operator_policy_attachment" 
   role       = aws_iam_role.workload_operator_role.name
   policy_arn = aws_iam_policy.workload_operator_policy.arn
 }
+
+resource "aws_iam_role_policy_attachment" "mandatory_tag_policy_attachment" {
+  role       = aws_iam_role.workload_operator_role.name
+  policy_arn = aws_iam_policy.mandatory_resource_tags.arn
+}
+
+resource "aws_iam_role_policy_attachment" "workload_abac_department" {
+  role       = aws_iam_role.workload_operator_role.name
+  policy_arn = aws_iam_policy.abac_department_isolation.arn
+}
+
+resource "aws_iam_role_policy_attachment" "workload_abac_tags" {
+  role       = aws_iam_role.workload_operator_role.name
+  policy_arn = aws_iam_policy.mandatory_resource_tags.arn
+}
+
+resource "aws_iam_role_policy_attachment" "workload_abac_readonly" {
+  role       = aws_iam_role.workload_operator_role.name
+  policy_arn = aws_iam_policy.abac_cross_department_readonly.arn
+}
