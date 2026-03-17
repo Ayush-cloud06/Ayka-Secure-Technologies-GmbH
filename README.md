@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository implements a comprehensive, compliance-oriented cloud security platform for **Ayka Secure Technologies GmbH**, a cloud-native SaaS startup based in the EU. It serves as both the company's internal security infrastructure and a reference implementation for regulated organizations seeking to achieve and maintain compliance across multiple frameworks.
+This repository implements a comprehensive, compliance-oriented cloud security platform for **Ayka Secure Technologies GmbH**, a simulated cloud-native SaaS startup based in the EU. It serves as both the company's internal security infrastructure and a reference implementation for regulated organizations seeking to achieve and maintain compliance across multiple frameworks.
 
 The platform demonstrates practical implementation of security controls, governance models, and automated compliance enforcement in cloud environments, with a focus on AWS as the primary cloud provider.
 
