@@ -12,16 +12,33 @@ The identity model follows a **multi-layer architecture** similar to enterprise 
 
 ```mermaid
 flowchart TD
-    A[HR Dataset (personnel.json)] --> B[Microsoft Entra ID (Identity Provider)]
-    B --> C[SCIM Provisioning]
-    C --> D[AWS Identity Center Users]
-    D --> E[Tier Groups (RBAC)]
-    E --> F[Permission Sets]
-    F --> G[sts:AssumeRole]
-    G --> H[IAM Roles (aws-iam-core)]
-    H --> I[ABAC Policies + Permission Boundaries]
-    I --> J[Resource Tag Evaluation]
-    J --> K[AWS Resources]
+    subgraph Identity_Source [IdP & Provisioning]
+        A[HR Dataset: personnel.json] --> B[Microsoft Entra ID]
+        B --> C{SCIM Sync}
+    end
+
+    subgraph AWS_Identity_Center [Authorization Layer]
+        C --> D[Users & Tier Groups]
+        D --> E[Permission Set Assignments]
+    end
+
+    subgraph AWS_Account_Execution [Technical Enforcement]
+        E --> F[sts:AssumeRoleWithSAML]
+        F --> G[IAM Role: Session]
+        G --> H[Permission Boundary: Hard Limit]
+        H --> I[ABAC Policy: Tag Match]
+    end
+
+    subgraph Resource_Layer [Data Plane]
+        I --> J{Resource Tag Evaluation}
+        J -->|Match| K[Access Granted]
+        J -->|Mismatch| L[Access Denied]
+    end
+
+    %% Documentation Links
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style G fill:#bbf,stroke:#333,stroke-width:2px
+    style I fill:#dfd,stroke:#333,stroke-width:2px
 ```
 
 This layered model ensures:

@@ -1,7 +1,7 @@
-AWS Organization
+/*AWS Organization
 
 Management Account
 Security Account
 Logging Account
 Dev Account
-Prod Account
+Prod Account*/
