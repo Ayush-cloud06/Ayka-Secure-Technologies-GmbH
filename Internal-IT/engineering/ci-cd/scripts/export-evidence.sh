@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-BASE_DIR="../../assurance/evidence/raw/$TIMESTAMP"
+BASE_DIR="../../Internal-IT/assurance/evidence/raw/$TIMESTAMP"
 
 echo "Exporting evidence to $BASE_DIR"
 
