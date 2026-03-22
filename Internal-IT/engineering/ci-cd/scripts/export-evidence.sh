@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 BASE_DIR="../../assurance/evidence/raw/$TIMESTAMP"
 
