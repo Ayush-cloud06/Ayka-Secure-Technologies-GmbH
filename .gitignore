@@ -2,8 +2,7 @@
 # Terraform Core
 ##################################
 .terraform/
-*terraform*
-.terraform.lock.hcl
+#.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 crash.log
@@ -58,6 +57,7 @@ credentials
 config
 tree.md
 
+!.env.example
 ##################################
 # Python / Lambda
 ##################################
@@ -87,11 +87,8 @@ pnpm-lock.yaml
 ##################################
 # Reports / Generated Evidence
 ##################################
-reports/*
-!reports/.gitkeep
-evidence/*
-!evidence/.gitkeep
-
+**/evidence/*
+!**/evidence/.gitkeep
 ##################################
 # Logs
 ##################################
@@ -109,3 +106,7 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+
+!.github/
+!.github/workflows/
