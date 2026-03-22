@@ -87,7 +87,6 @@ pnpm-lock.yaml
 ##################################
 # Reports / Generated Evidence
 ##################################
-**/evidence/*
 !**/evidence/.gitkeep
 ##################################
 # Logs
