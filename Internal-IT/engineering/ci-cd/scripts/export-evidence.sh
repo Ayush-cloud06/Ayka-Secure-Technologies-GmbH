@@ -1,28 +1,34 @@
 #!/bin/bash
 set -e
 
-cd "$(git rev-parse --show-toplevel)"
+echo "Starting export script..."
 
-OUTPUT_DIR="$(git rev-parse --show-toplevel)/output"
+ROOT="$(git rev-parse --show-toplevel)"
+echo "Root: $ROOT"
+
+cd "$ROOT"
+
+OUTPUT_DIR="$ROOT/output"
+EVIDENCE_ROOT="$ROOT/evidence"
 
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-BASE_DIR="$(pwd)/evidence/raw/$TIMESTAMP"
-mkdir -p "$BASE_DIR"
-echo "📦 Exporting evidence to $BASE_DIR"
-cp "$OUTPUT_DIR"/*.json "$BASE_DIR/" 2>/dev/null || echo "No JSON files found"
+BASE_DIR="$EVIDENCE_ROOT/raw/$TIMESTAMP"
 
-
-
-# 🔥 THIS WAS MISSING
+echo "Creating evidence directory..."
 mkdir -p "$BASE_DIR"
 
-echo "📁 Output contents:"
-ls -la "$OUTPUT_DIR" || echo "No output directory"
+echo "Checking output folder:"
+ls -la "$OUTPUT_DIR" || echo "output folder missing"
 
-echo "📦 Copying files..."
-cp "$OUTPUT_DIR"/*.json "$BASE_DIR/" 2>/dev/null || echo "No JSON files found"
+echo "Copying files..."
 
-echo "📁 Evidence contents:"
+if compgen -G "$OUTPUT_DIR/*.json" > /dev/null; then
+  cp "$OUTPUT_DIR"/*.json "$BASE_DIR/"
+else
+  echo "No JSON files found in output"
+fi
+
+echo "Final evidence contents:"
 ls -la "$BASE_DIR"
 
-echo "✅ Evidence stored"
+echo "Export script finished"
