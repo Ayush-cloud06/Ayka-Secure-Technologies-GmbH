@@ -1,14 +1,15 @@
 #!/bin/bash
 set -e
+
+cd "$(git rev-parse --show-toplevel)"
+
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-BASE_DIR="../../Internal-IT/assurance/evidence/raw/$TIMESTAMP"
+BASE_DIR="evidence/raw/$TIMESTAMP"
 
-echo "Exporting evidence to $BASE_DIR"
+mkdir -p "$BASE_DIR"
+echo " Copying files..."
+cp output/*.json "$BASE_DIR/" || true
 
-mkdir -p $BASE_DIR
+ls -la "$BASE_DIR"
 
-cp output/*.json $BASE_DIR/
-
-echo "Evidence stored"
-
-# chmod +x ci-cd/scripts/*.sh   -> Make script executable
+echo " Evidence stored"
