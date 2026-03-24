@@ -37,6 +37,11 @@ jobs:
       - name: 🧠 Evaluate Results
         run: bash Internal-IT/engineering/ci-cd/scripts/evaluate-results.sh
 
+      - name: 🔍 Debug evidence folder
+        run: |
+          echo "Listing evidence:"
+          tree evidence || ls -R evidence
+
       - name: Export Evidence
         run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
 
@@ -44,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: compliance-evidence
-          path: Internal-IT/assurance/evidence/
+          path: evidence/
