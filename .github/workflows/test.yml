@@ -25,11 +25,17 @@ jobs:
           tar xzf conftest_*.tar.gz
           sudo mv conftest /usr/local/bin
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Run Checkov
         run: bash Internal-IT/engineering/ci-cd/scripts/run-checkov.sh
 
       - name: Run OPA (Conftest)
         run: bash Internal-IT/engineering/ci-cd/scripts/run-policy-check.sh
+
+      - name: 🧠 Evaluate Results
+        run: bash Internal-IT/engineering/ci-cd/scripts/evaluate-results.sh
 
       - name: Export Evidence
         run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
