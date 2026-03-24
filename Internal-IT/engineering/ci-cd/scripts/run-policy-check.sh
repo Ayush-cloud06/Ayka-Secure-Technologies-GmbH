@@ -3,7 +3,7 @@ set -e
 echo "Running OPA policies via conftest ..."
 mkdir -p output
 
-conftest test Internal-IT/engineering/ \
+conftest test Internal-IT/ \
  --policy ../policy-as-code/OPA \
  --output json > output/opa-result.json
 
