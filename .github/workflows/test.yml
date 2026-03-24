@@ -39,8 +39,8 @@ jobs:
 
       - name: 🔍 Debug evidence folder
         run: |
-          echo "Listing evidence:"
-          tree evidence || ls -R evidence
+          pwd
+           tree -L 3 || ls -R
 
       - name: Export Evidence
         run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
