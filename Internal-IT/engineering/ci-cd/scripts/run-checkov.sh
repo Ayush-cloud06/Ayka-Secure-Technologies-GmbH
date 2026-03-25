@@ -1,11 +1,17 @@
 #!/bin/bash
 set -e
-echo "running checkov ..."
 
-mkdir -p output
+echo "🔍 Running Checkov..."
 
-checkov -d infra-test \
- --quiet \
- --output json > output/checkov-result.json
+cd "$(git rev-parse --show-toplevel)"
+echo "📍 Current directory: $(pwd)"
 
-echo "checkov scan complete
+OUTPUT_DIR="$(git rev-parse --show-toplevel)/output"
+mkdir -p "$OUTPUT_DIR"
+
+# Run checkov but DO NOT fail pipeline
+checkov -d Internal-IT/engineering/infra-test \
+  --quiet \
+  --output json > output/checkov-result.json || true
+
+echo "✅ Checkov scan complete"

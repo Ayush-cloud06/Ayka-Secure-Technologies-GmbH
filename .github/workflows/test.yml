@@ -1,0 +1,52 @@
+name: PR Compliance Pipeline
+
+on:
+  push:
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python (for Checkov)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install checkov
+
+          # Install Conftest (OPA runner)
+          wget https://github.com/open-policy-agent/conftest/releases/download/v0.45.0/conftest_0.45.0_Linux_x86_64.tar.gz
+          tar xzf conftest_*.tar.gz
+          sudo mv conftest /usr/local/bin
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Run Checkov
+        run: bash Internal-IT/engineering/ci-cd/scripts/run-checkov.sh
+
+      - name: Run OPA (Conftest)
+        run: bash Internal-IT/engineering/ci-cd/scripts/run-policy-check.sh
+
+      - name: 🧠 Evaluate Results
+        run: bash Internal-IT/engineering/ci-cd/scripts/evaluate-results.sh
+
+      - name: 🔍 Debug evidence folder
+        run: |
+          pwd
+           tree -L 3 || ls -R
+
+      - name: Export Evidence
+        run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
+
+      - name: Upload Evidence Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-evidence
+          path: evidence/
