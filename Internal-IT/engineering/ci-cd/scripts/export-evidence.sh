@@ -1,14 +1,34 @@
 #!/bin/bash
 set -e
+
+echo "Starting export script..."
+
+ROOT="$(git rev-parse --show-toplevel)"
+echo "Root: $ROOT"
+
+cd "$ROOT"
+
+OUTPUT_DIR="$ROOT/output"
+EVIDENCE_ROOT="$ROOT/evidence"
+
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-BASE_DIR="../../Internal-IT/assurance/evidence/raw/$TIMESTAMP"
+BASE_DIR="$EVIDENCE_ROOT/raw/$TIMESTAMP"
 
-echo "Exporting evidence to $BASE_DIR"
+echo "Creating evidence directory..."
+mkdir -p "$BASE_DIR"
 
-mkdir -p $BASE_DIR
+echo "Checking output folder:"
+ls -la "$OUTPUT_DIR" || echo "output folder missing"
 
-cp output/*.json $BASE_DIR/
+echo "Copying files..."
 
-echo "Evidence stored"
+if compgen -G "$OUTPUT_DIR/*.json" > /dev/null; then
+  cp "$OUTPUT_DIR"/*.json "$BASE_DIR/"
+else
+  echo "No JSON files found in output"
+fi
 
-# chmod +x ci-cd/scripts/*.sh   -> Make script executable
+echo "Final evidence contents:"
+ls -la "$BASE_DIR"
+
+echo "Export script finished"

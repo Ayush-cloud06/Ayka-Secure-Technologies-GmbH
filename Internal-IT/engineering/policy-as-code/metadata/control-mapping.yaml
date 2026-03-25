@@ -1,0 +1,41 @@
+controls:
+  CLOUDTRAIL_PROTECTION:
+    domain: detection
+    severity: CRITICAL
+
+    implemented_by:
+    - deny-disable-cloudtrail.json
+    - cloudtrail.tf
+
+    frameworks:
+      iso27001: [ A.12.4.1 ]
+
+  S3_PUBLIC_ACCESS_BLOCK:
+    domain: data_security
+    severity: HIGH
+
+    implemented_by:
+    - public_access_block.tf
+
+    frameworks:
+      iso27001: [ A.8.13 ]
+
+  IAM_PERMISSION_BOUNDARY:
+    domain: identity_security
+    severity: HIGH
+
+    implemented_by:
+    - permission_boundary.tf
+
+    frameworks:
+      iso27001: [ A.9.2.3 ]
+
+  BREAK_GLASS_ACCESS:
+    domain: identity_security
+    severity: CRITICAL
+
+    implemented_by:
+    - break-glass-role.tf
+
+    frameworks:
+      iso27001: [ A.9.4.2 ]
