@@ -1,7 +1,7 @@
-package terraform.security
+package main
 
 deny[msg] {
-  input.resource_type == "aws_s3_bucket"
-  not input.encryption
-  msg := "S3 bucket must have encryption enabled"
+  resource := input.resource_changes[_]
+  resource.type == "aws_s3_bucket"
+  msg = "S3 bucket detected"
 }
