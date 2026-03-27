@@ -28,6 +28,25 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Terraform init
+        working-directory: Internal-IT/workloads/control-validation-scenarios
+        run: terraform init -input=false
+
+      - name: Terraform Plan
+        working-directory: Internal-IT/workloads/control-validation-scenarios
+        run: terraform plan -input=false -refresh=false -out=tfplan.binary
+
+      - name: Export Terraform Plan JSON
+        working-directory: Internal-IT/workloads/control-validation-scenarios
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/output
+          terraform show -json tfplan.binary > $GITHUB_WORKSPACE/output/tfplan.json
+
       - name: Run Checkov
         run: bash Internal-IT/engineering/ci-cd/scripts/run-checkov.sh
 
