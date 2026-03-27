@@ -1,16 +1,36 @@
 # Control Validation Scenarios
 
-This directory contains intentionally insecure or non-compliant Terraform used to validate CI/CD compliance gates.
+This directory contains intentionally flawed Terraform used to validate CI/CD controls.
 
-It exists to prove that policy checks, static analysis, and severity handling behave as expected against realistic Terraform plans.
+Keep it simple: bad EC2, bad S3, bad VPC, bad IAM.
 
-## Rules
+Each folder should contain a small Terraform example that triggers one obvious finding.
 
-- Do not treat these scenarios as deployable workloads.
-- Keep each scenario small and focused on one control failure.
-- Add a short `README.md` inside each scenario with the expected result: `block`, `warn`, or `pass`.
-- Prefer generating `terraform plan` and `terraform show -json` from these scenarios instead of using hand-written test JSON.
+Use these scenarios to generate real `terraform plan` output for policy checks instead of relying on dummy JSON.
 
-## Scope
+## Selective testing
 
-Typical cases include bad S3, EC2, IAM, VPC, logging, encryption, and network security configurations.
+The root module now supports enabling only the scenarios you want to validate.
+
+By default, all scenarios are enabled. To run a subset, set `enabled_scenarios` in a root `terraform.tfvars` file:
+
+```hcl
+enabled_scenarios = [
+  "ec2_imdsv2",
+  "s3_public",
+]
+```
+
+You can also disable everything and turn on one scenario at plan time:
+
+```bash
+terraform plan -var='enabled_scenarios=["vpc_permissive_network_acl"]'
+```
+
+Supported scenario names:
+
+- `ec2_imdsv2`
+- `ec2_openssh`
+- `s3_encryption`
+- `s3_public`
+- `vpc_permissive_network_acl`
