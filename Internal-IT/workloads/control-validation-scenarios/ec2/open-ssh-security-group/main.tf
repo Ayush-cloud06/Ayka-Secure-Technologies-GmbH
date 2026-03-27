@@ -1,16 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "us-east-1"
-}
-
 resource "aws_security_group" "open_ssh" {
   name        = "control-validation-open-ssh"
   description = "Intentionally flawed security group for control validation"
