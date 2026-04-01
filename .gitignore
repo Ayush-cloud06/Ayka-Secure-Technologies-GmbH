@@ -18,6 +18,7 @@ terraform.tfvars.json
 backend.tfvars
 backend.hcl
 
+pipelinefix.md
 plan.md
 futureplan.md
 ##################################
