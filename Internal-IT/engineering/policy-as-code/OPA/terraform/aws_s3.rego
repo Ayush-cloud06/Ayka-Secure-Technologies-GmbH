@@ -1,5 +1,7 @@
 package policies.terraform.aws_s3
 
+import rego.v1
+
 deny[msg] if {
     r := input.resources[_]
     r.resource_type == "aws_s3_bucket"

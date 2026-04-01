@@ -1,5 +1,7 @@
 package policies.terraform.aws_ec2
 
+import rego.v1
+
 # Public SSH open to the internet
 
 deny[msg] if {
