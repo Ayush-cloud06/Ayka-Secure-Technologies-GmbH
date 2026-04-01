@@ -1,5 +1,7 @@
 package policies.terraform.aws_vpc
 
+import rego.v1
+
 # No default VPC allowed
 
 deny[msg] if {
@@ -19,7 +21,7 @@ deny[msg] if {
 
     msg := sprintf(
         "VPC %s does not have Flow Logs enabled",
-        [vpc.vlaues.cidr_block]
+        [vpc.values.cidr_block]
     )
 }
   # Helper: Check if flow logs exist for VPC

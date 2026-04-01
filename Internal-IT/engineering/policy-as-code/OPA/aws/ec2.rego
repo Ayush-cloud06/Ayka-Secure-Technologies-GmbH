@@ -1,5 +1,7 @@
 package policies.aws.ec2
 
+import rego.v1
+
 deny[msg] if {
     i := input.instances[_]
     i.imdsv2 == false
