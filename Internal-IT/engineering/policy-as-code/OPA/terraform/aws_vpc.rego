@@ -1,6 +1,6 @@
 package policies.terraform.aws_vpc
 
-import rego.v1
+import future.keywords.if
 
 # No default VPC allowed
 

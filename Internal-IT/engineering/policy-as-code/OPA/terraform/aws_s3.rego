@@ -1,6 +1,6 @@
 package policies.terraform.aws_s3
 
-import rego.v1
+import future.keywords.if
 
 deny[msg] if {
     r := input.resources[_]
