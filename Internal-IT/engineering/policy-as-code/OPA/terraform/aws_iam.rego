@@ -1,6 +1,7 @@
 package policies.terraform.aws_iam
 
-import rego.v1
+import future.keywords.if
+import future.keywords.in
 
 # No IAM policy should allow wildcard permissions
 

@@ -1,6 +1,6 @@
 package policies.aws.s3
 
-import rego.v1
+import future.keywords.if
 
 deny[msg] if {
     b := input.buckets[_]

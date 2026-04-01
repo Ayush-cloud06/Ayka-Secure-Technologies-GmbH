@@ -1,6 +1,7 @@
 package policies.terraform.aws_ec2
 
-import rego.v1
+import future.keywords.if
+import future.keywords.in
 
 # Public SSH open to the internet
 

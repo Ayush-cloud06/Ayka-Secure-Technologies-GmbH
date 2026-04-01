@@ -1,6 +1,6 @@
 package policies.aws.ec2
 
-import rego.v1
+import future.keywords.if
 
 deny[msg] if {
     i := input.instances[_]
