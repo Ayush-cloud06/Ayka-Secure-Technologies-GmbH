@@ -13,11 +13,15 @@ OPA_ERROR_LOG="$OUTPUT_DIR/opa-result.stderr.log"
 PLAN_FILE="$OUTPUT_DIR/tfplan.json"
 POLICY_DIR="Internal-IT/engineering/policy-as-code/OPA"
 
-if conftest test "$PLAN_FILE" \
+set +e
+conftest test "$PLAN_FILE" \
   --policy "$POLICY_DIR" \
-  --output json > "$OPA_RESULT_FILE" 2> "$OPA_ERROR_LOG"; then
-  :
-else
+  --all-namespaces \
+  --output json > "$OPA_RESULT_FILE" 2> "$OPA_ERROR_LOG"
+conftest_exit_code=$?
+set -e
+
+if [ "$conftest_exit_code" -gt 1 ] || [ ! -s "$OPA_RESULT_FILE" ]; then
   python3 - <<'PY' > "$OPA_RESULT_FILE"
 import json
 from pathlib import Path
@@ -34,10 +38,6 @@ payload = {
 
 print(json.dumps(payload, indent=2))
 PY
-fi
-
-if [ ! -s "$OPA_RESULT_FILE" ]; then
-  echo '{"status":"error","tool":"conftest","message":"OPA result file was empty."}' > "$OPA_RESULT_FILE"
 fi
 
 echo "✅ OPA policy check complete"

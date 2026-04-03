@@ -1,30 +1,30 @@
 package policies.terraform.aws_s3
 
-import future.keywords.if
+# Buckets must not be publicly readable through ACL resources.
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    bucket := module.resources[_]
+    bucket.type == "aws_s3_bucket"
 
-deny[msg] if {
-    r := input.resources[_]
-    r.resource_type == "aws_s3_bucket"
-    r.acl == "public-read"
-    msg := sprintf("s3 bucket %s is public", [r.name])
+    acl := module.resources[_]
+    acl.type == "aws_s3_bucket_acl"
+    acl.values.acl == "public-read"
+
+    msg := sprintf("S3 bucket %s is public", [bucket.address])
 }
 
-deny[msg] if {
-    r := input.resources[_]
-    r.resource_type == "aws_s3_bucket"
-    not r.encrypted
-    msg := sprintf("s3 bucket %s is not encrypted", [r.name])
+# Buckets must define server-side encryption configuration.
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    bucket := module.resources[_]
+    bucket.type == "aws_s3_bucket"
+
+    not module_has_s3_encryption(module)
+
+    msg := sprintf("S3 bucket %s is not encrypted", [bucket.address])
 }
 
-
- # Test command : 
-
- # opa eval --input examples/bucket.json \
-         # --data policies/terraform/aws_s3.rego \
-         # "data.policies.terraform.aws_s3.deny"
-
-
-
-            # "s3 bucket my-bucket is not encrypted": true,
-            # "s3 bucket my-bucket is public": true
-         
+module_has_s3_encryption(module) {
+    encryption := module.resources[_]
+    encryption.type == "aws_s3_bucket_server_side_encryption_configuration"
+}
