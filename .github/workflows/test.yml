@@ -10,6 +10,9 @@ permissions:
 jobs:
   compliance:
     runs-on: ubuntu-latest
+    outputs:
+      decision: ${{ steps.compliance-summary.outputs.decision }}
+      approval_required: ${{ steps.compliance-summary.outputs.approval_required }}
 
     steps:
       - name: Checkout code
@@ -66,16 +69,44 @@ jobs:
       - name: 🧠 Evaluate Results
         run: bash Internal-IT/engineering/ci-cd/scripts/evaluate-results.sh
 
+      - name: Publish Compliance Summary
+        id: compliance-summary
+        if: always()
+        run: |
+          if [ ! -f output/compliance-summary.json ]; then
+            echo "decision=error" >> "$GITHUB_OUTPUT"
+            echo "approval_required=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "decision=$(jq -r '.decision' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
+          echo "approval_required=$(jq -r '.approval_required' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
+
       - name: 🔍 Debug evidence folder
+        if: always()
         run: |
           pwd
            tree -L 3 || ls -R
 
       - name: Export Evidence
+        if: always()
         run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
 
       - name: Upload Evidence Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: compliance-evidence
           path: evidence/
+
+  medium-risk-approval:
+    needs: compliance
+    if: ${{ needs.compliance.outputs.approval_required == 'true' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: medium-risk-approval
+    steps:
+      - name: Await Manual Approval
+        run: |
+          echo "Medium severity findings require manual approval."
+          echo "Compliance decision: ${{ needs.compliance.outputs.decision }}"
