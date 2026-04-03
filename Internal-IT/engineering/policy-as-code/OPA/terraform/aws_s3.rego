@@ -10,7 +10,7 @@ deny[msg] {
     acl.type == "aws_s3_bucket_acl"
     acl.values.acl == "public-read"
 
-    msg := sprintf("S3 bucket %s is public", [bucket.address])
+    msg := sprintf("[S3_PUBLIC_ACCESS] S3 bucket %s is public", [bucket.address])
 }
 
 # Buckets must define server-side encryption configuration.
@@ -21,7 +21,7 @@ deny[msg] {
 
     not module_has_s3_encryption(module)
 
-    msg := sprintf("S3 bucket %s is not encrypted", [bucket.address])
+    msg := sprintf("[S3_ENCRYPTION_MISSING] S3 bucket %s is not encrypted", [bucket.address])
 }
 
 module_has_s3_encryption(module) {

@@ -15,7 +15,7 @@ deny[msg] {
     rule.cidr_blocks[_] == "0.0.0.0/0"
 
     msg := sprintf(
-        "Security group %s allows SSH (22) from the internet",
+        "[EC2_OPEN_SSH] Security group %s allows SSH (22) from the internet",
         [sg.address]
     )
 }
@@ -33,7 +33,7 @@ deny[msg] {
     rule.cidr_blocks[_] == "0.0.0.0/0"
 
     msg := sprintf(
-        "Security group %s allows HTTP (80) from the internet",
+        "[EC2_HTTP_OPEN] Security group %s allows HTTP (80) from the internet",
         [sg.address]
     )
 }
@@ -48,7 +48,7 @@ deny[msg] {
     metadata.http_tokens != "required"
 
     msg := sprintf(
-        "EC2 instance %s does not enforce IMDSv2 (http_tokens must be 'required')",
+        "[EC2_MISSING_IMDSV2] EC2 instance %s does not enforce IMDSv2 (http_tokens must be 'required')",
         [r.address]
     )
 }
@@ -60,7 +60,7 @@ deny[msg] {
     count(r.values.metadata_options) == 0
 
     msg := sprintf(
-        "EC2 instance %s does not define metadata_options and cannot prove IMDSv2 enforcement",
+        "[EC2_MISSING_IMDSV2] EC2 instance %s does not define metadata_options and cannot prove IMDSv2 enforcement",
         [r.address]
     )
 }
@@ -75,7 +75,7 @@ deny[msg] {
     not disk.encrypted
 
     msg := sprintf(
-        "EC2 instance %s has an unencrypted root volume",
+        "[EC2_ROOT_VOLUME_UNENCRYPTED] EC2 instance %s has an unencrypted root volume",
         [r.address]
     )
 }
@@ -90,7 +90,7 @@ deny[msg] {
     count(missing) > 0
 
     msg := sprintf(
-        "EC2 instance %s is missing mandatory tags: %v",
+        "[EC2_MISSING_TAGS] EC2 instance %s is missing mandatory tags: %v",
         [r.address, missing]
     )
 }
@@ -119,7 +119,7 @@ deny[msg] {
     r.values.instance_type in small_types
 
     msg := sprintf(
-        "EC2 instance %s uses undersized instance type %s in production",
+        "[EC2_PROD_UNDERSIZED_INSTANCE] EC2 instance %s uses undersized instance type %s in production",
         [r.address, r.values.instance_type]
     )
 }
@@ -136,7 +136,7 @@ deny[msg] {
     object.get(r.values.instance_market_options, "market_type", "") == "spot"
 
     msg := sprintf(
-        "EC2 instance %s uses Spot pricing in production",
+        "[EC2_PROD_SPOT_USAGE] EC2 instance %s uses Spot pricing in production",
         [r.address]
     )
 }
