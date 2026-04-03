@@ -8,7 +8,37 @@ permissions:
   contents: read
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive Internal-IT/workloads/control-validation-scenarios
+
+      - name: Terraform init for validation
+        working-directory: Internal-IT/workloads/control-validation-scenarios
+        run: terraform init -backend=false -input=false
+
+      - name: Terraform validate
+        working-directory: Internal-IT/workloads/control-validation-scenarios
+        run: terraform validate
+
+      - name: Validate CI shell scripts
+        run: |
+          for file in Internal-IT/engineering/ci-cd/scripts/*.sh; do
+            bash -n "$file"
+          done
+
   compliance:
+    needs: validate
     runs-on: ubuntu-latest
     outputs:
       decision: ${{ steps.compliance-summary.outputs.decision }}
