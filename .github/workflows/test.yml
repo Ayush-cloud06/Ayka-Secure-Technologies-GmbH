@@ -20,6 +20,11 @@ jobs:
         with:
           terraform_version: 1.7.5
 
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
       - name: Terraform fmt check
         run: terraform fmt -check -recursive Internal-IT/workloads/control-validation-scenarios
 
@@ -30,6 +35,10 @@ jobs:
       - name: Terraform validate
         working-directory: Internal-IT/workloads/control-validation-scenarios
         run: terraform validate
+
+      - name: TFLint
+        working-directory: Internal-IT/workloads/control-validation-scenarios
+        run: tflint --init && tflint --recursive
 
       - name: Validate CI shell scripts
         run: |
@@ -62,6 +71,11 @@ jobs:
           tar xzf conftest_*.tar.gz
           sudo mv conftest /usr/local/bin
 
+          # Install tfsec
+          wget https://github.com/aquasecurity/tfsec/releases/download/v1.28.14/tfsec-linux-amd64
+          chmod +x tfsec-linux-amd64
+          sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
+
       - name: Install jq
         run: sudo apt-get install -y jq
 
@@ -92,6 +106,9 @@ jobs:
 
       - name: Run Checkov
         run: bash Internal-IT/engineering/ci-cd/scripts/run-checkov.sh
+
+      - name: Run tfsec
+        run: bash Internal-IT/engineering/ci-cd/scripts/run-tfsec.sh
 
       - name: Run OPA (Conftest)
         run: bash Internal-IT/engineering/ci-cd/scripts/run-policy-check.sh

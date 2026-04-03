@@ -7,9 +7,10 @@ echo "Evaluating security results..."
 OUTPUT_DIR="output"
 CHECKOV_FILE="$OUTPUT_DIR/checkov-result.json"
 OPA_FILE="$OUTPUT_DIR/opa-result.json"
+TFSEC_FILE="$OUTPUT_DIR/tfsec-result.json"
 SUMMARY_FILE="$OUTPUT_DIR/compliance-summary.json"
 
-for file in "$CHECKOV_FILE" "$OPA_FILE"; do
+for file in "$CHECKOV_FILE" "$OPA_FILE" "$TFSEC_FILE"; do
   if [ ! -f "$file" ]; then
     echo "Required result file missing: $file"
     exit 1
@@ -25,6 +26,7 @@ import sys
 output_dir = Path("output")
 checkov_file = output_dir / "checkov-result.json"
 opa_file = output_dir / "opa-result.json"
+tfsec_file = output_dir / "tfsec-result.json"
 summary_file = output_dir / "compliance-summary.json"
 
 
@@ -46,6 +48,23 @@ def normalize_checkov(data):
                 "source": item.get("check_id", "unknown"),
                 "severity": item.get("severity", "LOW"),
                 "message": item.get("check_name", "Checkov policy violation"),
+                "resource": item.get("resource"),
+            }
+        )
+    return findings
+
+
+def normalize_tfsec(data):
+    findings = []
+    for item in data.get("results", []):
+        findings.append(
+            {
+                "tool": "tfsec",
+                "source": item.get("rule_id") or item.get("long_id", "unknown"),
+                "severity": item.get("severity", "LOW"),
+                "message": item.get("description")
+                or item.get("rule_description")
+                or "tfsec policy violation",
                 "resource": item.get("resource"),
             }
         )
@@ -102,10 +121,12 @@ def count_by_severity(findings):
 
 checkov_data = load_json(checkov_file)
 opa_data = load_json(opa_file)
+tfsec_data = load_json(tfsec_file)
 
 checkov_findings = normalize_checkov(checkov_data)
 opa_findings = normalize_opa(opa_data)
-all_findings = checkov_findings + opa_findings
+tfsec_findings = normalize_tfsec(tfsec_data)
+all_findings = checkov_findings + opa_findings + tfsec_findings
 
 by_tool = defaultdict(list)
 for finding in all_findings:
@@ -141,4 +162,3 @@ if summary["decision"] == "fail":
 
 sys.exit(0)
 PY
-
