@@ -1,41 +1,180 @@
 controls:
-  CLOUDTRAIL_PROTECTION:
-    domain: detection
-    severity: CRITICAL
-
-    implemented_by:
-    - deny-disable-cloudtrail.json
-    - cloudtrail.tf
-
-    frameworks:
-      iso27001: [ A.12.4.1 ]
-
-  S3_PUBLIC_ACCESS_BLOCK:
-    domain: data_security
+  EC2_OPEN_SSH:
+    title: "Security groups must not allow public SSH access"
+    description: "Ingress on TCP/22 from 0.0.0.0/0 is treated as an internet-exposed administrative access path."
     severity: HIGH
-
-    implemented_by:
-    - public_access_block.tf
-
+    category: network_security
+    domain: compute_security
     frameworks:
-      iso27001: [ A.8.13 ]
+      iso27001: ["A.8.20", "A.8.21"]
+    enforcement:
+      tool: opa
+      control_id: EC2_OPEN_SSH
+      policy_package: policies.terraform.aws_ec2
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Restrict SSH ingress to approved administrative networks or remove the rule entirely."
 
-  IAM_PERMISSION_BOUNDARY:
-    domain: identity_security
+  S3_PUBLIC_ACCESS:
+    title: "S3 buckets must not be publicly accessible"
+    description: "Public-read ACLs or equivalent public exposure on S3 buckets are treated as internet data exposure."
     severity: HIGH
-
-    implemented_by:
-    - permission_boundary.tf
-
+    category: data_security
+    domain: storage_security
     frameworks:
-      iso27001: [ A.9.2.3 ]
+      iso27001: ["A.8.12", "A.8.24"]
+    enforcement:
+      tool: opa
+      control_id: S3_PUBLIC_ACCESS
+      policy_package: policies.terraform.aws_s3
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Remove public ACLs and enforce private bucket access patterns."
 
-  BREAK_GLASS_ACCESS:
-    domain: identity_security
-    severity: CRITICAL
-
-    implemented_by:
-    - break-glass-role.tf
-
+  EC2_MISSING_IMDSV2:
+    title: "EC2 instances must enforce IMDSv2"
+    description: "EC2 metadata access must require IMDSv2 to reduce SSRF-style credential exposure risk."
+    severity: HIGH
+    category: compute_security
+    domain: instance_hardening
     frameworks:
-      iso27001: [ A.9.4.2 ]
+      iso27001: ["A.8.9", "A.8.20"]
+    enforcement:
+      tool: opa
+      control_id: EC2_MISSING_IMDSV2
+      policy_package: policies.terraform.aws_ec2
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Set metadata_options.http_tokens to required on EC2 instances."
+
+  S3_VERSIONING_DISABLED:
+    title: "S3 bucket versioning should be enabled"
+    description: "Versioning improves recoverability and protection against accidental deletion or overwrite."
+    severity: MEDIUM
+    category: resilience
+    domain: storage_resilience
+    frameworks:
+      iso27001: ["A.8.13", "A.5.30"]
+    enforcement:
+      tool: checkov
+      control_id: S3_VERSIONING_DISABLED
+      policy_id: CKV_AWS_21
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Enable versioning on S3 buckets that store persistent or recoverable data."
+
+  EC2_MISSING_TAGS:
+    title: "EC2 instances should include mandatory governance tags"
+    description: "Missing Environment, Owner, or CostCenter tags reduce governance, ownership tracking, and cost attribution."
+    severity: LOW
+    category: governance
+    domain: asset_management
+    frameworks:
+      iso27001: ["A.5.9"]
+    enforcement:
+      tool: opa
+      control_id: EC2_MISSING_TAGS
+      policy_package: policies.terraform.aws_ec2
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Add the required governance tags to each EC2 instance definition."
+
+  S3_ENCRYPTION_MISSING:
+    title: "S3 buckets should use server-side encryption"
+    description: "Missing bucket encryption weakens data protection at rest and increases recovery and compliance risk."
+    severity: MEDIUM
+    category: data_security
+    domain: storage_security
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: opa
+      control_id: S3_ENCRYPTION_MISSING
+      policy_package: policies.terraform.aws_s3
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Add server-side encryption configuration for each S3 bucket."
+
+  EC2_ROOT_VOLUME_UNENCRYPTED:
+    title: "EC2 root volumes should be encrypted"
+    description: "Unencrypted root volumes weaken protection of instance data at rest."
+    severity: HIGH
+    category: compute_security
+    domain: storage_encryption
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: opa
+      control_id: EC2_ROOT_VOLUME_UNENCRYPTED
+      policy_package: policies.terraform.aws_ec2
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Enable encryption on root block devices for EC2 instances."
+
+  EC2_HTTP_OPEN:
+    title: "Security groups should not expose HTTP broadly without an explicit exception"
+    description: "Public HTTP exposure should be intentional and tightly governed."
+    severity: MEDIUM
+    category: network_security
+    domain: perimeter_security
+    frameworks:
+      iso27001: ["A.8.20"]
+    enforcement:
+      tool: opa
+      control_id: EC2_HTTP_OPEN
+      policy_package: policies.terraform.aws_ec2
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Restrict HTTP ingress scope or document and approve the exposure explicitly."
+
+  EC2_PROD_UNDERSIZED_INSTANCE:
+    title: "Production EC2 instances should not use undersized instance types"
+    description: "Undersized production instances increase performance and resilience risk."
+    severity: LOW
+    category: reliability
+    domain: production_readiness
+    frameworks:
+      iso27001: ["A.5.30"]
+    enforcement:
+      tool: opa
+      control_id: EC2_PROD_UNDERSIZED_INSTANCE
+      policy_package: policies.terraform.aws_ec2
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Use an appropriately sized production instance class."
+
+  EC2_PROD_SPOT_USAGE:
+    title: "Production EC2 instances should not rely on Spot pricing"
+    description: "Spot capacity in production creates avoidable interruption risk for critical workloads."
+    severity: MEDIUM
+    category: reliability
+    domain: production_readiness
+    frameworks:
+      iso27001: ["A.5.30"]
+    enforcement:
+      tool: opa
+      control_id: EC2_PROD_SPOT_USAGE
+      policy_package: policies.terraform.aws_ec2
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Avoid Spot market usage for production instances unless explicitly approved."

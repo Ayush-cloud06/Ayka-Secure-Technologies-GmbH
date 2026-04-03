@@ -21,13 +21,17 @@ python3 - <<'PY'
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
+import re
 import sys
+
+import yaml
 
 output_dir = Path("output")
 checkov_file = output_dir / "checkov-result.json"
 opa_file = output_dir / "opa-result.json"
 tfsec_file = output_dir / "tfsec-result.json"
 summary_file = output_dir / "compliance-summary.json"
+control_mapping_file = Path("Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml")
 
 
 def load_json(path: Path):
@@ -38,50 +42,99 @@ def load_json(path: Path):
         sys.exit(1)
 
 
-def normalize_checkov(data):
+def load_yaml(path: Path):
+    try:
+        return yaml.safe_load(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"Failed to parse YAML from {path}: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+
+def build_control_indexes(control_mapping):
+    controls = control_mapping.get("controls", {})
+    by_checkov_policy = {}
+    by_tfsec_policy = {}
+    by_opa_control_id = {}
+
+    for control_id, metadata in controls.items():
+        enforcement = metadata.get("enforcement", {})
+        tool = enforcement.get("tool")
+        if tool == "checkov" and enforcement.get("policy_id"):
+            by_checkov_policy[enforcement["policy_id"]] = control_id
+        elif tool == "tfsec" and enforcement.get("policy_id"):
+            by_tfsec_policy[enforcement["policy_id"]] = control_id
+        elif tool == "opa":
+            by_opa_control_id[enforcement.get("control_id", control_id)] = control_id
+
+    return controls, by_checkov_policy, by_tfsec_policy, by_opa_control_id
+
+
+def build_finding(tool, source, severity, message, resource, control_id=None, control=None):
+    finding = {
+        "tool": tool,
+        "source": source,
+        "severity": severity,
+        "message": message,
+        "resource": resource,
+    }
+    if control_id:
+        finding["control_id"] = control_id
+    if control:
+        finding["control"] = {
+            "title": control.get("title"),
+            "domain": control.get("domain"),
+            "category": control.get("category"),
+        }
+    return finding
+
+
+def normalize_checkov(data, controls, checkov_index):
     findings = []
     failed_checks = data.get("results", {}).get("failed_checks", [])
     for item in failed_checks:
+        source = item.get("check_id", "unknown")
+        control_id = checkov_index.get(source)
+        control = controls.get(control_id, {})
         findings.append(
-            {
-                "tool": "checkov",
-                "source": item.get("check_id", "unknown"),
-                "severity": item.get("severity", "LOW"),
-                "message": item.get("check_name", "Checkov policy violation"),
-                "resource": item.get("resource"),
-            }
+            build_finding(
+                tool="checkov",
+                source=source,
+                severity=control.get("severity", item.get("severity", "LOW")),
+                message=item.get("check_name", "Checkov policy violation"),
+                resource=item.get("resource"),
+                control_id=control_id,
+                control=control if control_id else None,
+            )
         )
     return findings
 
 
-def normalize_tfsec(data):
+def normalize_tfsec(data, controls, tfsec_index):
     findings = []
     for item in data.get("results", []):
+        source = item.get("rule_id") or item.get("long_id", "unknown")
+        control_id = tfsec_index.get(source)
+        control = controls.get(control_id, {})
         findings.append(
-            {
-                "tool": "tfsec",
-                "source": item.get("rule_id") or item.get("long_id", "unknown"),
-                "severity": item.get("severity", "LOW"),
-                "message": item.get("description")
+            build_finding(
+                tool="tfsec",
+                source=source,
+                severity=control.get("severity", item.get("severity", "LOW")),
+                message=item.get("description")
                 or item.get("rule_description")
                 or "tfsec policy violation",
-                "resource": item.get("resource"),
-            }
+                resource=item.get("resource"),
+                control_id=control_id,
+                control=control if control_id else None,
+            )
         )
     return findings
 
 
-OPA_NAMESPACE_SEVERITY = {
-    "policies.terraform.aws_ec2": "HIGH",
-    "policies.terraform.aws_s3": "HIGH",
-    "policies.terraform.aws_iam": "HIGH",
-    "policies.terraform.aws_vpc": "HIGH",
-    "policies.aws.ec2": "LOW",
-    "policies.aws.s3": "LOW",
-}
+OPA_CONTROL_PREFIX = re.compile(r"^\[(?P<control_id>[A-Z0-9_]+)\]\s*(?P<message>.*)$")
 
 
-def normalize_opa(data):
+def normalize_opa(data, controls, opa_index):
     if isinstance(data, dict) and data.get("status") == "error":
         print("OPA execution failed before producing findings JSON.", file=sys.stderr)
         print(json.dumps(data, indent=2), file=sys.stderr)
@@ -94,16 +147,27 @@ def normalize_opa(data):
     findings = []
     for namespace_result in data:
         namespace = namespace_result.get("namespace", "unknown")
-        severity = OPA_NAMESPACE_SEVERITY.get(namespace, "MEDIUM")
         for failure in namespace_result.get("failures", []):
+            raw_message = failure.get("msg", "OPA policy violation")
+            match = OPA_CONTROL_PREFIX.match(raw_message)
+            control_id = None
+            message = raw_message
+            if match:
+                control_id = match.group("control_id")
+                message = match.group("message")
+
+            mapped_control_id = opa_index.get(control_id) if control_id else None
+            control = controls.get(mapped_control_id, {})
             findings.append(
-                {
-                    "tool": "opa",
-                    "source": namespace,
-                    "severity": severity,
-                    "message": failure.get("msg", "OPA policy violation"),
-                    "resource": failure.get("metadata", {}).get("resource"),
-                }
+                build_finding(
+                    tool="opa",
+                    source=namespace,
+                    severity=control.get("severity", "MEDIUM"),
+                    message=message,
+                    resource=failure.get("metadata", {}).get("resource"),
+                    control_id=mapped_control_id or control_id,
+                    control=control if mapped_control_id else None,
+                )
             )
     return findings
 
@@ -122,10 +186,13 @@ def count_by_severity(findings):
 checkov_data = load_json(checkov_file)
 opa_data = load_json(opa_file)
 tfsec_data = load_json(tfsec_file)
+control_mapping_data = load_yaml(control_mapping_file)
 
-checkov_findings = normalize_checkov(checkov_data)
-opa_findings = normalize_opa(opa_data)
-tfsec_findings = normalize_tfsec(tfsec_data)
+controls, checkov_index, tfsec_index, opa_index = build_control_indexes(control_mapping_data)
+
+checkov_findings = normalize_checkov(checkov_data, controls, checkov_index)
+opa_findings = normalize_opa(opa_data, controls, opa_index)
+tfsec_findings = normalize_tfsec(tfsec_data, controls, tfsec_index)
 all_findings = checkov_findings + opa_findings + tfsec_findings
 
 by_tool = defaultdict(list)
