@@ -1,12 +1,11 @@
 package policies.terraform.aws_ec2
 
-import future.keywords.if
 import future.keywords.in
 
 # Public SSH open to the internet
-
-deny[msg] if {
-    sg := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    sg := module.resources[_]
     sg.type == "aws_security_group"
 
     rule := sg.values.ingress[_]
@@ -17,14 +16,14 @@ deny[msg] if {
 
     msg := sprintf(
         "Security group %s allows SSH (22) from the internet",
-        [sg.values.name]
+        [sg.address]
     )
 }
 
 # HTTP open to the internet
-
-deny[msg] if {
-    sg := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    sg := module.resources[_]
     sg.type == "aws_security_group"
 
     rule := sg.values.ingress[_]
@@ -35,36 +34,44 @@ deny[msg] if {
 
     msg := sprintf(
         "Security group %s allows HTTP (80) from the internet",
-        [sg.values.name]
+        [sg.address]
     )
 }
 
 # EC2 must enforce IMDSv2 (http_tokens = "required")
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type == "aws_instance"
 
-    # metadata_options missing or http_tokens not set to required
-    not r.values.metadata_options.http_tokens == "required"
+    metadata := r.values.metadata_options[_]
+    metadata.http_tokens != "required"
 
     msg := sprintf(
-        "EC2 instance %s does not enforce IMDSv2 (http_token must be 'required')",
+        "EC2 instance %s does not enforce IMDSv2 (http_tokens must be 'required')",
         [r.address]
     )
 }
 
-# Instance root volume must be encrypted
-# NOTE:
-# Root volume encryption is enforced at Terraform module level.
-# This rule is intentionally disabled because plan does not expose
-# disk encryption reliably in planned_values.
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
+    r.type == "aws_instance"
+    count(r.values.metadata_options) == 0
 
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+    msg := sprintf(
+        "EC2 instance %s does not define metadata_options and cannot prove IMDSv2 enforcement",
+        [r.address]
+    )
+}
+
+# Instance root volume must be encrypted when root block devices are explicitly defined
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type == "aws_instance"
 
-    disk := r.values.root_block_devices[_]
+    disk := r.values.root_block_device[_]
     not disk.encrypted
 
     msg := sprintf(
@@ -74,9 +81,9 @@ deny[msg] if {
 }
 
 # EC2 instances must have mandatory tags: Environment, Owner, CostCenter
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type == "aws_instance"
 
     missing := missing_tags(r.values.tags)
@@ -88,20 +95,25 @@ deny[msg] if {
     )
 }
 
-# Helper function to find missing tags
-missing_tags(tags) = missing if {
+missing_tags(tags) = missing {
+    tags == null
+    missing := {"Environment", "Owner", "CostCenter"}
+}
+
+missing_tags(tags) = missing {
     required := {"Environment", "Owner", "CostCenter"}
     present := {k | tags[k]}
     missing := required - present
 }
 
 # Small instance types not allowed in Production
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type == "aws_instance"
 
-    lower(r.values.tags.Environment) == "prod"
+    r.values.tags != null
+    lower(object.get(r.values.tags, "Environment", "")) == "prod"
 
     small_types := {"t2.micro", "t3.micro", "t3a.micro"}
     r.values.instance_type in small_types
@@ -113,13 +125,15 @@ deny[msg] if {
 }
 
 # No Spot instances allowed in Production
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type == "aws_instance"
 
-    lower(r.values.tags.Environment) == "prod"
-    r.values.instance_market_options.market_type == "spot"
+    r.values.tags != null
+    lower(object.get(r.values.tags, "Environment", "")) == "prod"
+    r.values.instance_market_options != null
+    object.get(r.values.instance_market_options, "market_type", "") == "spot"
 
     msg := sprintf(
         "EC2 instance %s uses Spot pricing in production",

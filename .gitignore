@@ -21,6 +21,7 @@ backend.hcl
 pipelinefix.md
 plan.md
 futureplan.md
+context.md
 ##################################
 # Terraform Plans & Artifacts
 ##################################

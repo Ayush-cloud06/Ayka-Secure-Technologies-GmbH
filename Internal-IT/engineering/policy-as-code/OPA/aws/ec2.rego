@@ -1,8 +1,6 @@
 package policies.aws.ec2
 
-import future.keywords.if
-
-deny[msg] if {
+deny[msg] {
     i := input.instances[_]
     i.imdsv2 == false
 

@@ -1,12 +1,11 @@
 package policies.terraform.aws_iam
 
-import future.keywords.if
 import future.keywords.in
 
 # No IAM policy should allow wildcard permissions
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type in {"aws_iam_policy", "aws_iam_role_policy", "aws_iam_user_policy"}
 
     policy := json.unmarshal(r.values.policy)
@@ -22,9 +21,9 @@ deny[msg] if {
 }
 
 # No inline IAM policies allowed
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type in {"aws_iam_role_policy", "aws_iam_user_policy"}
 
     msg := sprintf(
@@ -34,9 +33,9 @@ deny[msg] if {
 }
 
 # No IAM users allowed (role-only organization)
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type == "aws_iam_user"
 
     msg := sprintf(
@@ -46,9 +45,9 @@ deny[msg] if {
 }
 
 # IAM users must have MFA enabled
-
-deny[msg] if {
-    user := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    user := module.resources[_]
     user.type == "aws_iam_user"
 
     not user_has_mfa(user.name)
@@ -59,10 +58,9 @@ deny[msg] if {
     )
 }
 
-# Helper : Check if a user has an MFA device
-
-user_has_mfa(username) if {
-    mfa := input.planned_values.root_module.resources[_]
+user_has_mfa(username) {
+    module := input.planned_values.root_module.child_modules[_]
+    mfa := module.resources[_]
     mfa.type == "aws_iam_virtual_mfa_device"
     mfa.values.user == username
 }

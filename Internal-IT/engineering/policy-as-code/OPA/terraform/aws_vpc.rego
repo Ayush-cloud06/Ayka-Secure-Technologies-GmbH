@@ -1,20 +1,18 @@
 package policies.terraform.aws_vpc
 
-import future.keywords.if
-
 # No default VPC allowed
-
-deny[msg] if {
-    r := input.planned_values.root_module.resources[_] 
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    r := module.resources[_]
     r.type == "aws_default_vpc"
 
     msg := "Default VPC usage is not allowed. Create a custom VPC instead"
 }
 
 # VPC must have Flow Logs enabled
-
-deny[msg] if {
-    vpc := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    vpc := module.resources[_]
     vpc.type == "aws_vpc"
 
     not vpc_has_flow_logs(vpc.values.id)
@@ -24,18 +22,18 @@ deny[msg] if {
         [vpc.values.cidr_block]
     )
 }
-  # Helper: Check if flow logs exist for VPC
 
-  vpc_has_flow_logs(vpc_id) if {
-    fl := input.planned_values.root_module.resources[_]
+vpc_has_flow_logs(vpc_id) {
+    module := input.planned_values.root_module.child_modules[_]
+    fl := module.resources[_]
     fl.type == "aws_flow_log"
     fl.values.resource_id == vpc_id
-  }
+}
 
 # No route table should expose 0.0.0.0/0 directly to Internet Gateway
-
-deny[msg] if {
-    rt := input.planned_values.root_module.resources[_]
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    rt := module.resources[_]
     rt.type == "aws_route_table"
 
     route := rt.values.route[_]
@@ -48,10 +46,10 @@ deny[msg] if {
     )
 }
 
-# No Network ACL shoudl allow all traffic from 0.0.0.0/0
-
-deny[msg] if {
-    acl := input.planned_values.root_module.resources[_]
+# No Network ACL should allow all traffic from 0.0.0.0/0
+deny[msg] {
+    module := input.planned_values.root_module.child_modules[_]
+    acl := module.resources[_]
     acl.type == "aws_network_acl"
 
     entry := acl.values.ingress[_]
@@ -59,7 +57,7 @@ deny[msg] if {
     entry.rule_action == "allow"
 
     msg := sprintf(
-        "Network ACl %s allows unrestricted ingress from the internet",
+        "Network ACL %s allows unrestricted ingress from the internet",
         [acl.address]
     )
 }

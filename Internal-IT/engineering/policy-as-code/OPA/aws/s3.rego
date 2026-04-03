@@ -1,8 +1,6 @@
 package policies.aws.s3
 
-import future.keywords.if
-
-deny[msg] if {
+deny[msg] {
     b := input.buckets[_]
     b.public == true
 
