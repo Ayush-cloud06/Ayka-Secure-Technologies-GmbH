@@ -15,7 +15,7 @@ deny[msg] {
     stmt.Action == "*"
 
     msg := sprintf(
-        "IAM policy %s allows wildcard action '*'",
+        "[IAM_WILDCARD_POLICY] IAM policy %s allows wildcard action '*'",
         [r.address]
     )
 }
@@ -27,7 +27,7 @@ deny[msg] {
     r.type in {"aws_iam_role_policy", "aws_iam_user_policy"}
 
     msg := sprintf(
-        "Inline IAM policy %s is not allowed. Use managed IAM policies instead",
+        "[IAM_INLINE_POLICY_USAGE] Inline IAM policy %s is not allowed. Use managed IAM policies instead",
         [r.address]
     )
 }
@@ -39,7 +39,7 @@ deny[msg] {
     r.type == "aws_iam_user"
 
     msg := sprintf(
-        "IAM user %s is not allowed. Use federated access with IAM role instead",
+        "[IAM_USER_PROHIBITED] IAM user %s is not allowed. Use federated access with IAM role instead",
         [r.address]
     )
 }
@@ -53,7 +53,7 @@ deny[msg] {
     not user_has_mfa(user.name)
 
     msg := sprintf(
-        "IAM user %s does not have MFA enabled",
+        "[IAM_USER_MFA_MISSING] IAM user %s does not have MFA enabled",
         [user.address]
     )
 }

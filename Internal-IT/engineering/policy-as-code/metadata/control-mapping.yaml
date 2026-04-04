@@ -178,3 +178,147 @@ controls:
       artifact: opa-result.json
     remediation:
       action: "Avoid Spot market usage for production instances unless explicitly approved."
+
+  IAM_WILDCARD_POLICY:
+    title: "IAM policies must not allow wildcard actions"
+    description: "Allow statements with action '*' create excessive privilege and weaken least-privilege enforcement."
+    severity: HIGH
+    category: identity_security
+    domain: access_control
+    frameworks:
+      iso27001: ["A.8.2", "A.8.3"]
+    enforcement:
+      tool: opa
+      control_id: IAM_WILDCARD_POLICY
+      policy_package: policies.terraform.aws_iam
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Replace wildcard permissions with narrowly scoped IAM actions."
+
+  IAM_INLINE_POLICY_USAGE:
+    title: "Inline IAM policies should be avoided"
+    description: "Inline policies reduce central governance and make policy review harder than managed policy use."
+    severity: MEDIUM
+    category: identity_security
+    domain: access_control
+    frameworks:
+      iso27001: ["A.8.2"]
+    enforcement:
+      tool: opa
+      control_id: IAM_INLINE_POLICY_USAGE
+      policy_package: policies.terraform.aws_iam
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Use managed IAM policies instead of inline role or user policies."
+
+  IAM_USER_PROHIBITED:
+    title: "IAM users should not be provisioned in a role-based environment"
+    description: "Long-lived IAM users increase credential management and compromise risk in federated environments."
+    severity: HIGH
+    category: identity_security
+    domain: identity_governance
+    frameworks:
+      iso27001: ["A.5.17", "A.8.2"]
+    enforcement:
+      tool: opa
+      control_id: IAM_USER_PROHIBITED
+      policy_package: policies.terraform.aws_iam
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Use federated access and IAM roles instead of standalone IAM users."
+
+  IAM_USER_MFA_MISSING:
+    title: "IAM users must have MFA enabled"
+    description: "If IAM users exist, they must enforce MFA to reduce account takeover risk."
+    severity: HIGH
+    category: identity_security
+    domain: authentication
+    frameworks:
+      iso27001: ["A.8.5"]
+    enforcement:
+      tool: opa
+      control_id: IAM_USER_MFA_MISSING
+      policy_package: policies.terraform.aws_iam
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Attach or provision MFA devices for all remaining IAM users."
+
+  VPC_DEFAULT_PROHIBITED:
+    title: "Default VPC usage is not allowed"
+    description: "Default VPCs weaken network standardization and governance compared to explicitly designed VPCs."
+    severity: MEDIUM
+    category: network_security
+    domain: network_governance
+    frameworks:
+      iso27001: ["A.8.20"]
+    enforcement:
+      tool: opa
+      control_id: VPC_DEFAULT_PROHIBITED
+      policy_package: policies.terraform.aws_vpc
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Create and use dedicated custom VPCs instead of default VPC resources."
+
+  VPC_FLOW_LOGS_MISSING:
+    title: "VPCs should have flow logs enabled"
+    description: "VPC flow logs improve visibility for investigation, monitoring, and network control evidence."
+    severity: MEDIUM
+    category: logging_and_monitoring
+    domain: network_visibility
+    frameworks:
+      iso27001: ["A.8.15", "A.8.16"]
+    enforcement:
+      tool: opa
+      control_id: VPC_FLOW_LOGS_MISSING
+      policy_package: policies.terraform.aws_vpc
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Enable VPC flow logs for each managed VPC."
+
+  ROUTE_TABLE_PUBLIC_IGW:
+    title: "Route tables should not expose default routes directly to the internet"
+    description: "Direct 0.0.0.0/0 internet routes increase public exposure and should be tightly controlled."
+    severity: HIGH
+    category: network_security
+    domain: perimeter_security
+    frameworks:
+      iso27001: ["A.8.20", "A.8.21"]
+    enforcement:
+      tool: opa
+      control_id: ROUTE_TABLE_PUBLIC_IGW
+      policy_package: policies.terraform.aws_vpc
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Restrict or redesign route tables so direct internet exposure is intentional and controlled."
+
+  NETWORK_ACL_UNRESTRICTED_INGRESS:
+    title: "Network ACLs must not allow unrestricted ingress"
+    description: "Allowing ingress from 0.0.0.0/0 at the NACL layer creates broad network exposure."
+    severity: HIGH
+    category: network_security
+    domain: network_hardening
+    frameworks:
+      iso27001: ["A.8.20", "A.8.21"]
+    enforcement:
+      tool: opa
+      control_id: NETWORK_ACL_UNRESTRICTED_INGRESS
+      policy_package: policies.terraform.aws_vpc
+    evidence:
+      source: opa
+      artifact: opa-result.json
+    remediation:
+      action: "Restrict NACL ingress rules to approved CIDR ranges and required ports only."

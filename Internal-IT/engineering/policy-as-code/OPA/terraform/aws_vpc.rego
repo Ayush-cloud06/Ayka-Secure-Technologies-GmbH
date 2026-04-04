@@ -6,7 +6,7 @@ deny[msg] {
     r := module.resources[_]
     r.type == "aws_default_vpc"
 
-    msg := "Default VPC usage is not allowed. Create a custom VPC instead"
+    msg := "[VPC_DEFAULT_PROHIBITED] Default VPC usage is not allowed. Create a custom VPC instead"
 }
 
 # VPC must have Flow Logs enabled
@@ -18,7 +18,7 @@ deny[msg] {
     not vpc_has_flow_logs(vpc.values.id)
 
     msg := sprintf(
-        "VPC %s does not have Flow Logs enabled",
+        "[VPC_FLOW_LOGS_MISSING] VPC %s does not have Flow Logs enabled",
         [vpc.values.cidr_block]
     )
 }
@@ -41,7 +41,7 @@ deny[msg] {
     route.gateway_id != null
 
     msg := sprintf(
-        "Route table %s has a direct route to Internet Gateway (0.0.0.0/0)",
+        "[ROUTE_TABLE_PUBLIC_IGW] Route table %s has a direct route to Internet Gateway (0.0.0.0/0)",
         [rt.address]
     )
 }
@@ -57,7 +57,7 @@ deny[msg] {
     entry.rule_action == "allow"
 
     msg := sprintf(
-        "Network ACL %s allows unrestricted ingress from the internet",
+        "[NETWORK_ACL_UNRESTRICTED_INGRESS] Network ACL %s allows unrestricted ingress from the internet",
         [acl.address]
     )
 }
