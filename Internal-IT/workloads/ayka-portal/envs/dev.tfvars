@@ -1,0 +1,14 @@
+aws_region           = "ap-south-1"
+environment          = "dev"
+name_prefix          = "ayka-portal-dev"
+vpc_cidr             = "10.42.0.0/16"
+availability_zones   = ["ap-south-1a", "ap-south-1b"]
+public_subnet_cidrs  = ["10.42.0.0/24", "10.42.1.0/24"]
+private_subnet_cidrs = ["10.42.10.0/24", "10.42.11.0/24"]
+db_subnet_cidrs      = ["10.42.20.0/24", "10.42.21.0/24"]
+bucket_suffix        = "artifacts"
+ecs_container_image  = "nginx:stable"
+app_port             = 80
+ec2_ami_id           = "ami-1234567890abcdef0"
+db_name              = "aykaportal"
+db_username          = "portal_admin"
