@@ -41,16 +41,30 @@ def build_control_indexes(control_mapping):
     by_opa_control_id = {}
 
     for control_id, metadata in controls.items():
-        enforcement = metadata.get("enforcement", {})
-        tool = enforcement.get("tool")
-        if tool == "checkov" and enforcement.get("policy_id"):
-            by_checkov_policy[enforcement["policy_id"]] = control_id
-        elif tool == "tfsec" and enforcement.get("policy_id"):
-            by_tfsec_policy[enforcement["policy_id"]] = control_id
-        elif tool == "opa":
-            by_opa_control_id[enforcement.get("control_id", control_id)] = control_id
+        enforcements = []
+        if metadata.get("enforcement"):
+            enforcements.append(metadata["enforcement"])
+        enforcements.extend(metadata.get("additional_enforcements", []))
+
+        for enforcement in enforcements:
+            tool = enforcement.get("tool")
+            if tool == "checkov" and enforcement.get("policy_id"):
+                by_checkov_policy[enforcement["policy_id"]] = control_id
+            elif tool == "tfsec" and enforcement.get("policy_id"):
+                by_tfsec_policy[enforcement["policy_id"]] = control_id
+            elif tool == "opa":
+                by_opa_control_id[enforcement.get("control_id", control_id)] = control_id
 
     return controls, by_checkov_policy, by_tfsec_policy, by_opa_control_id
+
+
+def normalize_severity(value):
+    normalized = (value or "LOW").upper()
+    if normalized == "CRITICAL":
+        return "HIGH"
+    if normalized in {"HIGH", "MEDIUM", "LOW"}:
+        return normalized
+    return "LOW"
 
 
 def build_finding(tool, source, severity, message, resource, control_id=None, control=None):
@@ -83,7 +97,9 @@ def normalize_checkov(data, controls, checkov_index):
             build_finding(
                 tool="checkov",
                 source=source,
-                severity=control.get("severity", item.get("severity", "LOW")),
+                severity=normalize_severity(
+                    control.get("severity", item.get("severity", "LOW"))
+                ),
                 message=item.get("check_name", "Checkov policy violation"),
                 resource=item.get("resource"),
                 control_id=control_id,
@@ -103,7 +119,9 @@ def normalize_tfsec(data, controls, tfsec_index):
             build_finding(
                 tool="tfsec",
                 source=source,
-                severity=control.get("severity", item.get("severity", "LOW")),
+                severity=normalize_severity(
+                    control.get("severity", item.get("severity", "LOW"))
+                ),
                 message=item.get("description")
                 or item.get("rule_description")
                 or "tfsec policy violation",
@@ -146,7 +164,7 @@ def normalize_opa(data, controls, opa_index):
                 build_finding(
                     tool="opa",
                     source=namespace,
-                    severity=control.get("severity", "MEDIUM"),
+                    severity=normalize_severity(control.get("severity", "MEDIUM")),
                     message=message,
                     resource=failure.get("metadata", {}).get("resource"),
                     control_id=mapped_control_id or control_id,

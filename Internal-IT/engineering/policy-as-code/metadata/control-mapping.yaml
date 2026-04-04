@@ -11,6 +11,9 @@ controls:
       tool: opa
       control_id: EC2_OPEN_SSH
       policy_package: policies.terraform.aws_ec2
+    additional_enforcements:
+      - tool: tfsec
+        policy_id: AVD-AWS-0107
     evidence:
       source: opa
       artifact: opa-result.json
@@ -29,6 +32,17 @@ controls:
       tool: opa
       control_id: S3_PUBLIC_ACCESS
       policy_package: policies.terraform.aws_s3
+    additional_enforcements:
+      - tool: tfsec
+        policy_id: AVD-AWS-0086
+      - tool: tfsec
+        policy_id: AVD-AWS-0087
+      - tool: tfsec
+        policy_id: AVD-AWS-0091
+      - tool: tfsec
+        policy_id: AVD-AWS-0092
+      - tool: tfsec
+        policy_id: AVD-AWS-0093
     evidence:
       source: opa
       artifact: opa-result.json
@@ -47,6 +61,9 @@ controls:
       tool: opa
       control_id: EC2_MISSING_IMDSV2
       policy_package: policies.terraform.aws_ec2
+    additional_enforcements:
+      - tool: tfsec
+        policy_id: AVD-AWS-0028
     evidence:
       source: opa
       artifact: opa-result.json
@@ -65,6 +82,9 @@ controls:
       tool: checkov
       control_id: S3_VERSIONING_DISABLED
       policy_id: CKV_AWS_21
+    additional_enforcements:
+      - tool: tfsec
+        policy_id: AVD-AWS-0090
     evidence:
       source: checkov
       artifact: checkov-result.json
@@ -101,6 +121,11 @@ controls:
       tool: opa
       control_id: S3_ENCRYPTION_MISSING
       policy_package: policies.terraform.aws_s3
+    additional_enforcements:
+      - tool: tfsec
+        policy_id: AVD-AWS-0088
+      - tool: tfsec
+        policy_id: AVD-AWS-0132
     evidence:
       source: opa
       artifact: opa-result.json
@@ -119,6 +144,9 @@ controls:
       tool: opa
       control_id: EC2_ROOT_VOLUME_UNENCRYPTED
       policy_package: policies.terraform.aws_ec2
+    additional_enforcements:
+      - tool: tfsec
+        policy_id: AVD-AWS-0131
     evidence:
       source: opa
       artifact: opa-result.json
@@ -178,6 +206,57 @@ controls:
       artifact: opa-result.json
     remediation:
       action: "Avoid Spot market usage for production instances unless explicitly approved."
+
+  EC2_PUBLIC_EGRESS:
+    title: "Security groups should not allow unrestricted public egress"
+    description: "Unrestricted egress can expose workloads to unwanted outbound communication and data exfiltration risk."
+    severity: HIGH
+    category: network_security
+    domain: egress_control
+    frameworks:
+      iso27001: ["A.8.20", "A.8.21"]
+    enforcement:
+      tool: tfsec
+      policy_id: AVD-AWS-0104
+    evidence:
+      source: tfsec
+      artifact: tfsec-result.json
+    remediation:
+      action: "Restrict security group egress to only approved destinations and ports."
+
+  EC2_SECURITY_GROUP_RULE_DESCRIPTION:
+    title: "Security group rules should include descriptions"
+    description: "Missing descriptions weaken maintainability and reviewability of network access rules."
+    severity: LOW
+    category: governance
+    domain: change_clarity
+    frameworks:
+      iso27001: ["A.5.37"]
+    enforcement:
+      tool: tfsec
+      policy_id: AVD-AWS-0124
+    evidence:
+      source: tfsec
+      artifact: tfsec-result.json
+    remediation:
+      action: "Add clear descriptions to all ingress and egress security group rules."
+
+  S3_LOGGING_DISABLED:
+    title: "S3 buckets should have access logging enabled"
+    description: "Bucket access logging improves monitoring and investigation capability."
+    severity: MEDIUM
+    category: logging_and_monitoring
+    domain: storage_visibility
+    frameworks:
+      iso27001: ["A.8.15", "A.8.16"]
+    enforcement:
+      tool: tfsec
+      policy_id: AVD-AWS-0089
+    evidence:
+      source: tfsec
+      artifact: tfsec-result.json
+    remediation:
+      action: "Enable access logging for S3 buckets where access monitoring is required."
 
   IAM_WILDCARD_POLICY:
     title: "IAM policies must not allow wildcard actions"
