@@ -13,49 +13,44 @@ variable "name_prefix" {
   default = "ayka-portal-dev"
 }
 
-variable "vpc_id" {
-  type = string
+variable "vpc_cidr" {
+  type    = string
+  default = "10.42.0.0/16"
 }
 
-variable "public_subnet_ids" {
-  type = list(string)
+variable "availability_zones" {
+  type    = list(string)
+  default = ["ap-south-1a", "ap-south-1b"]
 }
 
-variable "private_subnet_ids" {
-  type = list(string)
+variable "public_subnet_cidrs" {
+  type    = list(string)
+  default = ["10.42.0.0/24", "10.42.1.0/24"]
 }
 
-variable "alb_security_group_id" {
-  type = string
+variable "private_subnet_cidrs" {
+  type    = list(string)
+  default = ["10.42.10.0/24", "10.42.11.0/24"]
 }
 
-variable "ecs_security_group_id" {
-  type = string
+variable "db_subnet_cidrs" {
+  type    = list(string)
+  default = ["10.42.20.0/24", "10.42.21.0/24"]
 }
 
-variable "ec2_security_group_id" {
-  type = string
-}
-
-variable "ecs_execution_role_arn" {
-  type = string
-}
-
-variable "ecs_task_role_arn" {
-  type = string
-}
-
-variable "ec2_instance_profile_name" {
-  type = string
+variable "bucket_suffix" {
+  type    = string
+  default = "artifacts"
 }
 
 variable "ecs_container_image" {
-  type = string
+  type    = string
+  default = "nginx:stable"
 }
 
 variable "app_port" {
   type    = number
-  default = 8080
+  default = 80
 }
 
 variable "ecs_cpu" {
@@ -88,16 +83,47 @@ variable "ecs_target_cpu_utilization" {
   default = 70
 }
 
-variable "ec2_ami_id" {
-  type = string
-}
-
 variable "ec2_instance_type" {
   type    = string
   default = "t3.micro"
 }
 
+variable "ec2_ami_id" {
+  type    = string
+  default = "ami-1234567890abcdef0"
+}
+
 variable "ec2_root_volume_size" {
   type    = number
   default = 20
+}
+
+variable "db_name" {
+  type    = string
+  default = "aykaportal"
+}
+
+variable "db_username" {
+  type    = string
+  default = "portal_admin"
+}
+
+variable "db_port" {
+  type    = number
+  default = 5432
+}
+
+variable "db_instance_class" {
+  type    = string
+  default = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  type    = number
+  default = 20
+}
+
+variable "db_max_allocated_storage" {
+  type    = number
+  default = 100
 }
