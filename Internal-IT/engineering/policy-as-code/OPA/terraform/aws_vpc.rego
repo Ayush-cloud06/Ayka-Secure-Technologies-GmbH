@@ -38,7 +38,7 @@ deny[msg] {
 
     route := rt.values.route[_]
     route.cidr_block == "0.0.0.0/0"
-    route.gateway_id != null
+    startswith(object.get(route, "gateway_id", ""), "igw-")
 
     msg := sprintf(
         "[ROUTE_TABLE_PUBLIC_IGW] Route table %s has a direct route to Internet Gateway (0.0.0.0/0)",
