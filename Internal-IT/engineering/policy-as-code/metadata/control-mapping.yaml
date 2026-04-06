@@ -369,7 +369,7 @@ controls:
   ROUTE_TABLE_PUBLIC_IGW:
     title: "Route tables should not expose default routes directly to the internet"
     description: "Direct 0.0.0.0/0 internet routes increase public exposure and should be tightly controlled."
-    severity: HIGH
+    severity: LOW
     category: network_security
     domain: perimeter_security
     frameworks:
