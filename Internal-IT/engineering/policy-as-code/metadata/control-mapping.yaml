@@ -11,6 +11,8 @@ controls:
       tool: opa
       control_id: EC2_OPEN_SSH
       policy_package: policies.terraform.aws_ec2
+    message_patterns:
+      - "allows ssh (22) from the internet"
     additional_enforcements:
       - tool: tfsec
         policy_id: AVD-AWS-0107
@@ -32,6 +34,8 @@ controls:
       tool: opa
       control_id: S3_PUBLIC_ACCESS
       policy_package: policies.terraform.aws_s3
+    message_patterns:
+      - "is public"
     additional_enforcements:
       - tool: tfsec
         policy_id: AVD-AWS-0086
@@ -61,6 +65,9 @@ controls:
       tool: opa
       control_id: EC2_MISSING_IMDSV2
       policy_package: policies.terraform.aws_ec2
+    message_patterns:
+      - "does not enforce imdsv2"
+      - "cannot prove imdsv2 enforcement"
     additional_enforcements:
       - tool: tfsec
         policy_id: AVD-AWS-0028
@@ -103,6 +110,8 @@ controls:
       tool: opa
       control_id: EC2_MISSING_TAGS
       policy_package: policies.terraform.aws_ec2
+    message_patterns:
+      - "is missing mandatory tags"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -121,6 +130,8 @@ controls:
       tool: opa
       control_id: S3_ENCRYPTION_MISSING
       policy_package: policies.terraform.aws_s3
+    message_patterns:
+      - "is not encrypted"
     additional_enforcements:
       - tool: tfsec
         policy_id: AVD-AWS-0088
@@ -144,6 +155,8 @@ controls:
       tool: opa
       control_id: EC2_ROOT_VOLUME_UNENCRYPTED
       policy_package: policies.terraform.aws_ec2
+    message_patterns:
+      - "has an unencrypted root volume"
     additional_enforcements:
       - tool: tfsec
         policy_id: AVD-AWS-0131
@@ -165,6 +178,8 @@ controls:
       tool: opa
       control_id: EC2_HTTP_OPEN
       policy_package: policies.terraform.aws_ec2
+    message_patterns:
+      - "allows http (80) from the internet"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -183,6 +198,8 @@ controls:
       tool: opa
       control_id: EC2_PROD_UNDERSIZED_INSTANCE
       policy_package: policies.terraform.aws_ec2
+    message_patterns:
+      - "uses undersized instance type"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -201,6 +218,8 @@ controls:
       tool: opa
       control_id: EC2_PROD_SPOT_USAGE
       policy_package: policies.terraform.aws_ec2
+    message_patterns:
+      - "uses spot pricing in production"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -270,6 +289,8 @@ controls:
       tool: opa
       control_id: IAM_WILDCARD_POLICY
       policy_package: policies.terraform.aws_iam
+    message_patterns:
+      - "allows wildcard action '*'"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -288,6 +309,8 @@ controls:
       tool: opa
       control_id: IAM_INLINE_POLICY_USAGE
       policy_package: policies.terraform.aws_iam
+    message_patterns:
+      - "inline iam policy"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -306,6 +329,9 @@ controls:
       tool: opa
       control_id: IAM_USER_PROHIBITED
       policy_package: policies.terraform.aws_iam
+    message_patterns:
+      - "iam user"
+      - "not allowed. use federated access"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -324,6 +350,8 @@ controls:
       tool: opa
       control_id: IAM_USER_MFA_MISSING
       policy_package: policies.terraform.aws_iam
+    message_patterns:
+      - "does not have mfa enabled"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -342,6 +370,8 @@ controls:
       tool: opa
       control_id: VPC_DEFAULT_PROHIBITED
       policy_package: policies.terraform.aws_vpc
+    message_patterns:
+      - "default vpc usage is not allowed"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -360,6 +390,8 @@ controls:
       tool: opa
       control_id: VPC_FLOW_LOGS_MISSING
       policy_package: policies.terraform.aws_vpc
+    message_patterns:
+      - "does not have flow logs enabled"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -378,6 +410,8 @@ controls:
       tool: opa
       control_id: ROUTE_TABLE_PUBLIC_IGW
       policy_package: policies.terraform.aws_vpc
+    message_patterns:
+      - "direct route to internet gateway"
     evidence:
       source: opa
       artifact: opa-result.json
@@ -396,6 +430,8 @@ controls:
       tool: opa
       control_id: NETWORK_ACL_UNRESTRICTED_INGRESS
       policy_package: policies.terraform.aws_vpc
+    message_patterns:
+      - "allows unrestricted ingress from the internet"
     evidence:
       source: opa
       artifact: opa-result.json
