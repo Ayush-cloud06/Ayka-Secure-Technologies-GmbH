@@ -18,10 +18,12 @@ terraform.tfvars.json
 backend.tfvars
 backend.hcl
 
+todolater.md
 pipelinefix.md
 plan.md
 futureplan.md
 context.md
+Compliancelisting.md
 ##################################
 # Terraform Plans & Artifacts
 ##################################

@@ -59,8 +59,10 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     outputs:
+      schema_version: ${{ steps.compliance-summary.outputs.schema_version }}
       decision: ${{ steps.compliance-summary.outputs.decision }}
       approval_required: ${{ steps.compliance-summary.outputs.approval_required }}
+      unmapped_findings: ${{ steps.compliance-summary.outputs.unmapped_findings }}
 
     steps:
       - name: Checkout code
@@ -130,13 +132,22 @@ jobs:
         if: always()
         run: |
           if [ ! -f output/compliance-summary.json ]; then
+            echo "schema_version=unknown" >> "$GITHUB_OUTPUT"
             echo "decision=error" >> "$GITHUB_OUTPUT"
             echo "approval_required=false" >> "$GITHUB_OUTPUT"
+            echo "unmapped_findings=0" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
+          echo "schema_version=$(jq -r '.schema_version // \"unknown\"' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
           echo "decision=$(jq -r '.decision' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
           echo "approval_required=$(jq -r '.approval_required' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
+          echo "unmapped_findings=$(jq -r '.metadata_coverage.unmapped_findings // 0' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Print Compliance Coverage
+        if: always() && hashFiles('output/compliance-summary.json') != ''
+        run: |
+          jq '{schema_version, decision, approval_required, totals, metadata_coverage}' output/compliance-summary.json
 
       - name: 🔍 Debug evidence folder
         if: always()
@@ -166,3 +177,5 @@ jobs:
         run: |
           echo "Medium severity findings require manual approval."
           echo "Compliance decision: ${{ needs.compliance.outputs.decision }}"
+          echo "Summary schema version: ${{ needs.compliance.outputs.schema_version }}"
+          echo "Unmapped findings: ${{ needs.compliance.outputs.unmapped_findings }}"
