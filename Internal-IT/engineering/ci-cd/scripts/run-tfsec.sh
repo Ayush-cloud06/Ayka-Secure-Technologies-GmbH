@@ -6,7 +6,7 @@ echo "Running tfsec..."
 cd "$(git rev-parse --show-toplevel)"
 
 OUTPUT_DIR="$(git rev-parse --show-toplevel)/output"
-TARGET_DIR="Internal-IT/workloads/control-validation-scenarios"
+TARGET_DIR="${WORKLOAD_DIR:-Internal-IT/workloads/ayka-portal}"
 mkdir -p "$OUTPUT_DIR"
 
 # Run tfsec but do not fail here; gating happens in evaluate-results.sh

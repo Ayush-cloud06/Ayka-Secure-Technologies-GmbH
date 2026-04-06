@@ -2,6 +2,15 @@ name: PR Compliance Pipeline
 
 on:
   push:
+  workflow_dispatch:
+    inputs:
+      workload_dir:
+        description: Terraform workload directory to validate and scan
+        required: false
+        default: Internal-IT/workloads/ayka-portal
+
+env:
+  WORKLOAD_DIR: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
 
 permissions:
   id-token: write
@@ -26,18 +35,18 @@ jobs:
           tflint_version: latest
 
       - name: Terraform fmt check
-        run: terraform fmt -check -recursive Internal-IT/workloads/control-validation-scenarios
+        run: terraform fmt -check -recursive "$WORKLOAD_DIR"
 
       - name: Terraform init for validation
-        working-directory: Internal-IT/workloads/control-validation-scenarios
+        working-directory: ${{ env.WORKLOAD_DIR }}
         run: terraform init -backend=false -input=false
 
       - name: Terraform validate
-        working-directory: Internal-IT/workloads/control-validation-scenarios
+        working-directory: ${{ env.WORKLOAD_DIR }}
         run: terraform validate
 
       - name: TFLint
-        working-directory: Internal-IT/workloads/control-validation-scenarios
+        working-directory: ${{ env.WORKLOAD_DIR }}
         run: tflint --init && tflint --recursive
 
       - name: Validate CI shell scripts
@@ -91,15 +100,15 @@ jobs:
           terraform_version: 1.7.5
 
       - name: Terraform init
-        working-directory: Internal-IT/workloads/control-validation-scenarios
+        working-directory: ${{ env.WORKLOAD_DIR }}
         run: terraform init -input=false
 
       - name: Terraform Plan
-        working-directory: Internal-IT/workloads/control-validation-scenarios
+        working-directory: ${{ env.WORKLOAD_DIR }}
         run: terraform plan -input=false -refresh=false -out=tfplan.binary
 
       - name: Export Terraform Plan JSON
-        working-directory: Internal-IT/workloads/control-validation-scenarios
+        working-directory: ${{ env.WORKLOAD_DIR }}
         run: |
           mkdir -p $GITHUB_WORKSPACE/output
           terraform show -json tfplan.binary > $GITHUB_WORKSPACE/output/tfplan.json
