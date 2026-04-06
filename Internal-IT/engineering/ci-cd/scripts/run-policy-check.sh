@@ -22,22 +22,9 @@ conftest_exit_code=$?
 set -e
 
 if [ "$conftest_exit_code" -gt 1 ] || [ ! -s "$OPA_RESULT_FILE" ]; then
-  python3 - <<'PY' > "$OPA_RESULT_FILE"
-import json
-from pathlib import Path
-
-error_log = Path("output/opa-result.stderr.log")
-
-payload = {
-    "status": "error",
-    "tool": "conftest",
-    "message": "OPA policy evaluation failed before producing JSON results.",
-    "stderr_log": str(error_log),
-    "stderr_preview": error_log.read_text(encoding="utf-8", errors="replace").strip().splitlines()[:20],
-}
-
-print(json.dumps(payload, indent=2))
-PY
+  python3 Internal-IT/engineering/ci-cd/scripts/write-opa-error-result.py \
+    "$OPA_ERROR_LOG" \
+    "$OPA_RESULT_FILE"
 fi
 
 echo "✅ OPA policy check complete"
