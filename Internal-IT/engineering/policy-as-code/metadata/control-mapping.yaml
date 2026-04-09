@@ -180,6 +180,9 @@ controls:
       policy_package: policies.terraform.aws_ec2
     message_patterns:
       - "allows http (80) from the internet"
+    additional_enforcements:
+      - tool: checkov
+        policy_id: CKV_AWS_260
     evidence:
       source: opa
       artifact: opa-result.json
@@ -237,6 +240,9 @@ controls:
     enforcement:
       tool: tfsec
       policy_id: AVD-AWS-0104
+    additional_enforcements:
+      - tool: checkov
+        policy_id: CKV_AWS_382
     evidence:
       source: tfsec
       artifact: tfsec-result.json
@@ -271,11 +277,70 @@ controls:
     enforcement:
       tool: tfsec
       policy_id: AVD-AWS-0089
+    additional_enforcements:
+      - tool: checkov
+        policy_id: CKV_AWS_18
     evidence:
       source: tfsec
       artifact: tfsec-result.json
     remediation:
       action: "Enable access logging for S3 buckets where access monitoring is required."
+
+  S3_KMS_ENCRYPTION_REQUIRED:
+    title: "S3 buckets should use KMS-backed server-side encryption"
+    description: "KMS-backed encryption improves key governance and auditability compared to default encryption alone."
+    severity: MEDIUM
+    category: data_security
+    domain: storage_encryption
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_145
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Configure S3 bucket encryption to use an approved KMS key."
+
+  ALB_WAF_PROTECTION_REQUIRED:
+    title: "Public-facing ALBs should be protected by WAF"
+    description: "Internet-facing load balancers should have web application firewall protection to reduce common web attack exposure."
+    severity: HIGH
+    category: application_security
+    domain: edge_protection
+    frameworks:
+      iso27001: ["A.8.20", "A.8.21"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_28
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Associate an approved AWS WAF web ACL with each public-facing application load balancer."
+
+  ALB_TLS_ENFORCEMENT:
+    title: "Application load balancers should enforce HTTPS and modern TLS"
+    description: "Public application load balancers should terminate traffic over HTTPS and use a modern TLS policy."
+    severity: HIGH
+    category: network_security
+    domain: transport_security
+    frameworks:
+      iso27001: ["A.8.20", "A.8.21", "A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_2
+    additional_enforcements:
+      - tool: checkov
+        policy_id: CKV_AWS_103
+      - tool: checkov
+        policy_id: CKV2_AWS_20
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Redirect HTTP to HTTPS and apply a load balancer listener policy that enforces at least TLS 1.2."
 
   IAM_WILDCARD_POLICY:
     title: "IAM policies must not allow wildcard actions"
@@ -392,6 +457,9 @@ controls:
       policy_package: policies.terraform.aws_vpc
     message_patterns:
       - "does not have flow logs enabled"
+    additional_enforcements:
+      - tool: checkov
+        policy_id: CKV2_AWS_11
     evidence:
       source: opa
       artifact: opa-result.json
