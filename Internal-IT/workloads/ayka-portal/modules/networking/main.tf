@@ -22,7 +22,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.this.id
   cidr_block              = each.value
   availability_zone       = var.availability_zones[tonumber(each.key)]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${var.name_prefix}-public-${tonumber(each.key) + 1}"
@@ -128,4 +128,65 @@ resource "aws_route_table_association" "db" {
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.db.id
+}
+
+resource "aws_default_security_group" "this" {
+  vpc_id = aws_vpc.this.id
+  ingress = []
+  egress  = []
+
+  tags = {
+    Name = "${var.name_prefix}-default-sg"
+  }
+}
+
+data "aws_iam_policy_document" "flow_logs_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "flow_logs" {
+  name               = "${var.name_prefix}-flow-logs-role"
+  assume_role_policy = data.aws_iam_policy_document.flow_logs_assume_role.json
+}
+
+data "aws_iam_policy_document" "flow_logs" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      aws_cloudwatch_log_group.vpc_flow_logs.arn,
+      "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:*"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "flow_logs" {
+  name   = "${var.name_prefix}-flow-logs-policy"
+  role   = aws_iam_role.flow_logs.id
+  policy = data.aws_iam_policy_document.flow_logs.json
+}
+
+resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
+  name              = "/aws/vpc/${var.name_prefix}/flow-logs"
+  retention_in_days = 365
+}
+
+resource "aws_flow_log" "vpc" {
+  iam_role_arn         = aws_iam_role.flow_logs.arn
+  log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.this.id
 }

@@ -5,3 +5,7 @@ variable "name_prefix" {
 variable "bucket_suffix" {
   type = string
 }
+
+variable "kms_key_arn" {
+  type = string
+}
