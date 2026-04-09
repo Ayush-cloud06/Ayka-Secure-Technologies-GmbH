@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from collections import Counter, defaultdict
+import os
 from pathlib import Path
 import re
 import sys
@@ -8,13 +9,22 @@ import sys
 import yaml
 
 
-OUTPUT_DIR = Path("output")
-CHECKOV_FILE = OUTPUT_DIR / "checkov-result.json"
-OPA_FILE = OUTPUT_DIR / "opa-result.json"
-TFSEC_FILE = OUTPUT_DIR / "tfsec-result.json"
-SUMMARY_FILE = OUTPUT_DIR / "compliance-summary.json"
+OUTPUT_DIR = Path(os.environ.get("COMPLIANCE_OUTPUT_DIR", "output"))
+CHECKOV_FILE = Path(
+    os.environ.get("COMPLIANCE_CHECKOV_FILE", OUTPUT_DIR / "checkov-result.json")
+)
+OPA_FILE = Path(os.environ.get("COMPLIANCE_OPA_FILE", OUTPUT_DIR / "opa-result.json"))
+TFSEC_FILE = Path(
+    os.environ.get("COMPLIANCE_TFSEC_FILE", OUTPUT_DIR / "tfsec-result.json")
+)
+SUMMARY_FILE = Path(
+    os.environ.get("COMPLIANCE_SUMMARY_FILE", OUTPUT_DIR / "compliance-summary.json")
+)
 CONTROL_MAPPING_FILE = Path(
-    "Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml"
+    os.environ.get(
+        "COMPLIANCE_CONTROL_MAPPING_FILE",
+        "Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml",
+    )
 )
 OPA_CONTROL_PREFIX = re.compile(r"^\[(?P<control_id>[A-Z0-9_]+)\]\s*(?P<message>.*)$")
 
@@ -434,6 +444,7 @@ def main():
     )
 
     summary = build_summary(findings)
+    SUMMARY_FILE.parent.mkdir(parents=True, exist_ok=True)
     SUMMARY_FILE.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
     print("Compliance decision summary:")
