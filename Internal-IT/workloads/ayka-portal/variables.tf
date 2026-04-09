@@ -43,6 +43,16 @@ variable "bucket_suffix" {
   default = "artifacts"
 }
 
+variable "owner" {
+  type    = string
+  default = "internal-it"
+}
+
+variable "cost_center" {
+  type    = string
+  default = "engineering"
+}
+
 variable "ecs_container_image" {
   type    = string
   default = "nginx:stable"

@@ -1,10 +1,16 @@
 resource "aws_ecs_cluster" "this" {
   name = "${var.name_prefix}-ecs-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 resource "aws_cloudwatch_log_group" "ecs" {
   name              = "/aws/ecs/${var.name_prefix}"
-  retention_in_days = 30
+  retention_in_days = 365
+  kms_key_id        = var.kms_key_arn
 }
 
 resource "aws_ecs_task_definition" "app" {
@@ -21,11 +27,29 @@ resource "aws_ecs_task_definition" "app" {
       name      = "portal"
       image     = var.ecs_container_image
       essential = true
+      readonlyRootFilesystem = true
       portMappings = [
         {
           containerPort = var.app_port
           hostPort      = var.app_port
           protocol      = "tcp"
+        }
+      ]
+      mountPoints = [
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/tmp"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "run"
+          containerPath = "/var/run"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "cache"
+          containerPath = "/var/cache/nginx"
+          readOnly      = false
         }
       ]
       logConfiguration = {
@@ -38,6 +62,18 @@ resource "aws_ecs_task_definition" "app" {
       }
     }
   ])
+
+  volume {
+    name = "tmp"
+  }
+
+  volume {
+    name = "run"
+  }
+
+  volume {
+    name = "cache"
+  }
 }
 
 resource "aws_ecs_service" "app" {
@@ -60,5 +96,5 @@ resource "aws_ecs_service" "app" {
     container_port   = var.app_port
   }
 
-  depends_on = [aws_lb_listener.http]
+  depends_on = [aws_lb_listener.https]
 }

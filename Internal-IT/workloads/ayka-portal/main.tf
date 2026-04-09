@@ -23,6 +23,7 @@ module "storage" {
 
   name_prefix   = var.name_prefix
   bucket_suffix = var.bucket_suffix
+  kms_key_arn   = aws_kms_key.workload.arn
 }
 
 module "database" {
@@ -37,6 +38,7 @@ module "database" {
   max_allocated_storage  = var.db_max_allocated_storage
   subnet_ids             = module.networking.db_subnet_ids
   vpc_security_group_ids = [module.security.rds_security_group_id]
+  kms_key_arn            = aws_kms_key.workload.arn
 }
 
 module "compute" {
@@ -64,4 +66,9 @@ module "compute" {
   ec2_ami_id                 = var.ec2_ami_id
   ec2_instance_type          = var.ec2_instance_type
   ec2_root_volume_size       = var.ec2_root_volume_size
+  access_logs_bucket_name    = module.storage.access_logs_bucket_name
+  kms_key_arn                = aws_kms_key.workload.arn
+  environment                = var.environment
+  owner                      = var.owner
+  cost_center                = var.cost_center
 }

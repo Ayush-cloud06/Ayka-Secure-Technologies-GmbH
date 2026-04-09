@@ -94,3 +94,23 @@ variable "ec2_root_volume_size" {
   type    = number
   default = 20
 }
+
+variable "access_logs_bucket_name" {
+  type = string
+}
+
+variable "kms_key_arn" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "owner" {
+  type = string
+}
+
+variable "cost_center" {
+  type = string
+}

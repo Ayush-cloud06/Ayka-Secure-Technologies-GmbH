@@ -5,6 +5,8 @@ resource "aws_instance" "ops" {
   vpc_security_group_ids      = [var.ec2_security_group_id]
   iam_instance_profile        = var.ec2_instance_profile_name
   associate_public_ip_address = false
+  monitoring                  = true
+  ebs_optimized               = true
 
   metadata_options {
     http_endpoint = "enabled"
@@ -18,7 +20,10 @@ resource "aws_instance" "ops" {
   }
 
   tags = {
-    Name = "${var.name_prefix}-ops"
-    Role = "operations"
+    Name        = "${var.name_prefix}-ops"
+    Role        = "operations"
+    Environment = var.environment
+    Owner       = var.owner
+    CostCenter  = var.cost_center
   }
 }
