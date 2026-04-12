@@ -7,6 +7,7 @@ module "networking" {
   public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
   db_subnet_cidrs      = var.db_subnet_cidrs
+  kms_key_arn          = aws_kms_key.workload.arn
 }
 
 module "security" {

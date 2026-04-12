@@ -21,3 +21,7 @@ variable "private_subnet_cidrs" {
 variable "db_subnet_cidrs" {
   type = list(string)
 }
+
+variable "kms_key_arn" {
+  type = string
+}

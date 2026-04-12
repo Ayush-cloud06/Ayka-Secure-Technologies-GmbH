@@ -505,3 +505,244 @@ controls:
       artifact: opa-result.json
     remediation:
       action: "Restrict NACL ingress rules to approved CIDR ranges and required ports only."
+
+  CLOUDWATCH_LOG_GROUP_KMS_ENCRYPTION:
+    title: "CloudWatch log groups should use KMS-backed encryption"
+    description: "KMS-backed encryption strengthens confidentiality and key governance for retained log data."
+    severity: LOW
+    category: logging_and_monitoring
+    domain: log_protection
+    frameworks:
+      iso27001: ["A.8.15", "A.8.16", "A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_158
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Set kms_key_id on CloudWatch log groups that retain security-relevant logs."
+
+  SECRETS_MANAGER_CMK_ENCRYPTION:
+    title: "Secrets Manager secrets should use a customer-managed KMS key"
+    description: "Customer-managed KMS keys improve governance, access control, and auditability for stored secrets."
+    severity: LOW
+    category: data_security
+    domain: secret_protection
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_149
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Configure each Secrets Manager secret to use an approved customer-managed KMS key."
+
+  SNS_TOPIC_KMS_ENCRYPTION:
+    title: "SNS topics should use KMS-backed encryption"
+    description: "Encrypting SNS topics protects message content at rest and improves key governance."
+    severity: LOW
+    category: data_security
+    domain: event_protection
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_26
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Set kms_master_key_id on SNS topics that carry workload or operational events."
+
+  SECURITY_GROUP_UNUSED:
+    title: "Security groups should be attached to a resource"
+    description: "Unused security groups increase management complexity and may be accidentally applied with insecure rules."
+    severity: LOW
+    category: network_security
+    domain: resource_management
+    frameworks:
+      iso27001: ["A.8.15", "A.5.15"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_5
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Remove unused security groups or ensure they are attached to an active resource."
+
+  S3_REPLICATION_DISABLED:
+    title: "S3 bucket replication should be enabled"
+    description: "Cross-region replication improves availability and disaster recovery readiness."
+    severity: LOW
+    category: resilience
+    domain: storage_resilience
+    frameworks:
+      iso27001: ["A.8.13", "A.5.30"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_144
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Enable cross-region replication for S3 buckets containing critical data."
+
+  S3_ACLS_DISABLED:
+    title: "S3 bucket ACLs should be disabled"
+    description: "Disabling ACLs in favor of bucket policies simplifies access control and reduces misconfiguration risk."
+    severity: LOW
+    category: data_security
+    domain: storage_security
+    frameworks:
+      iso27001: ["A.8.12", "A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_65
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Set object_ownership to BucketOwnerEnforced to disable ACLs."
+
+  KMS_KEY_POLICY_DEFINED:
+    title: "KMS key policy should be explicitly defined"
+    description: "Explicit key policies ensure that access to cryptographic keys is tightly controlled and audited."
+    severity: LOW
+    category: data_security
+    domain: encryption_governance
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_64
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Define an explicit IAM policy for each KMS key to manage administrative and usage permissions."
+
+  WAF_LOG4J_PROTECTION:
+    title: "WAF should prevent Log4j message lookup exploitation"
+    description: "Configuring WAF to block Log4j lookups reduces exposure to remote code execution vulnerabilities like CVE-2021-44228."
+    severity: LOW
+    category: application_security
+    domain: edge_protection
+    frameworks:
+      iso27001: ["A.8.20", "A.8.21"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_192
+    additional_enforcements:
+      - tool: checkov
+        policy_id: CKV2_AWS_76
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Enable the appropriate AWS Managed Rules for Log4j protection in the WAF Web ACL."
+
+  RDS_PERFORMANCE_INSIGHTS_ENCRYPTION:
+    title: "RDS Performance Insights should use KMS-backed encryption"
+    description: "Encrypting Performance Insights data protects sensitive database performance metrics at rest."
+    severity: LOW
+    category: data_security
+    domain: database_security
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV_AWS_354
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Configure RDS Performance Insights to use an approved KMS key for encryption."
+
+  S3_NOTIFICATIONS_DISABLED:
+    title: "S3 buckets should have event notifications enabled"
+    description: "Event notifications enable automated responses to bucket activity, improving visibility and reactivity."
+    severity: LOW
+    category: logging_and_monitoring
+    domain: storage_visibility
+    frameworks:
+      iso27001: ["A.8.15", "A.8.16"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_62
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Configure S3 bucket notifications for relevant events to an approved destination."
+
+  SECRETS_MANAGER_ROTATION_DISABLED:
+    title: "Secrets Manager secrets should have automatic rotation enabled"
+    description: "Automatic rotation reduces the risk of long-lived credential compromise."
+    severity: LOW
+    category: identity_security
+    domain: secret_protection
+    frameworks:
+      iso27001: ["A.5.17", "A.8.2"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_57
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Enable automatic rotation for Secrets Manager secrets using an approved Lambda function."
+
+  RDS_ENCRYPTION_IN_TRANSIT:
+    title: "RDS database instances should enforce encryption in transit"
+    description: "Requiring SSL/TLS for database connections protects sensitive data from interception during transmission."
+    severity: LOW
+    category: network_security
+    domain: database_security
+    frameworks:
+      iso27001: ["A.8.24"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_69
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Configure the RDS instance or its parameter group to enforce SSL/TLS connections."
+
+  S3_LIFECYCLE_DISABLED:
+    title: "S3 buckets should have a lifecycle configuration"
+    description: "Lifecycle rules improve data governance and cost-efficiency by automating object transitions and expirations."
+    severity: LOW
+    category: resilience
+    domain: storage_resilience
+    frameworks:
+      iso27001: ["A.8.13"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_61
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Add a lifecycle configuration to S3 buckets to manage data retention and transitions."
+
+  WAF_LOGGING_DISABLED:
+    title: "WAF should have a logging configuration"
+    description: "WAF logging is essential for monitoring web requests, detecting attacks, and investigating incidents."
+    severity: LOW
+    category: logging_and_monitoring
+    domain: edge_visibility
+    frameworks:
+      iso27001: ["A.8.15", "A.8.16"]
+    enforcement:
+      tool: checkov
+      policy_id: CKV2_AWS_31
+    evidence:
+      source: checkov
+      artifact: checkov-result.json
+    remediation:
+      action: "Enable logging for the WAF Web ACL to an approved destination."

@@ -29,8 +29,10 @@ Compliancelisting.md
 ##################################
 *.tfplan
 *.plan
+*.binary
 *.out
-
+.codex
+output/
 ##################################
 # Sensitive Files (Just In Case)
 ##################################
