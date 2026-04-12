@@ -25,11 +25,11 @@ resource "aws_acm_certificate" "alb" {
 }
 
 resource "aws_lb" "app" {
-  name               = "${var.name_prefix}-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [var.alb_security_group_id]
-  subnets            = var.public_subnet_ids
+  name                       = "${var.name_prefix}-alb"
+  internal                   = false
+  load_balancer_type         = "application"
+  security_groups            = [var.alb_security_group_id]
+  subnets                    = var.public_subnet_ids
   drop_invalid_header_fields = true
   enable_deletion_protection = true
 

@@ -24,9 +24,9 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([
     {
-      name      = "portal"
-      image     = var.ecs_container_image
-      essential = true
+      name                   = "portal"
+      image                  = var.ecs_container_image
+      essential              = true
       readonlyRootFilesystem = true
       portMappings = [
         {

@@ -1,8 +1,8 @@
 data "aws_iam_policy_document" "bucket_notifications" {
   statement {
-    sid     = "AllowS3ToPublishNotifications"
-    effect  = "Allow"
-    actions = ["SNS:Publish"]
+    sid       = "AllowS3ToPublishNotifications"
+    effect    = "Allow"
+    actions   = ["SNS:Publish"]
     resources = [aws_sns_topic.bucket_events.arn]
 
     principals {
