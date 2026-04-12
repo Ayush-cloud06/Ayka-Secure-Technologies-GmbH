@@ -172,15 +172,20 @@ data "aws_iam_policy_document" "flow_logs" {
   }
 }
 
-resource "aws_iam_role_policy" "flow_logs" {
+resource "aws_iam_policy" "flow_logs" {
   name   = "${var.name_prefix}-flow-logs-policy"
-  role   = aws_iam_role.flow_logs.id
   policy = data.aws_iam_policy_document.flow_logs.json
+}
+
+resource "aws_iam_role_policy_attachment" "flow_logs" {
+  role       = aws_iam_role.flow_logs.name
+  policy_arn = aws_iam_policy.flow_logs.arn
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/${var.name_prefix}/flow-logs"
   retention_in_days = 365
+  kms_key_id        = var.kms_key_arn
 }
 
 resource "aws_flow_log" "vpc" {

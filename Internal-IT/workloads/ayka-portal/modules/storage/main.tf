@@ -57,6 +57,14 @@ resource "aws_s3_bucket_acl" "access_logs" {
   acl    = "log-delivery-write"
 }
 
+resource "aws_s3_bucket_versioning" "access_logs" {
+  bucket = aws_s3_bucket.access_logs.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_bucket" "this" {
   bucket = "${var.name_prefix}-${var.bucket_suffix}"
 }
@@ -115,7 +123,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
 }
 
 resource "aws_sns_topic" "bucket_events" {
-  name = "${var.name_prefix}-bucket-events"
+  name              = "${var.name_prefix}-bucket-events"
+  kms_master_key_id = var.kms_key_arn
 }
 
 resource "aws_sns_topic_policy" "bucket_events" {
