@@ -166,6 +166,63 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         self.assertEqual(summary["findings"][0]["severity_source"], "metadata")
         self.assertEqual(summary["findings"][0]["control_id"], "S3_VERSIONING_DISABLED")
 
+    def test_mapped_tfsec_finding_uses_metadata_severity(self):
+        result, summary = self.run_case(
+            checkov={"results": {"failed_checks": []}},
+            tfsec={
+                "results": [
+                    {
+                        "rule_id": "AVD-AWS-0107",
+                        "description": "Security group rule allows ingress from 0.0.0.0/0 to port 22.",
+                        "resource": "aws_security_group.open_ssh",
+                        "severity": "LOW",
+                    }
+                ]
+            },
+            opa=[],
+        )
+
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(summary["decision"], "fail")
+        self.assertEqual(summary["totals"]["HIGH"], 1)
+        self.assertEqual(summary["metadata_coverage"]["unmapped_findings"], 0)
+        self.assertTrue(summary["findings"][0]["mapped"])
+        self.assertEqual(summary["findings"][0]["tool"], "tfsec")
+        self.assertEqual(summary["findings"][0]["mapping_method"], "policy_id")
+        self.assertEqual(summary["findings"][0]["severity"], "HIGH")
+        self.assertEqual(summary["findings"][0]["severity_source"], "metadata")
+        self.assertEqual(summary["findings"][0]["control_id"], "EC2_OPEN_SSH")
+
+    def test_unmapped_tfsec_finding_uses_scanner_severity(self):
+        result, summary = self.run_case(
+            checkov={"results": {"failed_checks": []}},
+            tfsec={
+                "results": [
+                    {
+                        "rule_id": "AVD-AWS-9999",
+                        "description": "Synthetic unmapped tfsec finding for regression coverage.",
+                        "resource": "aws_security_group.example",
+                        "severity": "LOW",
+                    }
+                ]
+            },
+            opa=[],
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(summary["decision"], "pass")
+        self.assertEqual(summary["totals"]["LOW"], 1)
+        self.assertEqual(summary["metadata_coverage"]["unmapped_findings"], 1)
+        self.assertFalse(summary["findings"][0]["mapped"])
+        self.assertEqual(summary["findings"][0]["tool"], "tfsec")
+        self.assertEqual(summary["findings"][0]["mapping_method"], "scanner_default")
+        self.assertEqual(summary["findings"][0]["severity"], "LOW")
+        self.assertEqual(summary["findings"][0]["severity_source"], "scanner_default")
+        self.assertEqual(
+            summary["findings"][0]["unmapped_reason"],
+            "No control mapping entry matched this scanner rule.",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
