@@ -1,0 +1,49 @@
+name: 'Terraform Plan'
+description: 'Authenticated Terraform plan and JSON export'
+
+inputs:
+  workload_dir:
+    description: 'Directory containing the Terraform workload'
+    required: true
+  aws_role_arn:
+    description: 'AWS Role ARN to assume via OIDC'
+    required: true
+  aws_region:
+    description: 'AWS region'
+    required: false
+    default: 'ap-south-1'
+  terraform_version:
+    description: 'Version of Terraform to use'
+    required: false
+    default: '1.7.5'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure AWS credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws_role_arn }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+
+    - name: Terraform init
+      shell: bash
+      working-directory: ${{ inputs.workload_dir }}
+      run: terraform init -input=false
+
+    - name: Terraform Plan
+      shell: bash
+      working-directory: ${{ inputs.workload_dir }}
+      run: terraform plan -input=false -refresh=false -out=tfplan.binary
+
+    - name: Export Terraform Plan JSON
+      shell: bash
+      working-directory: ${{ inputs.workload_dir }}
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/output
+        terraform show -json tfplan.binary > $GITHUB_WORKSPACE/output/tfplan.json
