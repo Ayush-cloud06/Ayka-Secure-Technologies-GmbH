@@ -11,6 +11,9 @@ on:
 
 env:
   WORKLOAD_DIR: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
+  AWS_REGION: ap-south-1
+  AWS_ROLE_ARN: arn:aws:iam::982081090103:role/github-actions-oidc-role
+  TERRAFORM_VERSION: 1.7.5
 
 permissions:
   id-token: write
@@ -19,35 +22,15 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Validate
+        uses: ./.github/actions/validate
         with:
-          terraform_version: 1.7.5
-
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
-        with:
-          tflint_version: latest
-
-      - name: Terraform fmt check
-        run: terraform fmt -check -recursive "$WORKLOAD_DIR"
-
-      - name: Terraform init for validation
-        working-directory: ${{ env.WORKLOAD_DIR }}
-        run: terraform init -backend=false -input=false
-
-      - name: Terraform validate
-        working-directory: ${{ env.WORKLOAD_DIR }}
-        run: terraform validate
-
-      - name: TFLint
-        working-directory: ${{ env.WORKLOAD_DIR }}
-        run: tflint --init && tflint --recursive
+          workload_dir: ${{ env.WORKLOAD_DIR }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: Validate CI shell scripts
         run: |
@@ -59,112 +42,29 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     outputs:
-      schema_version: ${{ steps.compliance-summary.outputs.schema_version }}
-      decision: ${{ steps.compliance-summary.outputs.decision }}
-      approval_required: ${{ steps.compliance-summary.outputs.approval_required }}
-      unmapped_findings: ${{ steps.compliance-summary.outputs.unmapped_findings }}
+      schema_version: ${{ steps.evaluate.outputs.schema_version }}
+      decision: ${{ steps.evaluate.outputs.decision }}
+      approval_required: ${{ steps.evaluate.outputs.approval_required }}
+      unmapped_findings: ${{ steps.evaluate.outputs.unmapped_findings }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python (for Checkov)
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: |
-          pip install checkov
-
-          # Install Conftest (OPA runner)
-          wget https://github.com/open-policy-agent/conftest/releases/download/v0.45.0/conftest_0.45.0_Linux_x86_64.tar.gz
-          tar xzf conftest_*.tar.gz
-          sudo mv conftest /usr/local/bin
-
-          # Install tfsec
-          wget https://github.com/aquasecurity/tfsec/releases/download/v1.28.14/tfsec-linux-amd64
-          chmod +x tfsec-linux-amd64
-          sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
-
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::982081090103:role/github-actions-oidc-role
-          aws-region: ap-south-1
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.7.5
-
-      - name: Terraform init
-        working-directory: ${{ env.WORKLOAD_DIR }}
-        run: terraform init -input=false
-
       - name: Terraform Plan
-        working-directory: ${{ env.WORKLOAD_DIR }}
-        run: terraform plan -input=false -refresh=false -out=tfplan.binary
-
-      - name: Export Terraform Plan JSON
-        working-directory: ${{ env.WORKLOAD_DIR }}
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/output
-          terraform show -json tfplan.binary > $GITHUB_WORKSPACE/output/tfplan.json
-
-      - name: Run Checkov
-        run: bash Internal-IT/engineering/ci-cd/scripts/run-checkov.sh
-
-      - name: Run tfsec
-        run: bash Internal-IT/engineering/ci-cd/scripts/run-tfsec.sh
-
-      - name: Run OPA (Conftest)
-        run: bash Internal-IT/engineering/ci-cd/scripts/run-policy-check.sh
-
-      - name: 🧠 Evaluate Results
-        run: bash Internal-IT/engineering/ci-cd/scripts/evaluate-results.sh
-
-      - name: Publish Compliance Summary
-        id: compliance-summary
-        if: always()
-        run: |
-          if [ ! -f output/compliance-summary.json ]; then
-            echo "schema_version=unknown" >> "$GITHUB_OUTPUT"
-            echo "decision=error" >> "$GITHUB_OUTPUT"
-            echo "approval_required=false" >> "$GITHUB_OUTPUT"
-            echo "unmapped_findings=0" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "schema_version=$(jq -r '.schema_version // \"unknown\"' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
-          echo "decision=$(jq -r '.decision' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
-          echo "approval_required=$(jq -r '.approval_required' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
-          echo "unmapped_findings=$(jq -r '.metadata_coverage.unmapped_findings // 0' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
-
-      - name: Print Compliance Coverage
-        if: always() && hashFiles('output/compliance-summary.json') != ''
-        run: |
-          jq '{schema_version, decision, approval_required, totals, metadata_coverage}' output/compliance-summary.json
-
-      - name: 🔍 Debug evidence folder
-        if: always()
-        run: |
-          pwd
-           tree -L 3 || ls -R
-
-      - name: Export Evidence
-        if: always()
-        run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
-
-      - name: Upload Evidence Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
+        uses: ./.github/actions/plan
         with:
-          name: compliance-evidence
-          path: evidence/
+          workload_dir: ${{ env.WORKLOAD_DIR }}
+          aws_role_arn: ${{ env.AWS_ROLE_ARN }}
+          aws_region: ${{ env.AWS_REGION }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Security Scan
+        uses: ./.github/actions/scan
+
+      - name: Evaluate Compliance
+        id: evaluate
+        uses: ./.github/actions/evaluate
 
   medium-risk-approval:
     needs: compliance
