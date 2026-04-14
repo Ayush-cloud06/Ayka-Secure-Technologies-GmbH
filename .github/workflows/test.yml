@@ -96,16 +96,23 @@ jobs:
       - name: Evaluate Compliance (Regression)
         id: evaluate_regression
         uses: ./.github/actions/evaluate
+        continue-on-error: true
 
       - name: Check Regression Results
         shell: bash
         run: |
-          echo "Regression Decision: ${{ steps.evaluate_regression.outputs.decision }}"
-          # Regression suite is EXPECTED to have findings (it's negative testing),
-          # but we want to ensure it evaluates correctly.
-          if [ "${{ steps.evaluate_regression.outputs.decision }}" == "error" ]; then
-            echo "Regression evaluation failed."
+          DECISION="${{ steps.evaluate_regression.outputs.decision }}"
+          echo "Regression Decision: $DECISION"
+          
+          if [ "$DECISION" == "error" ] || [ -z "$DECISION" ]; then
+            echo "Regression evaluation produced an error or no decision."
             exit 1
+          fi
+          
+          if [ "$DECISION" == "fail" ]; then
+            echo "SUCCESS: Regression suite correctly identified security violations (Negative testing verified)."
+          else
+            echo "WARNING: Regression suite did not return 'fail'. Current decision: $DECISION"
           fi
 
   medium-risk-approval:
