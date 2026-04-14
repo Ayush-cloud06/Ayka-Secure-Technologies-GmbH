@@ -1,6 +1,12 @@
 name: 'Evaluate Compliance'
 description: 'Evaluate security scan results and export artifacts'
 
+inputs:
+  artifact_name:
+    description: 'Name of the uploaded artifact'
+    required: false
+    default: 'compliance-evidence'
+
 outputs:
   schema_version:
     description: 'Schema version of the summary'
@@ -62,7 +68,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: compliance-evidence
+        name: ${{ inputs.artifact_name }}
         path: |
           evidence/
           output/compliance-report.md
