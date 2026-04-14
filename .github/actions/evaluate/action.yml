@@ -24,6 +24,7 @@ runs:
 
     - name: Publish Compliance Summary
       id: publish-summary
+      if: always()
       shell: bash
       run: |
         if [ ! -f output/compliance-summary.json ]; then
@@ -40,6 +41,7 @@ runs:
         echo "unmapped_findings=$(jq -r '.metadata_coverage.unmapped_findings // 0' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
 
     - name: Print Compliance Coverage
+      if: always()
       shell: bash
       run: |
         if [ -f output/compliance-summary.json ]; then
@@ -47,14 +49,17 @@ runs:
         fi
 
     - name: 📝 Generate Human-Readable Report
+      if: always()
       shell: bash
       run: python3 Internal-IT/engineering/ci-cd/scripts/generate-report.py
 
     - name: Export Evidence
+      if: always()
       shell: bash
       run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
 
     - name: Upload Evidence Artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: compliance-evidence
