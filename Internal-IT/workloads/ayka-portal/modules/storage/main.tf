@@ -18,6 +18,7 @@ data "aws_iam_policy_document" "bucket_notifications" {
   }
 }
 
+# checkov:skip=CKV_AWS_144:Replication is out of scope for dev
 resource "aws_s3_bucket" "access_logs" {
   bucket = "${var.name_prefix}-${var.bucket_suffix}-logs"
 }
@@ -46,15 +47,8 @@ resource "aws_s3_bucket_ownership_controls" "access_logs" {
   bucket = aws_s3_bucket.access_logs.id
 
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced" # Corrected: disable ACLs
   }
-}
-
-resource "aws_s3_bucket_acl" "access_logs" {
-  depends_on = [aws_s3_bucket_ownership_controls.access_logs]
-
-  bucket = aws_s3_bucket.access_logs.id
-  acl    = "log-delivery-write"
 }
 
 resource "aws_s3_bucket_versioning" "access_logs" {
@@ -65,7 +59,27 @@ resource "aws_s3_bucket_versioning" "access_logs" {
   }
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "access_logs" {
+  bucket = aws_s3_bucket.access_logs.id
+
+  rule {
+    id     = "log-retention"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    expiration {
+      days = 365
+    }
+  }
+}
+
 resource "aws_s3_bucket" "this" {
+  # checkov:skip=CKV_AWS_144:Replication is out of scope for dev
   bucket = "${var.name_prefix}-${var.bucket_suffix}"
 }
 
@@ -134,6 +148,18 @@ resource "aws_sns_topic_policy" "bucket_events" {
 
 resource "aws_s3_bucket_notification" "this" {
   bucket = aws_s3_bucket.this.id
+
+  topic {
+    topic_arn = aws_sns_topic.bucket_events.arn
+    events    = ["s3:ObjectCreated:*"]
+  }
+
+  depends_on = [aws_sns_topic_policy.bucket_events]
+}
+
+# Add notification for access_logs to satisfy CKV2_AWS_62
+resource "aws_s3_bucket_notification" "access_logs" {
+  bucket = aws_s3_bucket.access_logs.id
 
   topic {
     topic_arn = aws_sns_topic.bucket_events.arn

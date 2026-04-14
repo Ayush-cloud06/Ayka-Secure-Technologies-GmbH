@@ -8,6 +8,7 @@ resource "random_id" "final_snapshot" {
 }
 
 resource "aws_secretsmanager_secret" "db" {
+  # checkov:skip=CKV2_AWS_57:Rotation requires lambda which is out of scope
   name       = "${var.name_prefix}-db-credentials"
   kms_key_id = var.kms_key_arn
 }
@@ -50,6 +51,11 @@ resource "aws_db_parameter_group" "this" {
   parameter {
     name  = "log_min_duration_statement"
     value = "5000"
+  }
+
+  parameter {
+    name  = "rds.force_ssl"
+    value = "1"
   }
 }
 

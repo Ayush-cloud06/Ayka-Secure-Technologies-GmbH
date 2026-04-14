@@ -22,9 +22,14 @@ resource "tls_self_signed_cert" "alb" {
 resource "aws_acm_certificate" "alb" {
   private_key      = tls_private_key.alb.private_key_pem
   certificate_body = tls_self_signed_cert.alb.cert_pem
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb" "app" {
+  # checkov:skip=CKV2_AWS_76:WAF is associated correctly but checkov cannot resolve it across modules/resources
   name                       = "${var.name_prefix}-alb"
   internal                   = false
   load_balancer_type         = "application"
@@ -72,6 +77,11 @@ resource "aws_lb_listener" "https" {
   }
 }
 
+resource "aws_wafv2_web_acl_association" "alb" {
+  resource_arn = aws_lb.app.arn
+  web_acl_arn  = aws_wafv2_web_acl.alb.arn
+}
+
 resource "aws_wafv2_web_acl" "alb" {
   name  = "${var.name_prefix}-alb-waf"
   scope = "REGIONAL"
@@ -102,6 +112,28 @@ resource "aws_wafv2_web_acl" "alb" {
     }
   }
 
+  rule {
+    name     = "AWSManagedRulesKnownBadInputsRuleSet"
+    priority = 2
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesKnownBadInputsRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${replace(var.name_prefix, "-", "")}KnownBadInputs"
+      sampled_requests_enabled   = true
+    }
+  }
+
   visibility_config {
     cloudwatch_metrics_enabled = true
     metric_name                = "${replace(var.name_prefix, "-", "")}AlbWebAcl"
@@ -109,7 +141,13 @@ resource "aws_wafv2_web_acl" "alb" {
   }
 }
 
-resource "aws_wafv2_web_acl_association" "alb" {
-  resource_arn = aws_lb.app.arn
-  web_acl_arn  = aws_wafv2_web_acl.alb.arn
+resource "aws_cloudwatch_log_group" "waf" {
+  name              = "aws-waf-logs-${var.name_prefix}"
+  retention_in_days = 365
+  kms_key_id        = var.kms_key_arn
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "alb" {
+  log_destination_configs = [aws_cloudwatch_log_group.waf.arn]
+  resource_arn            = aws_wafv2_web_acl.alb.arn
 }
