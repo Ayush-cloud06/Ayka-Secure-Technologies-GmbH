@@ -97,6 +97,8 @@ jobs:
         id: evaluate_regression
         uses: ./.github/actions/evaluate
         continue-on-error: true
+        with:
+          artifact_name: 'compliance-evidence-regression'
 
       - name: Check Regression Results
         shell: bash
