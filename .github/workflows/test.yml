@@ -11,6 +11,7 @@ on:
 
 env:
   WORKLOAD_DIR: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
+  REGRESSION_DIR: Internal-IT/workloads/control-validation-scenarios
   AWS_REGION: ap-south-1
   AWS_ROLE_ARN: arn:aws:iam::982081090103:role/github-actions-oidc-role
   TERRAFORM_VERSION: 1.7.5
@@ -65,6 +66,47 @@ jobs:
       - name: Evaluate Compliance
         id: evaluate
         uses: ./.github/actions/evaluate
+
+  regression:
+    name: Control Validation Regression
+    runs-on: ubuntu-latest
+    # Only run regression if we're not already running it as the primary workload
+    if: ${{ github.event.inputs.workload_dir != 'Internal-IT/workloads/control-validation-scenarios' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Terraform Validate (Regression)
+        uses: ./.github/actions/validate
+        with:
+          workload_dir: ${{ env.REGRESSION_DIR }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Plan (Regression)
+        uses: ./.github/actions/plan
+        with:
+          workload_dir: ${{ env.REGRESSION_DIR }}
+          aws_role_arn: ${{ env.AWS_ROLE_ARN }}
+          aws_region: ${{ env.AWS_REGION }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Security Scan (Regression)
+        uses: ./.github/actions/scan
+
+      - name: Evaluate Compliance (Regression)
+        id: evaluate_regression
+        uses: ./.github/actions/evaluate
+
+      - name: Check Regression Results
+        shell: bash
+        run: |
+          echo "Regression Decision: ${{ steps.evaluate_regression.outputs.decision }}"
+          # Regression suite is EXPECTED to have findings (it's negative testing),
+          # but we want to ensure it evaluates correctly.
+          if [ "${{ steps.evaluate_regression.outputs.decision }}" == "error" ]; then
+            echo "Regression evaluation failed."
+            exit 1
+          fi
 
   medium-risk-approval:
     needs: compliance
