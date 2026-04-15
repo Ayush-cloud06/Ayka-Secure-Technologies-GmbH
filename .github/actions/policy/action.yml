@@ -1,0 +1,17 @@
+name: 'Policy Check'
+description: 'Install and run OPA policies'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        # Install Conftest (OPA runner)
+        wget https://github.com/open-policy-agent/conftest/releases/download/v0.45.0/conftest_0.45.0_Linux_x86_64.tar.gz
+        tar xzf conftest_*.tar.gz
+        sudo mv conftest /usr/local/bin
+
+    - name: Run OPA (Conftest)
+      shell: bash
+      run: bash Internal-IT/engineering/ci-cd/scripts/run-policy-check.sh

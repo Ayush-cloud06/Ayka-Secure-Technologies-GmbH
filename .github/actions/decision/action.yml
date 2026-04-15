@@ -1,11 +1,5 @@
-name: 'Evaluate Compliance'
-description: 'Evaluate security scan results and export artifacts'
-
-inputs:
-  artifact_name:
-    description: 'Name of the uploaded artifact'
-    required: false
-    default: 'compliance-evidence'
+name: 'Compliance Decision'
+description: 'Evaluate security scan results and produce decision'
 
 outputs:
   schema_version:
@@ -53,22 +47,3 @@ runs:
         if [ -f output/compliance-summary.json ]; then
           jq '{schema_version, decision, approval_required, totals, metadata_coverage}' output/compliance-summary.json
         fi
-
-    - name: 📝 Generate Human-Readable Report
-      if: always()
-      shell: bash
-      run: python3 Internal-IT/engineering/ci-cd/scripts/generate-report.py
-
-    - name: Export Evidence
-      if: always()
-      shell: bash
-      run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
-
-    - name: Upload Evidence Artifact
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.artifact_name }}
-        path: |
-          evidence/
-          output/compliance-report.md

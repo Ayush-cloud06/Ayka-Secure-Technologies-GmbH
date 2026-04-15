@@ -1,0 +1,28 @@
+name: 'Security Check'
+description: 'Install and run static analysis tools (Checkov, tfsec)'
+
+runs:
+  using: 'composite'
+  steps:
+  - name: Setup Python (for Checkov)
+    uses: actions/setup-python@v5
+    with:
+      python-version: "3.11"
+
+  - name: Install dependencies
+    shell: bash
+    run: |
+      pip install checkov
+
+      # Install tfsec
+      wget https://github.com/aquasecurity/tfsec/releases/download/v1.28.14/tfsec-linux-amd64
+      chmod +x tfsec-linux-amd64
+      sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
+
+  - name: Run Checkov
+    shell: bash
+    run: bash Internal-IT/engineering/ci-cd/scripts/run-checkov.sh
+
+  - name: Run tfsec
+    shell: bash
+    run: bash Internal-IT/engineering/ci-cd/scripts/run-tfsec.sh
