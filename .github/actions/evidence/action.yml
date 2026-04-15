@@ -28,3 +28,5 @@ runs:
         path: |
           evidence/
           output/compliance-report.md
+          output/tfplan.json
+          output/tfplan.binary
