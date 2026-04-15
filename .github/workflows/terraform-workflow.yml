@@ -27,11 +27,6 @@ on:
         required: false
         type: string
         default: 'compliance-evidence'
-      continue_on_error:
-        description: 'Whether to continue on error during evaluation'
-        required: false
-        type: boolean
-        default: false
 
     outputs:
       schema_version:
@@ -47,12 +42,16 @@ on:
         description: 'Number of unmapped findings'
         value: ${{ jobs.compliance.outputs.unmapped_findings }}
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Terraform Validate
         uses: ./.github/actions/validate
@@ -70,7 +69,7 @@ jobs:
       unmapped_findings: ${{ steps.decision.outputs.unmapped_findings }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Terraform Plan
         uses: ./.github/actions/plan
@@ -79,6 +78,10 @@ jobs:
           aws_role_arn: ${{ inputs.aws_role_arn }}
           aws_region: ${{ inputs.aws_region }}
           terraform_version: ${{ inputs.terraform_version }}
+
+      - name: Cost Estimation Hook
+        shell: bash
+        run: echo "Cost estimation (Infracost/Terraform) to be implemented"
 
       - name: Security Check
         uses: ./.github/actions/check
@@ -89,10 +92,51 @@ jobs:
       - name: Compliance Decision
         id: decision
         uses: ./.github/actions/decision
-        continue-on-error: ${{ inputs.continue_on_error }}
+
+      - name: Checksum Artifacts
+        shell: bash
+        run: |
+          mkdir -p evidence
+          if [ -f output/tfplan.json ] && [ -f output/compliance-summary.json ]; then
+            sha256sum output/tfplan.json output/compliance-summary.json > evidence/artifacts.sha256
+            echo "Artifacts checksummed successfully for integrity."
+          else
+            echo "Warning: output artifacts not found for checksumming."
+          fi
 
       - name: Compliance Evidence
         uses: ./.github/actions/evidence
         if: always()
         with:
           artifact_name: ${{ inputs.artifact_name }}
+
+  medium-risk-approval:
+    needs: compliance
+    if: ${{ needs.compliance.outputs.approval_required == 'true' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: medium-risk-approval
+    steps:
+      - name: Await Manual Approval
+        run: |
+          echo "Medium severity findings require manual approval."
+          echo "Compliance decision: ${{ needs.compliance.outputs.decision }}"
+          echo "Summary schema version: ${{ needs.compliance.outputs.schema_version }}"
+          echo "Unmapped findings: ${{ needs.compliance.outputs.unmapped_findings }}"
+
+  apply:
+    needs: [compliance, medium-risk-approval]
+    if: |
+      always() &&
+      (needs.compliance.outputs.decision == 'pass' || needs.medium-risk-approval.result == 'success') &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Verify Integrity and Apply Hook
+        shell: bash
+        run: |
+          echo "tfplan checksum verification to be implemented before apply."
+          echo "Terraform apply to be implemented."
