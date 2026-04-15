@@ -81,7 +81,7 @@ jobs:
 
       - name: Cost Estimation Hook
         shell: bash
-        run: echo "Cost estimation (Infracost/Terraform) to be implemented"
+        run: bash Internal-IT/engineering/ci-cd/scripts/run-cost-check.sh
 
       - name: Security Check
         uses: ./.github/actions/check
@@ -131,12 +131,13 @@ jobs:
       (needs.compliance.outputs.decision == 'pass' || needs.medium-risk-approval.result == 'success') &&
       github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment:
+      name: manual-apply-approval
     steps:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Verify Integrity and Apply Hook
-        shell: bash
-        run: |
-          echo "tfplan checksum verification to be implemented before apply."
-          echo "Terraform apply to be implemented."
+        uses: ./.github/actions/apply
+        with:
+          workload_dir: ${{ inputs.workload_dir }}

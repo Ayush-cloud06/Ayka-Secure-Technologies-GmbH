@@ -1,0 +1,22 @@
+name: 'Terraform Apply'
+description: 'Download evidence, verify integrity, and run terraform apply'
+
+inputs:
+  workload_dir:
+    description: 'Terraform workload directory'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+      with:
+        name: compliance-evidence
+        path: downloaded-evidence
+
+    - name: Verify and Apply
+      shell: bash
+      env:
+        WORKLOAD_DIR: ${{ inputs.workload_dir }}
+      run: bash Internal-IT/engineering/ci-cd/scripts/run-apply.sh
