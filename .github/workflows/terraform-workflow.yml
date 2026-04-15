@@ -137,6 +137,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@5579c002bb4778aa43395ef1df492868a9a1c83f # v4.0.2
+        with:
+          aws-region: ${{ inputs.aws_region }}
+          role-to-assume: ${{ inputs.aws_role_arn }}
+
       - name: Verify Integrity and Apply Hook
         uses: ./.github/actions/apply
         with:
