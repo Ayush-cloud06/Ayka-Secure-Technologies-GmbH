@@ -47,3 +47,4 @@ runs:
       run: |
         mkdir -p $GITHUB_WORKSPACE/output
         terraform show -json tfplan.binary > $GITHUB_WORKSPACE/output/tfplan.json
+        mv tfplan.binary $GITHUB_WORKSPACE/output/tfplan.binary
