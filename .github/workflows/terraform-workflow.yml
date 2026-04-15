@@ -142,6 +142,7 @@ jobs:
         with:
           aws-region: ${{ inputs.aws_region }}
           role-to-assume: ${{ inputs.aws_role_arn }}
+          role-session-name: GitHubActionsTerraformApply
 
       - name: Verify Integrity and Apply Hook
         uses: ./.github/actions/apply
