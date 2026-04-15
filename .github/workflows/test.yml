@@ -21,18 +21,11 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  validate-scripts:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Terraform Validate
-        uses: ./.github/actions/validate
-        with:
-          workload_dir: ${{ env.WORKLOAD_DIR }}
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
       - name: Validate CI shell scripts
         run: |
           for file in Internal-IT/engineering/ci-cd/scripts/*.sh; do
@@ -40,32 +33,13 @@ jobs:
           done
 
   compliance:
-    needs: validate
-    runs-on: ubuntu-latest
-    outputs:
-      schema_version: ${{ steps.evaluate.outputs.schema_version }}
-      decision: ${{ steps.evaluate.outputs.decision }}
-      approval_required: ${{ steps.evaluate.outputs.approval_required }}
-      unmapped_findings: ${{ steps.evaluate.outputs.unmapped_findings }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Terraform Plan
-        uses: ./.github/actions/plan
-        with:
-          workload_dir: ${{ env.WORKLOAD_DIR }}
-          aws_role_arn: ${{ env.AWS_ROLE_ARN }}
-          aws_region: ${{ env.AWS_REGION }}
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: Security Scan
-        uses: ./.github/actions/scan
-
-      - name: Evaluate Compliance
-        id: evaluate
-        uses: ./.github/actions/evaluate
+    needs: validate-scripts
+    uses: ./.github/workflows/terraform-workflow.yml
+    with:
+      workload_dir: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
+      aws_region: ap-south-1
+      aws_role_arn: arn:aws:iam::982081090103:role/github-actions-oidc-role
+      terraform_version: 1.7.5
 
   regression:
     name: Control Validation Regression
@@ -90,13 +64,19 @@ jobs:
           aws_region: ${{ env.AWS_REGION }}
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: Security Scan (Regression)
-        uses: ./.github/actions/scan
+      - name: Security Check (Regression)
+        uses: ./.github/actions/check
 
-      - name: Evaluate Compliance (Regression)
+      - name: Policy Check (Regression)
+        uses: ./.github/actions/policy
+
+      - name: Compliance Decision (Regression)
         id: evaluate_regression
-        uses: ./.github/actions/evaluate
+        uses: ./.github/actions/decision
         continue-on-error: true
+
+      - name: Compliance Evidence (Regression)
+        uses: ./.github/actions/evidence
         with:
           artifact_name: 'compliance-evidence-regression'
 
