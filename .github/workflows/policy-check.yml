@@ -1,1 +1,21 @@
-../../Internal-IT/engineering/ci-cd/templates/policy-check.yml
+name: Policy Check Workflow
+description: 'Reusable workflow for running OPA policies'
+
+on:
+  workflow_call:
+    inputs:
+      plan_json_path:
+        description: 'Path to the Terraform plan JSON file'
+        required: false
+        type: string
+        default: 'output/tfplan.json'
+
+jobs:
+  policy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Policy Check
+        uses: ./.github/actions/policy
