@@ -3,7 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Log owner:** CISO role
 - **Version:** 1.0
-- **Last updated:** 2026-08-23
+- **Historical baseline:** 2026-04-16
+- **Log completed:** 2026-08-23
 **Effective approved acceptances:** None evidenced
 
 ## Acceptance rule

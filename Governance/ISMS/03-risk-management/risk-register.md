@@ -3,7 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Register owner:** CISO role
 - **Version:** 1.0
-- **Assessment date:** 2026-08-23
+- **Historical baseline:** 2026-04-16
+- **Register populated:** 2026-08-23
 - **Next scheduled review:** 2026-09-30
 **Status:** Working case-study record; no management approval or operating ISMS is evidenced
 

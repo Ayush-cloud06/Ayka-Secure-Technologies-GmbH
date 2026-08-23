@@ -3,7 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Owner:** CISO role
 - **Version:** 1.0
-- **Last updated:** 2026-08-23
+- **Historical baseline:** 2026-04-16
+- **Catalog completed:** 2026-08-23
 **Purpose:** Reusable scenarios for consistent assessment; not a claim that every event has occurred
 
 ## Using the catalog

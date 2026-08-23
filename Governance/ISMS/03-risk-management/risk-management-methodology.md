@@ -3,7 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Document owner:** CISO role
 - **Version:** 1.1
-- **Last updated:** 2026-08-23
+- **Historical baseline:** 2026-04-16
+- **Document completed:** 2026-08-23
 - **Review cycle:** Annual, and after a material change or incident
 **Document role:** Normative method; not evidence that a review or approval occurred
 
