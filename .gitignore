@@ -18,6 +18,10 @@ terraform.tfvars.json
 backend.tfvars
 backend.hcl
 
+annotations
+graphify-out
+AUDIT/
+
 todolater.md
 pipelinefix.md
 plan.md
