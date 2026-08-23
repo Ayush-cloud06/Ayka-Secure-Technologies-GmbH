@@ -1,226 +1,169 @@
-# Risk Management Methodology  
-**Organization:** Ayka Secure Technologies GmbH  
-**Location:** Stuttgart, Germany  
-**Standard Alignment:** ISO/IEC 27001  
-**Document Owner:** CISO  
-**Version:** 1.0  
-**Last Updated:** 22-02-2026  
+# Risk Management Methodology
 
----
+- **Organization:** Ayka Secure Technologies GmbH (simulated case study)
+- **Document owner:** CISO role
+- **Version:** 1.1
+- **Last updated:** 2026-08-23
+- **Review cycle:** Annual, and after a material change or incident
+**Document role:** Normative method; not evidence that a review or approval occurred
 
-# 1. Purpose
+## 1. Purpose
 
-This document defines the structured methodology used by Ayka Secure Technologies GmbH to identify, assess, treat, and monitor information security risks within the scope of the ISMS.
+This methodology explains how Ayka identifies, assesses, treats, accepts, and reviews information-security risk. It is designed for the repository's actual shape: AWS and Entra infrastructure-as-code, a compliance-gated CI pipeline, a representative workload, governance material, and the supporting audit record.
 
-The objective is to ensure risks are:
+The method exists to make decisions repeatable. A risk score is not useful on its own; every material risk must also show the affected asset or process, the uncertainty in the evidence, the chosen response, the accountable role, and the condition that proves treatment is complete.
 
-- Systematically identified  
-- Consistently evaluated  
-- Appropriately treated  
-- Regularly reviewed  
-- Properly documented  
+## 2. Scope and evidence boundary
 
----
+Risk management covers the ISMS scope described in [scope.md](../00-context-and-governance/scope.md), including:
 
-# 2. Scope of Risk Management
+- AWS organization, landing-zone, identity, logging, storage, and workload definitions;
+- Microsoft Entra ID and AWS IAM Identity Center integration;
+- Terraform state, CI/CD controls, policy-as-code, and generated artifacts;
+- governance, privacy, assurance, and supplier dependencies; and
+- people and processes represented by the Ayka case study.
 
-Risk management applies to:
+This repository is a **non-deploying portfolio case study**. Source definitions and local tests are not treated as proof of cloud deployment or operating effectiveness. Risk entries must preserve the distinctions used by the repository audit:
 
-- Information assets
-- Cloud infrastructure
-- Identity and access systems
-- SaaS platform components
-- Regulatory obligations (GDPR, ISO 27001, TISAX, etc.)
-- Third-party service providers
-- Personnel and operational processes
+| Evidence class | What it can support | What it cannot support |
+|---|---|---|
+| Source | A control or safeguard is defined | The control is deployed or effective |
+| Local validation | Syntax, plan, policy, or evaluator behavior was exercised locally | GitHub, AWS, Entra, or runtime behavior |
+| Dated external observation | The observed external state on that date | Current state after the observation date |
+| Operating evidence | A real activity occurred with an attributable owner and result | Anything outside the evidenced scope and period |
 
-All risks within the defined ISMS scope must follow this methodology.
+The current evidence boundary is maintained in [AUDIT/CURRENT_STATE.md](../../../AUDIT/CURRENT_STATE.md).
 
----
+## 3. Roles
 
-# 3. Risk Identification
+Roles are used as case-study accountabilities until named people and approvals are evidenced.
 
-Risks are identified through:
+| Role | Responsibility |
+|---|---|
+| Managing Director | Approves time-limited acceptance of high residual risk and receives critical-risk escalation |
+| CISO | Owns the method, challenges scoring, approves low and eligible medium acceptance, and maintains the consolidated view |
+| Risk owner | Owns the business consequence and decides whether proposed treatment is sufficient |
+| Treatment owner | Delivers the agreed action and supplies completion evidence |
+| Control owner | Operates or validates the relevant technical or organizational control |
+| Independent reviewer | Checks the evidence and challenges closure where independence is required |
 
-- Asset inventory review
-- Threat modeling workshops
-- Architecture reviews
-- Incident analysis
-- Change management activities
-- Internal audit findings
-- Regulatory gap assessments
-- Supplier assessments
+One role may perform more than one function in the simulated organization, but the record must make that overlap visible. An empty approval field never counts as approval.
 
-Each risk must include:
+## 4. Risk workflow
 
-- Asset affected
-- Threat description
-- Vulnerability exploited
-- Potential impact
+### 4.1 Establish context
 
-Risk statement format:
+Before scoring, record:
 
-> “There is a risk that [threat] exploits [vulnerability] affecting [asset], leading to [impact].”
+- the in-scope asset, process, or obligation;
+- whether the subject is source-only, locally tested, externally observed, or operational;
+- the evidence date and location; and
+- assumptions that could materially change the result.
 
----
+### 4.2 Write the scenario
 
-# 4. Risk Assessment Criteria
+Use a cause-event-consequence statement:
 
-## 4.1 Likelihood Scale
+> Because **[weakness or condition]**, **[threat event]** could affect **[asset/process]**, resulting in **[specific confidentiality, integrity, availability, legal, financial, or assurance consequence]**.
 
-| Score | Likelihood Description |
-|--------|------------------------|
-| 1 | Rare (Highly unlikely) |
-| 2 | Unlikely |
-| 3 | Possible |
-| 4 | Likely |
-| 5 | Almost Certain |
+Avoid control names disguised as risks, such as “lack of MFA.” Explain what could happen and why it matters to Ayka.
 
----
+### 4.3 Assess inherent risk
 
-## 4.2 Impact Scale
+Score the credible risk before additional treatment using the likelihood and impact definitions in [risk-criteria.md](risk-criteria.md).
 
-Impact is assessed across:
+`Risk score = likelihood x impact`
 
-- Confidentiality
-- Integrity
-- Availability
-- Regulatory compliance
-- Financial impact
-- Reputational damage
+Impact is the highest credible consequence across confidentiality, integrity, availability, legal/compliance, financial, and reputational dimensions. Do not average away a severe consequence.
 
-| Score | Impact Description |
-|--------|--------------------|
-| 1 | Negligible |
-| 2 | Minor |
-| 3 | Moderate |
-| 4 | Major |
-| 5 | Critical |
+### 4.4 Record current safeguards and confidence
 
----
+Current safeguards must state their evidence level:
 
-## 4.3 Risk Calculation
+| Confidence | Meaning |
+|---|---|
+| E0 - Claimed | Planned, assumed, or described without supporting source |
+| E1 - Defined | Present in policy, documentation, or source code |
+| E2 - Locally verified | Exercised by a reproducible local test or plan |
+| E3 - Externally verified | Confirmed by a dated GitHub, AWS, Entra, or equivalent observation |
+| E4 - Operating | Repeated operation and review are evidenced over the stated period |
 
-Risk Score = Likelihood × Impact  
+A source change may improve design without lowering residual risk if the relevant threat depends on deployment or operation.
 
-| Score Range | Risk Level |
-|-------------|------------|
-| 1–5 | Low |
-| 6–10 | Medium |
-| 11–15 | High |
-| 16–25 | Critical |
+### 4.5 Select treatment
 
----
+Use one primary response:
 
-# 5. Risk Treatment Options
+- **Mitigate:** reduce likelihood or impact with defined actions;
+- **Avoid:** stop the activity creating the risk;
+- **Transfer:** allocate part of the consequence contractually or through insurance; or
+- **Accept:** make a documented, time-limited decision within the authority in the risk criteria.
 
-Each identified risk must be assigned one of the following treatment strategies:
+Every mitigation entry needs an owner, a due gate or date, required evidence, target score, and fallback if the treatment fails.
 
-1. Risk Mitigation  
-   - Implement technical or organizational controls  
-   - Reduce likelihood and/or impact  
+### 4.6 Assess residual risk
 
-2. Risk Avoidance  
-   - Eliminate the activity causing the risk  
+Residual risk is the expected level after verified current safeguards. Target risk is the intended level after planned treatment. Keep these separate:
 
-3. Risk Transfer  
-   - Transfer risk through insurance or contractual agreements  
+- **Inherent score:** before safeguards;
+- **Current residual score:** supported by safeguards already evidenced;
+- **Target score:** expected after the treatment plan is completed and checked.
 
-4. Risk Acceptance  
-   - Formally accept risk if within tolerance threshold  
+### 4.7 Decide and monitor
 
-All accepted risks must be formally approved by executive management.
+The risk owner recommends a decision. The required authority approves acceptance, closure, or continued treatment. Open risks are reviewed quarterly and when a trigger occurs.
 
----
+## 5. Treatment completion and closure
 
-# 6. Risk Acceptance Criteria
+A task being merged or a document being written does not close a risk. Closure requires:
 
-Ayka Secure Technologies GmbH defines:
+1. the treatment action is complete;
+2. the required evidence exists and is attributable;
+3. the residual likelihood and impact are rescored;
+4. the reviewer records the result; and
+5. any remaining risk is accepted by the correct authority.
 
-- Low risks → May be accepted by CISO  
-- Medium risks → Must have mitigation plan  
-- High risks → Mitigation mandatory  
-- Critical risks → Immediate treatment required  
+If evidence is missing, the status remains **Open**, **Treating**, or **Awaiting external action**.
 
-No critical risk may remain untreated.
+## 6. Review triggers
 
----
+Review the affected risks when any of the following occurs:
 
-# 7. Risk Register
+- a live Terraform backend, apply path, or scheduled drift process is introduced;
+- AWS account, Region, trust, or Identity Center assumptions change;
+- a credential exposure, security incident, or material scanner finding is identified;
+- a new supplier, data flow, regulated activity, or customer-facing workload enters scope;
+- a control fails, evidence becomes stale, or an accepted-risk expiry is reached;
+- a significant audit finding or management decision changes priorities; or
+- the ISMS scope changes.
 
-All risks are recorded in the centralized Risk Register including:
+## 7. Records and traceability
 
-- Risk ID
-- Description
-- Asset
-- Threat
-- Vulnerability
-- Likelihood score
-- Impact score
-- Risk score
-- Risk owner
-- Treatment plan
-- Review date
-- Status
+| Record | Purpose |
+|---|---|
+| [risk-criteria.md](risk-criteria.md) | Scoring, tolerance, escalation, and acceptance authority |
+| [threat-scenarios-catalog.md](threat-scenarios-catalog.md) | Reusable scenarios grounded in this architecture |
+| [risk-register.md](risk-register.md) | Consolidated current risk position |
+| [risk-treatment-plan.md](risk-treatment-plan.md) | Actions, gates, evidence, and target scores |
+| [risk-acceptance-log.md](risk-acceptance-log.md) | Proposed and approved acceptance decisions |
+| [risk-assessment-results/](risk-assessment-results/) | Dated assessment and review records |
 
-The Risk Register is reviewed:
+Risk records are retained for five years under the case-study policy. In a real implementation, retention, access, and deletion must be approved and evidenced rather than inferred from this statement.
 
-- Quarterly
-- After major changes
-- After security incidents
-- During management review
+## 8. Quality rules
 
----
+- Use stable IDs and do not recycle them.
+- Link each score to evidence, not intuition alone.
+- Do not lower a score merely because a policy or Terraform resource exists.
+- Do not backdate meetings, approvals, tests, or management decisions.
+- Mark retrospective reconstruction clearly.
+- Record contradictory evidence instead of choosing the more convenient version.
+- Keep closed risks in the register with closure evidence and date.
+- Treat scanner totals as triage input, not as a compliance percentage.
 
-# 8. Risk Ownership
+## 9. References
 
-Each risk must have an assigned Risk Owner responsible for:
-
-- Monitoring risk status
-- Ensuring treatment implementation
-- Reporting to management
-
-Risk ownership aligns with defined roles in the Roles & Responsibilities document.
-
----
-
-# 9. Review and Continuous Improvement
-
-Risk management effectiveness is reviewed through:
-
-- Internal audits
-- Management review meetings
-- Incident trend analysis
-- Control effectiveness evaluations
-
-The methodology itself is reviewed annually.
-
----
-
-# 10. Documentation and Evidence
-
-All risk-related activities must be documented and retained as ISMS records, including:
-
-- Risk assessments
-- Treatment decisions
-- Approval records
-- Review logs
-- Management acceptance records
-
-Records are retained for a minimum of 5 years.
-
----
-
-# 11. Integration with Other Processes
-
-This methodology integrates with:
-
-- Change Management
-- Incident Management
-- Access Control Governance
-- Supplier Management
-- Business Continuity Planning
-
-Risk management is a continuous process, not a one-time activity.
-
----
+- [Current State and Audit Conclusion](../../../AUDIT/CURRENT_STATE.md)
+- [Findings, Compliance, and Identity Notes](../../../AUDIT/FINDINGS.md)
+- [Roadmap and Pipeline Reference Notes](../../../AUDIT/ROADMAP_AND_PIPELINE_NOTES.md)
+- [ISMS Scope](../00-context-and-governance/scope.md)
