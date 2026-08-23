@@ -48,6 +48,9 @@ isms/
 │   ├── statement-of-applicability.md
 │   ├── control-mapping-to-internal-it.md
 │   ├── control-gap-analysis.md
+│   ├── iam-iso27001-mapping.md
+│   ├── access-control-evidence-index.md
+│   ├── privileged-access-justification.md
 │   └── justification-for-exclusions.md
 │
 ├── 05-operational-policies/
@@ -90,12 +93,16 @@ isms/
 │   │   └── data-flow-diagram.png
 │   ├── internal-it-mapping.md
 │   ├── terraform-module-mapping.md
+│   ├── iam/
+│   │   ├── aws-iam-role-list.txt
+│   │   ├── identity-center-groups.txt
+│   │   └── terraform-plan-iam.txt
 │   ├── logging-evidence/
 │   ├── access-review-logs/
 │   ├── backup-test-results/
 │   ├── vulnerability-scan-reports/
-│   └── penetration-test-report.md
-    └── control-evidence-index.md
+│   ├── penetration-test-report.md
+│   └── control-evidence-index.md
 │
 ├── 08-monitoring-and-measurement/
 │   ├── kpi-and-metrics.md
