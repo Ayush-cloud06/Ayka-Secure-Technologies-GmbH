@@ -3,7 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Plan owner:** CISO role
 - **Version:** 1.0
-- **Last updated:** 2026-08-23
+- **Historical baseline:** 2026-04-16
+- **Plan completed:** 2026-08-23
 **Status:** Proposed treatments; completion and approval are not implied
 
 ## Treatment approach

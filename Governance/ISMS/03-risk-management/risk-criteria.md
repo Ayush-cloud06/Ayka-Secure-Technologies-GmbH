@@ -3,7 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Owner:** CISO role
 - **Version:** 1.0
-- **Last updated:** 2026-08-23
+- **Historical baseline:** 2026-04-16
+- **Document completed:** 2026-08-23
 **Applies to:** All records in `03-risk-management`
 
 ## 1. Scoring rule

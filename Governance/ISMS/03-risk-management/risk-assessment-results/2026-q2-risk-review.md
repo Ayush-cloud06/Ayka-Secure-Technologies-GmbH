@@ -2,7 +2,8 @@
 
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Period represented:** 2026-04-01 to 2026-06-30
-- **Reconstruction date:** 2026-08-23
+- **Starting baseline:** 2026-04-16
+- **Repository record prepared:** 2026-08-23
 - **Prepared by:** CISO role (document preparation)
 **Record status:** Retrospective evidence review; no contemporaneous Q2 management review or risk approval is evidenced
 
