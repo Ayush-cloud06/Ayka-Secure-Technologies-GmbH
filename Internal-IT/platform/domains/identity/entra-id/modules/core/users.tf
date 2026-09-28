@@ -13,7 +13,7 @@ resource "azuread_user" "users" {
   job_title     = each.value.primary_role
   employee_type = each.value.employment_type
 
-  password              = "TempP@ssw0rd123!"
+  password              = random_password.initial_user.result
   force_password_change = true
 
 }
