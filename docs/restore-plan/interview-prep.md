@@ -142,6 +142,7 @@
 | Mock credentials, refresh-free plan | `ayka-portal/provider.tf:19-24`, `plan/action.yml:42` | only possible to change with a real backend and account |
 | Drift detection can't work without state | 61/61 failed nightly runs (plan exit 2), now disabled | manual-only until remote state exists ([ADR-0008](adr/0008-drift-manual-only.md)) |
 | OPA sees only one module level; some values are unknown at plan time | `aws_ec2.rego:7`; `aws_vpc.rego:18,30,41` | walk all modules; move ID-based checks to post-apply |
+| A realistic bad plan (public SSH via rule resources, IMDSv1, `Action=["*"]`) passed in a probe | OPA reads only inline `ingress` (`aws_ec2.rego:6-39`) and string `"*"` (`aws_iam.rego:11-15`); equivalent Checkov checks unmapped | map CKV_AWS_24/79/62/63 to the HIGH controls (small); rewrite the rules (Phase 6) |
 | Severity is decided by whoever edits the mapping | `control-mapping.yaml` | review + rationale ([ADR-0014](adr/0014-control-mapping-changes-reviewed.md)) |
 | Checksum is integrity, not authenticity | `terraform-workflow.yml:96-105` | signed attestation (Phase 6) |
 | Rego uses pre-1.0 syntax, pinned conftest | `policy/action.yml:11`; OPA 1.0 check: 45 errors | migrate to `rego.v1` (Phase 6) |
