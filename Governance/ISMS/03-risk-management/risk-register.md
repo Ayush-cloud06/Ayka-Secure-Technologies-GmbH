@@ -18,7 +18,7 @@ The register is anchored to the [current audit](../../../AUDIT/CURRENT_STATE.md)
 
 | ID | Risk scenario | Owner role | Inherent | Current | Target | Response | Evidence confidence | Status |
 |---|---|---|---:|---:|---:|---|---|---|
-| RISK-001 | Historical Entra bootstrap credentials remain in public Git history; if applied or reused, an attacker could obtain privileged identity access even though current source is clean | Identity owner / CISO | 5 x 5 = **25 Critical** | 3 x 5 = **15 High** | 2 x 5 = **10 Medium** | Mitigate | E2 source/local scan; external use unresolved | Awaiting external action |
+| RISK-001 | Entra bootstrap passwords were hard-coded in source until 2026-09-28 (`entra-id/modules/core/users.tf:16`, `modules/privileged/break_glass.tf:6`, `modules/privileged/admin_accounts.tf:9` at baseline `53b0532`) and remain in public Git history and pull-request refs since 2026-03-22; if they were applied or reused, an attacker could obtain privileged identity access | Identity owner / CISO | 5 x 5 = **25 Critical** | 3 x 5 = **15 High** | 2 x 5 = **10 Medium** | Mitigate | E2 source scan; literals removed from source 2026-09-28; tenant check pending | Awaiting external action |
 | RISK-002 | Fragmented or local Terraform state may expose secrets, lose authoritative ownership, or make recovery and drift decisions unreliable | Cloud Platform owner | 4 x 5 = **20 Critical** | 4 x 5 = **20 Critical** | 2 x 5 = **10 Medium** | Mitigate | E1 design; ignored state observed but not inspected | Open |
 | RISK-003 | IAM boundaries, trust paths, and ABAC attributes may grant unintended access or block required access because effective permissions are not verified end to end | Identity owner | 4 x 5 = **20 Critical** | 3 x 5 = **15 High** | 2 x 5 = **10 Medium** | Mitigate | E2 source fixes and local validation | Treating |
 | RISK-004 | Contradictory Entra, SCIM, Identity Center, tier, and membership assumptions may leave joiner/mover/leaver access incomplete or excessive | Identity owner / IT Support | 4 x 4 = **16 Critical** | 4 x 4 = **16 Critical** | 2 x 4 = **8 Medium** | Mitigate | E1 source and conflicting documentation | Open |
@@ -46,6 +46,7 @@ The register is anchored to the [current audit](../../../AUDIT/CURRENT_STATE.md)
 | Date | Review type | Outcome |
 |---|---|---|
 | 2026-08-23 | Initial evidence-bounded population | Thirteen risks recorded from the consolidated audit; no risk closed and no acceptance made effective |
+| 2026-09-28 | Correction | RISK-001: literals were still in source on `main` (baseline `53b0532`); replaced with `random_password` and a manually managed break-glass account. Tenant check and rotation still pending. |
 
 ## Status rules
 
