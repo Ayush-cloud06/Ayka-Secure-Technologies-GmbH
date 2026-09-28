@@ -1,6 +1,11 @@
 name: 'Security Check'
 description: 'Install and run static analysis tools (Checkov, tfsec)'
 
+inputs:
+  workload_dir:
+    description: 'Terraform workload directory that tfsec scans'
+    required: true
+
 runs:
   using: 'composite'
   steps:
@@ -25,5 +30,7 @@ runs:
 
     - name: Run tfsec
       shell: bash
+      env:
+        WORKLOAD_DIR: ${{ inputs.workload_dir }}
       run: bash Internal-IT/engineering/ci-cd/scripts/run-tfsec.sh
 
