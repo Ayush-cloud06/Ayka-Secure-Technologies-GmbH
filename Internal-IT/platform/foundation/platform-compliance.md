@@ -1,6 +1,6 @@
 # Platform Compliance Mapping
 
-This document maps **implemented controls in `Internal-IT/cloud-platform/`** to major compliance frameworks.
+This document maps **implemented controls in `Internal-IT/platform/foundation/`** to major compliance frameworks.
 
 Scope covered:
 
