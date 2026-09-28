@@ -1,1 +1,0 @@
-# Statement of Applicability (SoA)
