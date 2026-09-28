@@ -109,9 +109,9 @@ Definitions from [ADR-0006](adr/0006-honesty-labelling.md):
 
 - **Implemented** = runs in CI on every push, and you can show the run.
 - **Simulated** = shown with fake inputs or outputs, on purpose, and labelled as such.
-- **Planned** = not built.
+- **Planned** = designed or written down, including Terraform that the gate never plans or scans. Nothing in CI proves it.
 
-"Design-only" means Terraform that validates but was never applied, and isn't scanned by the gate. It's a sub-label of Simulated.
+"Design-only" is the README wording for the platform roots. They are **Planned** in ADR-0006 terms: the source validates locally, but it was never applied and isn't gated. Rule of thumb: the weakest true label wins.
 
 | Capability | Status after Phase 5 | Evidence to point at |
 |---|---|---|
@@ -129,7 +129,7 @@ Definitions from [ADR-0006](adr/0006-honesty-labelling.md):
 | Terraform apply | **Simulated** (echo) | `run-apply.sh:24-27` |
 | Cost estimation | **Simulated** (infracost not installed) | `run-cost-check.sh` |
 | Workload infrastructure (ayka-portal) | **Simulated**: mock credentials, never deployed | `ayka-portal/provider.tf:17-33` |
-| AWS Organizations, SCPs, landing zone, IAM core, Identity Center, Entra ID | **Simulated, design-only** (validates, never applied) | `Internal-IT/platform/**` |
+| AWS Organizations, SCPs, landing zone, IAM core, Identity Center, Entra ID | **Planned: design-only** (source validates locally, never applied, not gated) | `Internal-IT/platform/**` |
 | The company, ISMS, personnel, risk register | **Simulated** case study (your docs already say so) | `risk-register.md:3,9` |
 | Remote state for workloads | **Planned** (Phase 6a) | — |
 | Real sandbox apply | **Planned** (Phase 6b) | — |
