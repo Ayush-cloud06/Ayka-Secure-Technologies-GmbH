@@ -5,6 +5,14 @@ inputs:
   workload_dir:
     description: 'Terraform workload directory'
     required: true
+  terraform_version:
+    description: 'Version of Terraform to use'
+    required: false
+    default: '1.7.5'
+  artifact_name:
+    description: 'Evidence artifact uploaded by the compliance job'
+    required: false
+    default: 'compliance-evidence'
 
 runs:
   using: 'composite'
@@ -12,13 +20,13 @@ runs:
     - name: Download Artifacts
       uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
       with:
-        name: compliance-evidence
+        name: ${{ inputs.artifact_name }}
         path: downloaded-evidence
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
       with:
-        terraform_version: 1.7.5
+        terraform_version: ${{ inputs.terraform_version }}
 
     - name: Verify and Apply
       shell: bash
