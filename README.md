@@ -70,7 +70,7 @@ Labels:
 | AWS Org / SCPs / landing zone / IAM / Identity Center / Entra ID | 📐 Planned: design-only Terraform, validates offline, not gated | — | Phase 6 |
 | Drift detection | 📐 Planned (no remote state yet) | Manual-only until state exists | Phase 4 / 6 |
 | ISMS, GDPR, risk register, org docs | 🎭 Simulated case study (many files are still empty placeholders) | Only real, linked docs | Phase 3 / 6 |
-| No plaintext credentials in source | ❌ Entra bootstrap credentials still in Terraform | Removed; exposure decision recorded | Phase 1 |
+| No plaintext credentials in source | ⚠️ Removed from source (Phase 1); still in git history, tenant rotation pending | Exposure decision recorded | Phase 1 |
 
 **Deliberately *not* claimed:** Terragrunt, SIEM integration, SOC 2 / NIST / CIS mappings, zero-trust, continuous monitoring, automated remediation, audit-readiness, certification.
 
@@ -105,8 +105,8 @@ flowchart LR
 
 | Phase | Goal | Milestone proof | Status |
 |---|---|---|:---:|
-| 0 Orient | Re-learn, install tools, tag the baseline | tag `baseline-2026-10` pushed; local chain matches CI run #68 | ☐ |
-| 1 Secrets | No plaintext credentials | `git grep -nE 'password\s*=\s*"' -- '*.tf'` is empty | ☐ |
+| 0 Orient | Re-learn, install tools, tag the baseline | tag `baseline-2026-10` pushed; local chain matches CI run #68 | ☑ |
+| 1 Secrets | No plaintext credentials | `git grep -nE 'password\s*=\s*"' -- '*.tf'` is empty | ◐ code done, tenant check pending |
 | 2 Codex triage | Decide the fate of the AI-cleanup branch | decision recorded; branch archived or dropped | ☐ |
 | 3 Prune | Zero placeholder files, one pipeline source | empty-file check prints nothing; 8/8 roots validate | ☐ |
 | 4 Honest green | Gate sees everything; tests bite | green run on `main` with tfsec counted | ☐ |
