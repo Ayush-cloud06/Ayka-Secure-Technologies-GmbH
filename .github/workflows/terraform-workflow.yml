@@ -85,6 +85,8 @@ jobs:
 
       - name: Security Check
         uses: ./.github/actions/check
+        with:
+          workload_dir: ${{ inputs.workload_dir }}
 
       - name: Policy Check
         uses: ./.github/actions/policy

@@ -66,6 +66,8 @@ jobs:
 
       - name: Security Check (Regression)
         uses: ./.github/actions/check
+        with:
+          workload_dir: ${{ env.REGRESSION_DIR }}
 
       - name: Policy Check (Regression)
         uses: ./.github/actions/policy
