@@ -6,7 +6,7 @@ resource "azuread_user" "admin_users" {
   display_name        = "Admin ${each.value.display_name}"
   mail_nickname       = "admin${lower(each.key)}"
 
-  password                    = "TempAdminP@ss123!"
+  password                    = random_password.initial_admin.result
   force_password_change       = true
   disable_password_expiration = false
 }

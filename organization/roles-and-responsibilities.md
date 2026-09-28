@@ -66,7 +66,7 @@ The CISO maintains independence from direct revenue targets.
 
 **Responsibilities:**
 
-- Monitors SIEM alerts (Microsoft Sentinel)
+- Would monitor security alerts (Planned: no SIEM exists in this repository)
 - Investigates security incidents
 - Coordinates incident response activities
 - Maintains incident documentation

@@ -3,6 +3,7 @@ controls:
     title: "Security groups must not allow public SSH access"
     description: "Ingress on TCP/22 from 0.0.0.0/0 is treated as an internet-exposed administrative access path."
     severity: HIGH
+    rationale: "HIGH because an internet-reachable admin port is a direct intrusion path; mapped to Checkov too because the OPA rule misses standalone rule resources."
     category: network_security
     domain: compute_security
     frameworks:
@@ -16,6 +17,8 @@ controls:
     additional_enforcements:
       - tool: tfsec
         policy_id: AVD-AWS-0107
+      - tool: checkov
+        policy_id: CKV_AWS_24
     evidence:
       source: opa
       artifact: opa-result.json
@@ -57,6 +60,7 @@ controls:
     title: "EC2 instances must enforce IMDSv2"
     description: "EC2 metadata access must require IMDSv2 to reduce SSRF-style credential exposure risk."
     severity: HIGH
+    rationale: "HIGH because IMDSv1 lets an SSRF bug steal instance credentials; mapped to Checkov too because the OPA rule misses root-module instances."
     category: compute_security
     domain: instance_hardening
     frameworks:
@@ -71,6 +75,8 @@ controls:
     additional_enforcements:
       - tool: tfsec
         policy_id: AVD-AWS-0028
+      - tool: checkov
+        policy_id: CKV_AWS_79
     evidence:
       source: opa
       artifact: opa-result.json
@@ -346,6 +352,7 @@ controls:
     title: "IAM policies must not allow wildcard actions"
     description: "Allow statements with action '*' create excessive privilege and weaken least-privilege enforcement."
     severity: HIGH
+    rationale: "HIGH because a wildcard action grants every current and future permission; mapped to Checkov too because the OPA rule misses list-form actions."
     category: identity_security
     domain: access_control
     frameworks:
@@ -356,6 +363,11 @@ controls:
       policy_package: policies.terraform.aws_iam
     message_patterns:
       - "allows wildcard action '*'"
+    additional_enforcements:
+      - tool: checkov
+        policy_id: CKV_AWS_62
+      - tool: checkov
+        policy_id: CKV_AWS_63
     evidence:
       source: opa
       artifact: opa-result.json

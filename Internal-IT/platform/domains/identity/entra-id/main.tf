@@ -8,6 +8,7 @@ module "privileged" {
   privileged_personnel = module.core.privileged_personnel
   tier_groups          = module.core.tier_groups
   security_role_groups = module.core.security_role_groups
+  break_glass_upn      = var.break_glass_upn
 }
 
 
@@ -23,8 +24,4 @@ module "conditional_access" {
   enable_conditional_access = var.enable_conditional_access
 
   count = var.enable_conditional_access ? 1 : 0
-}
-
-module "output" {
-  source = "./modules/output"
 }

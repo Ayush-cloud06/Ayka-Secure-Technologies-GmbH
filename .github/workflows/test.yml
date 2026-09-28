@@ -2,6 +2,8 @@ name: PR Compliance Pipeline
 
 on:
   push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
     inputs:
       workload_dir:
@@ -10,14 +12,10 @@ on:
         default: Internal-IT/workloads/ayka-portal
 
 env:
-  WORKLOAD_DIR: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
   REGRESSION_DIR: Internal-IT/workloads/control-validation-scenarios
-  AWS_REGION: ap-south-1
-  AWS_ROLE_ARN: arn:aws:iam::982081090103:role/github-actions-oidc-role
   TERRAFORM_VERSION: 1.7.5
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -32,17 +30,43 @@ jobs:
             bash -n "$file"
           done
 
-  compliance:
+  unit-tests:
     needs: validate-scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Evaluator and wrapper tests (pytest)
+        run: |
+          pip install -r tests/requirements.txt
+          python3 -m pytest -q tests/
+
+      - name: Policy tests (opa test)
+        run: |
+          # OPA 0.56.0 is the engine inside conftest v0.45.0, so tests and CI agree
+          wget -q https://github.com/open-policy-agent/opa/releases/download/v0.56.0/opa_linux_amd64_static
+          echo "623771025227588898af1788998d5b5f29068a887682cd8b8e9699136d4cf121  opa_linux_amd64_static" | sha256sum -c -
+          chmod +x opa_linux_amd64_static
+          ./opa_linux_amd64_static test -v Internal-IT/engineering/policy-as-code/OPA | tee opa-test.log
+          # opa test exits 0 when it finds no tests at all, so insist on at least one PASS line
+          grep -q '^PASS: [1-9]' opa-test.log
+
+  compliance:
+    needs: unit-tests
     uses: ./.github/workflows/terraform-workflow.yml
     with:
       workload_dir: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
-      aws_region: ap-south-1
-      aws_role_arn: arn:aws:iam::982081090103:role/github-actions-oidc-role
       terraform_version: 1.7.5
 
   regression:
     name: Control Validation Regression
+    needs: unit-tests
     runs-on: ubuntu-latest
     # Only run regression if we're not already running it as the primary workload
     if: ${{ github.event.inputs.workload_dir != 'Internal-IT/workloads/control-validation-scenarios' }}
@@ -60,12 +84,12 @@ jobs:
         uses: ./.github/actions/plan
         with:
           workload_dir: ${{ env.REGRESSION_DIR }}
-          aws_role_arn: ${{ env.AWS_ROLE_ARN }}
-          aws_region: ${{ env.AWS_REGION }}
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: Security Check (Regression)
         uses: ./.github/actions/check
+        with:
+          workload_dir: ${{ env.REGRESSION_DIR }}
 
       - name: Policy Check (Regression)
         uses: ./.github/actions/policy
@@ -82,18 +106,4 @@ jobs:
 
       - name: Check Regression Results
         shell: bash
-        run: |
-          DECISION="${{ steps.evaluate_regression.outputs.decision }}"
-          echo "Regression Decision: $DECISION"
-          
-          if [ "$DECISION" == "error" ] || [ -z "$DECISION" ]; then
-            echo "Regression evaluation produced an error or no decision."
-            exit 1
-          fi
-          
-          if [ "$DECISION" == "fail" ]; then
-            echo "SUCCESS: Regression suite correctly identified security violations (Negative testing verified)."
-          else
-            echo "WARNING: Regression suite did not return 'fail'. Current decision: $DECISION"
-          fi
-
+        run: bash Internal-IT/engineering/ci-cd/scripts/check-regression.sh

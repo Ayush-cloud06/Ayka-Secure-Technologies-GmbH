@@ -1,13 +1,12 @@
-# Control Mapping Reference
+# Control mapping
 
-This file contains a comprehensive mapping of all identified controls in the platform.
+`control-mapping.yaml` in this folder is the mapping the gate **enforces**. The evaluator reads it on every CI run (`Internal-IT/engineering/ci-cd/scripts/evaluate-results.py`, constant `CONTROL_MAPPING_FILE`).
 
-⚠️ Not all controls are actively enforced in the CI/CD pipeline.
+For each control it holds:
 
-The active enforcement set is defined in:
-../active/control-mapping.yaml
+- the severity that drives the decision (HIGH fails the run, MEDIUM needs approval, LOW passes);
+- the scanner rules that report it (Checkov or tfsec `policy_id`, OPA package and `[CONTROL_ID]` message prefix);
+- the ISO/IEC 27001:2022 references.
 
-This file is used for:
-- control discovery
-- future expansion
-- audit reference
+A control that no scanner rule reports is listed but not enforced.
+Changing a severity changes what the gate blocks, so write the reason in the commit message.

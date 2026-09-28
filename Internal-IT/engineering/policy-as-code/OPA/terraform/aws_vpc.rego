@@ -54,7 +54,7 @@ deny[msg] {
 
     entry := acl.values.ingress[_]
     entry.cidr_block == "0.0.0.0/0"
-    entry.rule_action == "allow"
+    entry.action == "allow"
 
     msg := sprintf(
         "[NETWORK_ACL_UNRESTRICTED_INGRESS] Network ACL %s allows unrestricted ingress from the internet",

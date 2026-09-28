@@ -1,20 +1,11 @@
 name: Terraform Compliance Workflow
-description: 'Reusable workflow for running Terraform plan and security checks'
+# Reusable workflow: plan, scan, decide, record evidence, simulated apply.
 
 on:
   workflow_call:
     inputs:
       workload_dir:
         description: 'Terraform workload directory'
-        required: true
-        type: string
-      aws_region:
-        description: 'AWS Region'
-        required: false
-        type: string
-        default: 'ap-south-1'
-      aws_role_arn:
-        description: 'AWS Role ARN'
         required: true
         type: string
       terraform_version:
@@ -43,7 +34,6 @@ on:
         value: ${{ jobs.compliance.outputs.unmapped_findings }}
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -75,8 +65,6 @@ jobs:
         uses: ./.github/actions/plan
         with:
           workload_dir: ${{ inputs.workload_dir }}
-          aws_role_arn: ${{ inputs.aws_role_arn }}
-          aws_region: ${{ inputs.aws_region }}
           terraform_version: ${{ inputs.terraform_version }}
 
       - name: Cost Estimation Hook
@@ -85,6 +73,8 @@ jobs:
 
       - name: Security Check
         uses: ./.github/actions/check
+        with:
+          workload_dir: ${{ inputs.workload_dir }}
 
       - name: Policy Check
         uses: ./.github/actions/policy
@@ -92,17 +82,6 @@ jobs:
       - name: Compliance Decision
         id: decision
         uses: ./.github/actions/decision
-
-      - name: Checksum Artifacts
-        shell: bash
-        run: |
-          mkdir -p evidence
-          if [ -f output/tfplan.json ] && [ -f output/compliance-summary.json ]; then
-            sha256sum output/tfplan.json output/compliance-summary.json > evidence/artifacts.sha256
-            echo "Artifacts checksummed successfully for integrity."
-          else
-            echo "Warning: output artifacts not found for checksumming."
-          fi
 
       - name: Compliance Evidence
         uses: ./.github/actions/evidence
@@ -137,14 +116,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@5579c002bb4778aa43395ef1df492868a9a1c83f # v4.0.2
-        with:
-          aws-region: ${{ inputs.aws_region }}
-          role-to-assume: ${{ inputs.aws_role_arn }}
-          role-session-name: GitHubActionsTerraformApply
-
-      - name: Verify Integrity and Apply Hook
+      - name: Verify Integrity and Simulated Apply
         uses: ./.github/actions/apply
         with:
           workload_dir: ${{ inputs.workload_dir }}
+          terraform_version: ${{ inputs.terraform_version }}
+          artifact_name: ${{ inputs.artifact_name }}

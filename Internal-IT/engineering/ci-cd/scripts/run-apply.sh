@@ -11,17 +11,12 @@ fi
 echo "Verifying plan integrity..."
 cd downloaded-evidence
 
-if ! sha256sum -c evidence/artifacts.sha256 --ignore-missing; then
-  echo "Error: Checksum verification failed. Tampering detected."
+if ! sha256sum -c evidence/artifacts.sha256; then
+  echo "Error: integrity check failed; these files differ from the ones that were scanned."
   exit 1
 fi
 echo "Integrity verified successfully."
 
-echo "Proceeding with apply..."
-cd "$GITHUB_WORKSPACE/$WORKLOAD_DIR"
-terraform init -input=false
-
-# In this mock environment, actual AWS calls will fail with the hardcoded mock credentials.
-# We will simulate a successful apply for the pipeline demonstration.
-echo "Simulating Terraform apply for $WORKLOAD_DIR..."
-echo "Apply complete! Resources: 14 added, 0 changed, 0 destroyed."
+# This project never applies to a real account yet (plan-only, mock provider).
+# Say so plainly instead of printing a fake Terraform summary.
+echo "SIMULATED APPLY for $WORKLOAD_DIR: the verified plan was NOT applied and no resources were created."

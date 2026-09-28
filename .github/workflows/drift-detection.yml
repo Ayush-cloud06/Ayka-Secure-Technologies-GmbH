@@ -1,12 +1,11 @@
-name: Scheduled Drift Detection
+name: Drift Detection (manual)
 
+# ADR-0008: manual-only until ayka-portal has a remote backend and real applied resources.
+# Without state, every run would report all resources as "to add", which is not drift.
 on:
-  schedule:
-    - cron: '0 2 * * *' # Run nightly at 2 AM
   workflow_dispatch:
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -18,28 +17,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        
+
+      - name: Require a remote backend
+        working-directory: ${{ matrix.workload }}
+        run: |
+          if ! grep -rqs --include='*.tf' 'backend "' .; then
+            echo "::error::No remote backend configured. Drift cannot be measured yet."
+            exit 1
+          fi
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
         with:
           terraform_version: 1.7.5
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@5579c002bb4778aa43395ef1df492868a9a1c83f # v4.0.2
-        with:
-          aws-region: ap-south-1
-          role-to-assume: arn:aws:iam::982081090103:role/github-actions-oidc-role
+          terraform_wrapper: false
 
       - name: Terraform Init and Plan
         working-directory: ${{ matrix.workload }}
         run: |
           terraform init -input=false
-          terraform plan -detailed-exitcode -out=drift.plan
-        continue-on-error: true
-        id: plan
-        
-      - name: Report Drift
-        if: steps.plan.outputs.exitcode == '2'
-        run: |
-          echo "Drift detected in ${{ matrix.workload }}!"
-          exit 1
+          set +e
+          terraform plan -input=false -detailed-exitcode -out=drift.plan
+          code=$?
+          set -e
+          case "$code" in
+            0) echo "No drift." ;;
+            2) echo "::error::Drift detected in ${{ matrix.workload }}"; exit 1 ;;
+            *) echo "::error::terraform plan failed (exit $code)"; exit 1 ;;
+          esac

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from collections import Counter, defaultdict
+from datetime import date
 import os
 from pathlib import Path
 import re
@@ -26,7 +27,17 @@ CONTROL_MAPPING_FILE = Path(
         "Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml",
     )
 )
+EXCEPTIONS_FILE = Path(
+    os.environ.get(
+        "COMPLIANCE_EXCEPTIONS_FILE",
+        "Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml",
+    )
+)
 OPA_CONTROL_PREFIX = re.compile(r"^\[(?P<control_id>[A-Z0-9_]+)\]\s*(?P<message>.*)$")
+TOOLS = ("checkov", "opa", "tfsec")
+# ADR-0011: a finding nobody has mapped yet is at least MEDIUM, so a human sees it.
+UNMAPPED_MIN_SEVERITY = "MEDIUM"
+SEVERITY_ORDER = ["LOW", "MEDIUM", "HIGH"]
 
 
 def load_json(path: Path):
@@ -52,6 +63,41 @@ def normalize_severity(value):
     if normalized in {"HIGH", "MEDIUM", "LOW"}:
         return normalized
     return "LOW"
+
+
+def at_least(severity, floor):
+    return max(severity, floor, key=SEVERITY_ORDER.index)
+
+
+def reject_input(tool, reason):
+    print(f"Invalid {tool} result: {reason}", file=sys.stderr)
+    sys.exit(1)
+
+
+def validate_checkov(data):
+    if not isinstance(data, dict) or not isinstance(data.get("results"), dict):
+        reject_input("checkov", "no 'results' object (summary-only output means nothing was scanned)")
+    results = data["results"]
+    if not isinstance(results.get("failed_checks"), list):
+        reject_input("checkov", "'results.failed_checks' is missing or not a list")
+    if results.get("parsing_errors"):
+        reject_input("checkov", f"parsing_errors: {results['parsing_errors']}")
+
+
+def validate_tfsec(data):
+    if not isinstance(data, dict) or not isinstance(data.get("results"), list):
+        reject_input("tfsec", "'results' is missing or not a list")
+
+
+def validate_opa(data, opa_package_index):
+    if isinstance(data, dict) and data.get("status") == "error":
+        return  # handled by normalize_opa with the full error payload
+    if not isinstance(data, list) or not data:
+        reject_input("opa", "expected a non-empty list of namespace results")
+    seen = {item.get("namespace") for item in data if isinstance(item, dict)}
+    missing = sorted(set(opa_package_index) - seen)
+    if missing:
+        reject_input("opa", f"no result for mapped policy packages: {missing}")
 
 
 def control_projection(control_id, control):
@@ -141,7 +187,7 @@ def resolve_scanner_mapping(index, source, controls, fallback_severity, fallback
             "mapped": False,
             "control_id": None,
             "control": None,
-            "severity": normalize_severity(fallback_severity),
+            "severity": at_least(normalize_severity(fallback_severity), UNMAPPED_MIN_SEVERITY),
             "severity_source": fallback_source,
             "mapping_method": "scanner_default",
             "unmapped_reason": "No control mapping entry matched this scanner rule.",
@@ -314,6 +360,38 @@ def normalize_opa(data, controls, opa_control_index, opa_package_index):
     return findings
 
 
+def load_exceptions(today):
+    """ADR-0014: accepted findings live in one reviewed file, each with an owner and an expiry."""
+    if not EXCEPTIONS_FILE.exists():
+        return []
+    entries = (load_yaml(EXCEPTIONS_FILE) or {}).get("exceptions") or []
+    active = []
+    for entry in entries:
+        missing = [k for k in ("policy_id", "resource", "reason", "owner", "expires") if not entry.get(k)]
+        if missing:
+            print(f"Exception entry {entry.get('policy_id')} is missing {missing}", file=sys.stderr)
+            sys.exit(1)
+        if date.fromisoformat(str(entry["expires"])) < today:
+            print(f"Exception expired, finding counts again: {entry['policy_id']} on {entry['resource']}", file=sys.stderr)
+            continue
+        active.append(entry)
+    return active
+
+
+def split_excepted(findings, exceptions):
+    kept, excepted = [], []
+    for finding in findings:
+        match = next(
+            (e for e in exceptions if e["policy_id"] == finding["source"] and e["resource"] == finding["resource"]),
+            None,
+        )
+        if match:
+            excepted.append(dict(finding, exception={k: str(match[k]) for k in ("reason", "owner", "expires")}))
+        else:
+            kept.append(finding)
+    return kept, excepted
+
+
 def count_by_severity(findings):
     counter = Counter()
     for finding in findings:
@@ -361,7 +439,7 @@ def build_metadata_coverage(findings):
     unmapped_findings = total_findings - mapped_findings
 
     by_tool = {}
-    for tool in sorted({finding["tool"] for finding in findings}):
+    for tool in sorted(set(TOOLS) | {finding["tool"] for finding in findings}):
         tool_findings = [finding for finding in findings if finding["tool"] == tool]
         total = len(tool_findings)
         mapped = sum(1 for finding in tool_findings if finding["mapped"])
@@ -383,10 +461,10 @@ def build_metadata_coverage(findings):
     }
 
 
-def build_summary(findings):
-    by_tool_groups = defaultdict(list)
+def build_summary(findings, excepted=()):
+    by_tool_groups = {tool: [] for tool in TOOLS}  # ADR-0011: every scanner is listed, even with 0 findings
     for finding in findings:
-        by_tool_groups[finding["tool"]].append(finding)
+        by_tool_groups.setdefault(finding["tool"], []).append(finding)
 
     totals = count_by_severity(findings)
     mapped_findings = [finding for finding in findings if finding["mapped"]]
@@ -401,6 +479,7 @@ def build_summary(findings):
             "medium_findings": totals["MEDIUM"],
             "low_findings": totals["LOW"],
             "unmapped_findings": len(unmapped_findings),
+            "excepted_findings": len(excepted),
         },
         "totals": totals,
         "by_tool": {
@@ -412,7 +491,11 @@ def build_summary(findings):
         "mapped_findings": mapped_findings,
         "unmapped_findings": unmapped_findings,
         "findings": findings,
+        "excepted_findings": list(excepted),
     }
+    for finding in excepted:
+        summary["by_tool"][finding["tool"]].setdefault("excepted_findings", 0)
+        summary["by_tool"][finding["tool"]]["excepted_findings"] += 1
 
     if totals["HIGH"] > 0:
         summary["decision"] = "fail"
@@ -437,13 +520,18 @@ def main():
         opa_package_index,
     ) = build_control_indexes(control_mapping_data)
 
+    validate_checkov(checkov_data)
+    validate_tfsec(tfsec_data)
+    validate_opa(opa_data, opa_package_index)
+
     findings = (
         normalize_checkov(checkov_data, controls, checkov_index)
         + normalize_opa(opa_data, controls, opa_control_index, opa_package_index)
         + normalize_tfsec(tfsec_data, controls, tfsec_index)
     )
 
-    summary = build_summary(findings)
+    findings, excepted = split_excepted(findings, load_exceptions(date.today()))
+    summary = build_summary(findings, excepted)
     SUMMARY_FILE.parent.mkdir(parents=True, exist_ok=True)
     SUMMARY_FILE.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 

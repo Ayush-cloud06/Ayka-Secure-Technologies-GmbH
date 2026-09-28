@@ -56,6 +56,15 @@ def generate_markdown_report(summary_path, output_path):
             report.append(f"| {finding.get('tool')} | {finding.get('source')} | {finding.get('severity')} | {finding.get('message')} | {finding.get('resource')} |")
         report.append("")
 
+    if summary.get('excepted_findings'):
+        report.append("## Excepted Findings (accepted with a reason, not counted)")
+        report.append("| Tool | Source | Resource | Reason | Owner | Expires |")
+        report.append("|------|--------|----------|--------|-------|---------|")
+        for finding in summary['excepted_findings']:
+            exc = finding.get('exception', {})
+            report.append(f"| {finding.get('tool')} | {finding.get('source')} | {finding.get('resource')} | {exc.get('reason')} | {exc.get('owner')} | {exc.get('expires')} |")
+        report.append("")
+
     with open(output_path, 'w') as f:
         f.write("\n".join(report))
     print(f"Report generated at {output_path}")

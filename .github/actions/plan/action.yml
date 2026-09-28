@@ -1,17 +1,10 @@
 name: 'Terraform Plan'
-description: 'Authenticated Terraform plan and JSON export'
+description: 'Plan-only Terraform run with mock credentials and JSON export'
 
 inputs:
   workload_dir:
     description: 'Directory containing the Terraform workload'
     required: true
-  aws_role_arn:
-    description: 'AWS Role ARN to assume via OIDC'
-    required: true
-  aws_region:
-    description: 'AWS region'
-    required: false
-    default: 'ap-south-1'
   terraform_version:
     description: 'Version of Terraform to use'
     required: false
@@ -20,14 +13,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ inputs.aws_role_arn }}
-        aws-region: ${{ inputs.aws_region }}
-
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
+      uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
       with:
         terraform_version: ${{ inputs.terraform_version }}
 
@@ -39,6 +26,12 @@ runs:
     - name: Terraform Plan
       shell: bash
       working-directory: ${{ inputs.workload_dir }}
+      env:
+        # ADR-0013: plan-only work never logs in to AWS. The provider's skip_* flags
+        # stop it from calling AWS; these values only satisfy its credential check.
+        AWS_ACCESS_KEY_ID: mock
+        AWS_SECRET_ACCESS_KEY: mock
+        AWS_EC2_METADATA_DISABLED: "true"
       run: terraform plan -input=false -refresh=false -out=tfplan.binary
 
     - name: Export Terraform Plan JSON

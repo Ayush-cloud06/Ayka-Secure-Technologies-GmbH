@@ -20,6 +20,24 @@ runs:
       shell: bash
       run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
 
+    - name: Checksum Artifacts
+      if: always()
+      shell: bash
+      run: |
+        mkdir -p evidence
+        # Hash every file the apply job will rely on. A fail run is evidence too.
+        files=""
+        for f in output/tfplan.json output/tfplan.binary output/compliance-summary.json; do
+          [ -f "$f" ] && files="$files $f"
+        done
+        if [ -z "$files" ]; then
+          echo "::warning::Nothing to checksum"
+          exit 0
+        fi
+        # shellcheck disable=SC2086
+        sha256sum $files > evidence/artifacts.sha256
+        cat evidence/artifacts.sha256
+
     - name: Upload Evidence Artifact
       if: always()
       uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
@@ -28,5 +46,6 @@ runs:
         path: |
           evidence/
           output/compliance-report.md
+          output/compliance-summary.json
           output/tfplan.json
           output/tfplan.binary

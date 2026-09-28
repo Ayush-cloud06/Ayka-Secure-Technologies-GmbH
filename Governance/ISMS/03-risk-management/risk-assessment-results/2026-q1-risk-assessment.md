@@ -16,8 +16,8 @@ The current source of truth for scores is [risk-register.md](../risk-register.md
 ## 2. Evidence used
 
 - repository source and history preserved for the later audit;
-- the dated findings consolidated in [AUDIT/FINDINGS.md](../../../../AUDIT/FINDINGS.md);
-- the evidence boundaries in [AUDIT/CURRENT_STATE.md](../../../../AUDIT/CURRENT_STATE.md); and
+- the dated CI runs of the compliance gate ([workflow history](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/workflows/test.yml));
+- the evidence boundaries in the capability table of the [repository README](../../../../README.md); and
 - the current scoring model in [risk-criteria.md](../risk-criteria.md).
 
 No Q1 risk workshop notes, named attendees, approval record, live AWS/Entra inventory, state review, or management decision was found.

@@ -1,46 +1,44 @@
-# 🚀 Ayka Customer Portal (Workload)
+# Workloads
 
-## 📖 Overview
-The **Ayka Customer Portal** is a Tier-1 customer-facing web application workload. It is designed to securely process and store customer inquiries and user profile data. 
+Two Terraform workloads exercise the compliance gate. Both are **Simulated**: the AWS provider runs with mock credentials, plans are refresh-free, and nothing is deployed.
 
-In alignment with Ayka Secure Technologies GmbH's internal IT policies, this workload is fully decoupled from foundational infrastructure. It does not provision its own networking or core identity components; instead, it securely inherits these resources from the central Platform Control Plane via data sources.
+| Workload | Role | Expected gate decision |
+|---|---|---|
+| [`ayka-portal/`](ayka-portal/) | Realistic customer-portal workload | **pass** (LOW findings only; accepted exceptions are listed in the report) |
+| [`control-validation-scenarios/`](control-validation-scenarios/) | Deliberately insecure resources | **fail**, with the controls listed in [`expected-controls.txt`](control-validation-scenarios/expected-controls.txt) |
 
-## 🏗️ Architecture Specs
-This workload implements a highly available, 3-tier architecture (SAA-Standard):
-* **Routing & Ingress:** Application Load Balancer (ALB) across multiple public subnets, protected by AWS WAF.
-* **Compute:** Containerized application running on Amazon ECS (Fargate) across private subnets.
-* **Storage (Primary):** Amazon RDS for PostgreSQL deployed in Multi-AZ configuration within isolated database subnets.
-* **Analytics (Event-Driven):** Application event logs are streamed via Amazon Kinesis Data Firehose into an S3 Data Lake for querying via Amazon Athena.
+## ayka-portal
 
-## 🛡️ GRC & Compliance Boundaries
-This workload processes **Confidential** data (including Customer PII). It is strictly mapped to our ISMS and GDPR frameworks.
+`ayka-portal/main.tf` wires five modules plus a workload KMS key (`kms.tf`). The plan creates about 87 resources:
 
-| Domain | Implementation | ISO 27001 / GDPR Mapping |
-| :--- | :--- | :--- |
-| **Access Control** | ECS Execution Roles assumed via central IAM Platform. Least privilege enforced. | A.9.1.2, GDPR Art. 32(1)(b) |
-| **Data at Rest** | RDS and S3 buckets encrypted using Platform-managed AWS KMS CMKs. | A.10.1.1, GDPR Art. 32(1)(a) |
-| **Data in Transit** | TLS 1.2+ enforced on ALB. Internal ALB-to-ECS traffic encrypted. | A.10.1.1, A.13.2.1 |
-| **Traceability** | All infrastructure changes require PR approvals. CloudWatch logs centralized. | A.12.4.1, A.14.2.7 |
-| **Segregation** | Workload state is isolated from Platform state. Network boundaries enforced via SGs. | A.13.1.3 |
+| Module | What it defines |
+|---|---|
+| `modules/networking/` | Its own VPC, public/private/database subnets, internet and NAT gateway, route tables, VPC flow logs to CloudWatch |
+| `modules/security/` | Security groups for the ALB, ECS tasks, the EC2 instance and the database, with explicit ingress/egress rules |
+| `modules/compute/` | Internet-facing ALB (HTTPS, TLS 1.2+ policy) with WAF, ECS Fargate cluster/service/task, autoscaling, an EC2 instance |
+| `modules/database/` | RDS PostgreSQL (Multi-AZ), parameter and subnet groups, credentials in Secrets Manager |
+| `modules/storage/` | Application bucket and access-log bucket: encryption, versioning, lifecycle, public-access block, notifications |
 
-## 🧩 Module Layout
-To maintain DRY principles and blast-radius isolation, this workload is split into functional modules:
-* `/modules/compute/` - ALB, Target Groups, ECS Cluster, Task Definitions, and Auto-scaling.
-* `/modules/database/` - RDS Instances, Subnet Groups, and Secrets Manager integration.
-* `/modules/analytics/` - Kinesis Delivery Streams, S3 Data Lake, and Athena Workgroups.
+## Compliance mapping
 
-## 🔌 Platform Dependencies (Inheritance)
-This workload expects the following resources to be pre-provisioned by the Platform team. These are fetched dynamically via `data.tf`:
-1. `ayka-prod-vpc` and associated Private/Public/DB subnets.
-2. `WorkloadOperatorRole` (Execution IAM Role).
-3. `ayka-central-kms-key` (For encryption at rest).
-4. Centralized CloudWatch Log Destinations.
+The gate maps scanner findings to the controls in [`control-mapping.yaml`](../engineering/policy-as-code/metadata/control-mapping.yaml), which carry ISO/IEC 27001:2022 references. Examples relevant to this workload:
 
-## 🎮 Deployment Guide
-This infrastructure is managed via our Compliance-Gated CI/CD Pipeline. 
+| Domain | Control IDs (ISO/IEC 27001:2022) |
+|---|---|
+| Data at rest | `S3_ENCRYPTION_MISSING`, `S3_KMS_ENCRYPTION_REQUIRED`, `EC2_ROOT_VOLUME_UNENCRYPTED` (A.8.24) |
+| Data in transit | `ALB_TLS_ENFORCEMENT` (A.8.20, A.8.21, A.8.24), `RDS_ENCRYPTION_IN_TRANSIT` (A.8.24) |
+| Network exposure | `EC2_OPEN_SSH`, `EC2_PUBLIC_EGRESS`, `ALB_WAF_PROTECTION_REQUIRED` (A.8.20, A.8.21) |
+| Logging | `VPC_FLOW_LOGS_MISSING`, `S3_LOGGING_DISABLED`, `WAF_LOGGING_DISABLED` (A.8.15, A.8.16) |
+| Access control | `IAM_WILDCARD_POLICY`, `IAM_INLINE_POLICY_USAGE` (A.8.2, A.8.3) |
 
-**Local Validation (Dry-Run):**
+Changes to `main` go through a pull request with required CI checks once the branch ruleset is active; approvals aren't required while there is one maintainer.
+
+## Run it locally (plan-only)
+
 ```bash
-terraform init
-terraform validate
-terraform plan -var-file="envs/dev.tfvars"
+cd ayka-portal
+terraform init -input=false
+AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock terraform plan -input=false -refresh=false
+```
+
+For the full gate (plan, three scanners, decision) use `Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh`.

@@ -3,8 +3,7 @@
 **Organization:** Ayka Secure Technologies GmbH  
 **Location:** Stuttgart, Germany  
 **Version:** 1.0  
-**Approved by:** Managing Director  
-**Effective Date:** 01-03-2026  
+**Status:** Draft, simulated case study. Not approved: no approval record exists.  
 **Policy Owner:** Chief Information Security Officer (CISO)  
 
 ---
@@ -44,7 +43,7 @@ Ayka Secure Technologies GmbH establishes measurable information security object
 These objectives include:
 
 - Maintaining ISO/IEC 27001 alignment  
-- Ensuring 100% MFA enforcement for privileged access  
+- Target: MFA for all privileged access (not measured in this repository)  
 - Ensuring timely remediation of identified vulnerabilities  
 - Maintaining secure logging and monitoring of cloud environments  
 - Ensuring regular access reviews and least-privilege enforcement  
@@ -118,10 +117,5 @@ This policy is reviewed:
 
 Approved revisions are communicated to all personnel.
 
----
-
-**Approved By:**  
-Managing Director  
-Ayka Secure Technologies GmbH  
 
 **End of Document**
