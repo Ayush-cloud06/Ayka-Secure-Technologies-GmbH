@@ -824,7 +824,7 @@ Then run the Step 14 loop and the Step 15 Terraform loop once more on `main`. Bo
 
 ## 8. Commit message(s)
 
-One commit per batch, in this order (all used in the planning dry run):
+One commit per batch, in this order (the first 13 are exactly the commits of the planning dry run):
 
 ```text
 chore(repo): remove empty assurance placeholders

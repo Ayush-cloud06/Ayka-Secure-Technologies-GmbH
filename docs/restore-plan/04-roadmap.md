@@ -107,9 +107,9 @@ stateDiagram-v2
 | Milestone | Target date | Proof it's done |
 |---|---|---|
 | **M0** Baseline recorded | 2026-10-06 | tag `baseline-2026-10` on `53b0532` visible on GitHub; run #68 artifacts saved locally; your local chain prints `pass` 0/0/14 for ayka-portal |
-| **M1** No plaintext secrets in HEAD | 2026-10-13 | `git grep -nE 'password\s*=\s*"' -- '*.tf'` is empty on `main`; ADR-0007 **Accepted** with your rotation/history decision; `risk-register.md:21` corrected |
+| **M1** No plaintext secrets in HEAD | 2026-10-13 | `git grep -nE 'password[[:space:]]*=[[:space:]]*"' -- '*.tf'` is empty on `main`; ADR-0007 **Accepted** with your rotation/history decision; `risk-register.md:21` corrected |
 | **M2** Codex decision recorded | 2026-10-15 | ADR-0003 **Accepted** with "recovered and archived at …" or "declared lost on …" |
-| **M3** Zero empty files | 2026-10-27 | the Phase 3 empty-file check prints nothing; `git ls-files \| wc -l` ≈ 201; 8/8 roots validate |
+| **M3** Zero empty files | 2026-10-27 | the Phase 3 empty-file check prints only `vpc/permissive-network-acl/main.tf` (implemented in Phase 4); `git ls-files \| wc -l` ≈ 203 outside `docs/` (201 after Phase 4 removes `OPA/aws`); 8/8 roots validate (dry-run result on 2026-09-28) |
 | **M4** Honest green | 2026-11-10 | **URL of a green run on `main`** whose summary lists `checkov`, `opa` **and** `tfsec` in `by_tool`, with pytest and `opa test` steps; the regression job is strict; screenshot of the branch ruleset |
 | **M5** Flagship-ready | 2026-11-21 | new README merged; Definition of Done D1–D10 ([02-target-state.md §6](02-target-state.md#6-definition-of-done-flagship-ready)) ticked; demo rehearsed in under 3 minutes |
 | M6a Remote state | Dec 2026 | ayka-portal `terraform init` uses a remote backend; drift workflow run shows "No changes" against real state |

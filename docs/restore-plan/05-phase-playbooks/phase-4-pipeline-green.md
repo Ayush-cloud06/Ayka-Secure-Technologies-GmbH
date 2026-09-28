@@ -877,14 +877,17 @@ git add -A && git commit && git push
 (The second change prints `decision_basis`, which will carry the excepted-finding count from Step 13, into the job log.)
 
 ```bash
-bash -eo pipefail -c "echo \"schema_version=\$(jq -r '.schema_version // \"unknown\"' output/compliance-summary.json)\""
-bash -eo pipefail -c 'echo "schema_version=$(jq -r ".schema_version // \"unknown\"" output/compliance-summary.json)"'
+cat > /tmp/jq-bug.sh <<'EOF'
+echo "old: schema_version=$(jq -r '.schema_version // \"unknown\"' output/compliance-summary.json)"
+echo "new: schema_version=$(jq -r '.schema_version // "unknown"' output/compliance-summary.json)"
+EOF
+bash -eo pipefail /tmp/jq-bug.sh
 git add -A && git commit && git push
 ```
 
 - **Files touched:** `.github/actions/decision/action.yml`.
-- **Expected output:** the first line reproduces the bug (`jq: error: syntax error, unexpected INVALID_CHARACTER`, then `schema_version=`); the second prints `schema_version=2.0`. In CI, the "Publish Compliance Summary" log no longer contains `jq: error`.
-- **If this fails:** the shell quoting in the test commands is fiddly; what matters is the YAML line. Check it with `grep -n 'unknown' .github/actions/decision/action.yml`: there must be no backslash on line 38.
+- **Expected output:** the `old:` line reproduces the bug: `jq: error: syntax error, unexpected INVALID_CHARACTER (Unix shell quoting issues?)`, then `old: schema_version=` (empty), and the script still exits 0. The `new:` line prints `new: schema_version=2.0` (measured with jq 1.7). In CI, the "Publish Compliance Summary" log no longer contains `jq: error`.
+- **If this fails:** the heredoc must use `<<'EOF'` with quotes, otherwise your shell eats the backslashes before the test runs. What matters in the end is the YAML line: `grep -n 'unknown' .github/actions/decision/action.yml` must show no backslash on line 38.
 
 ---
 
@@ -1033,7 +1036,7 @@ git add -A && git commit && git push
 actionlint .github/workflows/*.yml
 git grep -n 'id-token\|configure-aws-credentials\|role-to-assume\|aws_role_arn' -- .github
 git add -A && git commit && git push
-gh pr ready --undo 2>/dev/null; gh pr view --json url -q .url
+gh pr view --json url,isDraft -q '"\(.url) draft=\(.isDraft)"'
 ```
 
 - **Files touched:** `.github/actions/plan/action.yml`, `.github/workflows/terraform-workflow.yml`, `.github/workflows/test.yml`.
@@ -1256,7 +1259,7 @@ git add -A && git commit && git push
 ```
 
 - **Files touched:** `…/vpc/permissive-network-acl/main.tf`, `…/OPA/tests/aws_vpc_test.rego` (new), `…/OPA/terraform/aws_vpc.rego`, `…/expected-controls.txt`, `Internal-IT/workloads/control-validation-scenarios/README.md`.
-- **Expected output:** before the fix, `FAIL: 1/4`; after, `PASS: 4/4`. Plan `8 to add`. Scenarios `{"decision":"fail","totals":{"HIGH":18,"MEDIUM":35,"LOW":10},…}` with OPA 7 findings; the `jq` count is `1`; `Negative test verified …`.
+- **Expected output:** before the fix, `test_open_nacl_is_denied: FAIL`, then `PASS: 3/4` and `FAIL: 1/4` (measured against the original rule); after the fix, `PASS: 4/4`. Plan `8 to add`. Scenarios `{"decision":"fail","totals":{"HIGH":18,"MEDIUM":35,"LOW":10},…}` with OPA 7 findings; the `jq` count is `1`; `Negative test verified …`.
   Also note what the other tools did (measured): Checkov reported `CKV_AWS_229/230/231/232` (NACL open to ports 21/20/3389/22) and `CKV2_AWS_1`/`CKV2_AWS_12` (all unmapped, so MEDIUM now), plus `CKV2_AWS_11` (flow logs, mapped). tfsec added only `AVD-AWS-0178` (VPC flow logs); it didn't flag the inline NACL rule.
 - **If this fails:** `terraform fmt -check` fails on the new file → run `terraform fmt Internal-IT/workloads/control-validation-scenarios/vpc/permissive-network-acl`. `Plan: 6 to add` → the file wasn't saved, or `enabled_scenarios` was overridden.
 
@@ -1404,7 +1407,7 @@ git add -A && git commit && git push
 +    summary = build_summary(findings, excepted)
 ```
 
-Known limit, and worth saying out loud: tfsec reports the *module* as the resource (`module.compute`), not the resource address, so an exception for `AVD-AWS-0053` on `module.compute` would also cover a second public ALB added to that module later. The expiry date and the review of `exceptions.yaml` (CODEOWNERS, Step 15) are the safety net. OPA exceptions aren't supported yet (OPA findings have no resource, F-note in [../research/pipeline.md](../research/pipeline.md) §3).
+Known limit, and worth saying out loud: tfsec reports the *module* as the resource (`module.compute`), not the resource address, so an exception for `AVD-AWS-0053` on `module.compute` would also cover a second public ALB added to that module later. The expiry date and the review of `exceptions.yaml` (CODEOWNERS, Step 15) are the safety net. OPA exceptions aren't supported yet: OPA findings carry no resource, because no rule emits metadata ([../research/pipeline.md](../research/pipeline.md) §3, OPA row).
 
 Add an "Excepted findings" table to the human report, after the unmapped section in `Internal-IT/engineering/ci-cd/scripts/generate-report.py` (before `with open(output_path, 'w')`, line 59):
 
@@ -1622,7 +1625,6 @@ gh api repos/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/rules/branches/main \
   --jq '[.[].type]'
 gh api repos/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/environments \
   --jq '.environments[] | {name, rules: [.protection_rules[]?.type]}'
-git push origin HEAD:main --dry-run 2>&1 | tail -2    # a direct push should now be refused (dry-run may not show it; a real push will)
 ```
 
 - **Files touched:** `.github/CODEOWNERS` (new); GitHub settings (not files).
@@ -1735,10 +1737,10 @@ RUN=$(gh run list --workflow test.yml --branch main --limit 1 --json databaseId,
 gh run view "${RUN%% *}" --log | grep -E 'PASS: [1-9]|passed|Negative test verified|SIMULATED APPLY|tfsec-linux-amd64: OK' | head
 jq '.metadata_coverage.by_tool | keys' docs/evidence/2026-11-m4/portal/output/compliance-summary.json
 gh api repos/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/rules/branches/main --jq '[.[].type]'
-git grep -n 'id-token\|--ignore-missing\|tfsec-result"' -- .github Internal-IT/engineering/ci-cd; echo "leftovers: $?"
+git grep -n 'id-token\|--ignore-missing\|{"results":\[\]}' -- .github Internal-IT/engineering/ci-cd; echo "leftovers: $?"
 ```
 
-Expected: `<id> success`; log lines for `21 passed, 1 skipped`, `PASS: 4/4`, `Negative test verified`, `SIMULATED APPLY` and the tfsec checksum; `["checkov","opa","tfsec"]`; a rules list including `required_status_checks`; `leftovers: 1`.
+Expected: `<id> success`; log lines for `21 passed, 1 skipped`, `PASS: 4/4`, `Negative test verified`, `SIMULATED APPLY` and the tfsec checksum; `["checkov","opa","tfsec"]`; a rules list including `required_status_checks`; `leftovers: 1` (on `53b0532` the same `git grep` finds five lines: three `id-token: write`, the `--ignore-missing` at `run-apply.sh:14` and the fallback at `run-tfsec.sh:18`).
 
 Write the run URL into the tracker in [../README.md](../README.md) as the M4 proof.
 

@@ -161,8 +161,8 @@ Each line is checkable by someone who doesn't trust you.
 
 | # | Criterion | How to verify |
 |---|---|---|
-| D1 | No plaintext credentials in `HEAD`; a written decision on rotation or history | `git grep -nE 'password\s*=\s*"' -- '*.tf'` returns nothing; ADR-0007 status Accepted |
-| D2 | Zero empty or title-only tracked files | `git ls-files -z \| xargs -0 -I{} sh -c 'test -s "{}" \|\| echo {}'` prints nothing; the title-only check in Phase 3 prints nothing |
+| D1 | No plaintext credentials in `HEAD`; a written decision on rotation or history | `git grep -nE 'password[[:space:]]*=[[:space:]]*"' -- '*.tf'` returns nothing; ADR-0007 status Accepted |
+| D2 | Zero empty or title-only tracked files | `git ls-files -z \| xargs -0 -I{} sh -c 'test -s "{}" \|\| echo {}'` prints nothing (until Phase 4, the only expected hit is `control-validation-scenarios/vpc/permissive-network-acl/main.tf`); the title-only check in Phase 3 prints nothing |
 | D3 | CI green on `main` with **all three scanners** in `by_tool` | run summary shows `checkov`, `opa`, `tfsec` in `metadata_coverage.by_tool` |
 | D4 | Tests run in CI and pass | the run shows pytest (≥ 5 + new cases) and `opa test` steps |
 | D5 | Regression job fails the build if the scenarios stop failing | a deliberate test commit on a branch (e.g. comment out one scenario) turns CI red; then revert |

@@ -57,7 +57,8 @@ git diff --shortstat main f68766c        # you remembered: 293 files, +9.5k / -3
 # 3. Back it up WITHOUT touching main (pick one)
 git push origin f68766c:refs/heads/archive/codex-ai-cleanup-20260823
 #   or keep it private:
-git bundle create ~/codex-ai-cleanup.bundle f68766c ^main
+git branch archive/codex-ai-cleanup-20260823 f68766c      # a bundle needs a named ref
+git bundle create ~/codex-ai-cleanup.bundle archive/codex-ai-cleanup-20260823 ^main
 ```
 
 If step 1 prints nothing, the branch is gone. That's fine: section 4 shows that every fix it was supposed to contain is small enough to redo by hand.
@@ -83,7 +84,7 @@ For each changed file, fill one row of this table (template):
 
 Rules:
 
-1. **Never** `git merge` or `git cherry-pick` a whole AI commit. Take **one file or one hunk at a time** (`git apply -p1 --include=<path>` or `git checkout origin/$BR -- <path>`), then read every line before committing.
+1. **Never** `git merge` or `git cherry-pick` a whole AI commit. Take **one file or one hunk at a time** (`git apply -p1 --include=<path>`, or `git checkout origin/$BR -- <path>` **only on a throwaway review branch that you never merge**, as in [ADR-0003](../adr/0003-codex-branch-parts-bin.md)). Read every line, then re-type the change on your working branch.
 2. If you can't explain a line out loud, don't take it. Re-implement it your way instead.
 3. Take a file only if its row maps to a known issue in section 4. "Nice refactors" are skip by default.
 4. One commit per fix, written by you, e.g. `fix(ci): write tfsec json to the path the evaluator reads`.
