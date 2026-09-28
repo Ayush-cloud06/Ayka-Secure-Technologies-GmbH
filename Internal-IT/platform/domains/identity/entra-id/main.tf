@@ -25,7 +25,3 @@ module "conditional_access" {
 
   count = var.enable_conditional_access ? 1 : 0
 }
-
-module "output" {
-  source = "./modules/output"
-}
