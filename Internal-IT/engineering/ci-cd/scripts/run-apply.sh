@@ -11,8 +11,8 @@ fi
 echo "Verifying plan integrity..."
 cd downloaded-evidence
 
-if ! sha256sum -c evidence/artifacts.sha256 --ignore-missing; then
-  echo "Error: Checksum verification failed. Tampering detected."
+if ! sha256sum -c evidence/artifacts.sha256; then
+  echo "Error: integrity check failed; these files differ from the ones that were scanned."
   exit 1
 fi
 echo "Integrity verified successfully."
