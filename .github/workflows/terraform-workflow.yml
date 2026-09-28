@@ -95,17 +95,6 @@ jobs:
         id: decision
         uses: ./.github/actions/decision
 
-      - name: Checksum Artifacts
-        shell: bash
-        run: |
-          mkdir -p evidence
-          if [ -f output/tfplan.json ] && [ -f output/compliance-summary.json ]; then
-            sha256sum output/tfplan.json output/compliance-summary.json > evidence/artifacts.sha256
-            echo "Artifacts checksummed successfully for integrity."
-          else
-            echo "Warning: output artifacts not found for checksumming."
-          fi
-
       - name: Compliance Evidence
         uses: ./.github/actions/evidence
         if: always()
