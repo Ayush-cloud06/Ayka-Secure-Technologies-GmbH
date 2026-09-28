@@ -2,6 +2,8 @@ name: PR Compliance Pipeline
 
 on:
   push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
     inputs:
       workload_dir:
@@ -10,14 +12,10 @@ on:
         default: Internal-IT/workloads/ayka-portal
 
 env:
-  WORKLOAD_DIR: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
   REGRESSION_DIR: Internal-IT/workloads/control-validation-scenarios
-  AWS_REGION: ap-south-1
-  AWS_ROLE_ARN: arn:aws:iam::982081090103:role/github-actions-oidc-role
   TERRAFORM_VERSION: 1.7.5
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -64,8 +62,6 @@ jobs:
     uses: ./.github/workflows/terraform-workflow.yml
     with:
       workload_dir: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
-      aws_region: ap-south-1
-      aws_role_arn: arn:aws:iam::982081090103:role/github-actions-oidc-role
       terraform_version: 1.7.5
 
   regression:
@@ -88,8 +84,6 @@ jobs:
         uses: ./.github/actions/plan
         with:
           workload_dir: ${{ env.REGRESSION_DIR }}
-          aws_role_arn: ${{ env.AWS_ROLE_ARN }}
-          aws_region: ${{ env.AWS_REGION }}
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: Security Check (Regression)
