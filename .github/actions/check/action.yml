@@ -17,10 +17,11 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        pip install checkov
+        pip install checkov==3.3.20 pyyaml==6.0.1
 
-        # Install tfsec
-        wget https://github.com/aquasecurity/tfsec/releases/download/v1.28.14/tfsec-linux-amd64
+        # Install tfsec and refuse to run it if the download is not the published binary
+        wget -q https://github.com/aquasecurity/tfsec/releases/download/v1.28.14/tfsec-linux-amd64
+        echo "a32d0799bbefababaa4fcd814da9f4d251cd932789590b99d1d5fcb89ace6f68  tfsec-linux-amd64" | sha256sum -c -
         chmod +x tfsec-linux-amd64
         sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
 

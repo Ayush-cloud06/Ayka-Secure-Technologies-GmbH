@@ -120,3 +120,5 @@ jobs:
         uses: ./.github/actions/apply
         with:
           workload_dir: ${{ inputs.workload_dir }}
+          terraform_version: ${{ inputs.terraform_version }}
+          artifact_name: ${{ inputs.artifact_name }}

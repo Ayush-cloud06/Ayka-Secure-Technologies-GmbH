@@ -14,14 +14,14 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
+      uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
       with:
         terraform_version: ${{ inputs.terraform_version }}
 
     - name: Setup TFLint
-      uses: terraform-linters/setup-tflint@v4
+      uses: terraform-linters/setup-tflint@90f302c255ef959cbfb4bd10581afecdb7ece3e6 # v4.1.1
       with:
-        tflint_version: latest
+        tflint_version: v0.53.0
 
     - name: Terraform fmt check
       shell: bash
