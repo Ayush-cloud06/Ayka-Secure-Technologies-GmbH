@@ -1,0 +1,29 @@
+# Accepted findings (ADR-0014). One entry per finding you decided not to fix.
+# The evaluator reports matches under "excepted_findings"; they never count toward the decision.
+# An entry past its expiry date stops matching, and the finding counts again.
+# Never lower a control's severity to get green: record the decision here instead.
+exceptions:
+  - policy_id: AVD-AWS-0053
+    resource: module.compute
+    reason: >-
+      The portal ALB is internet-facing by design (modules/compute/alb.tf:33). It sits behind
+      WAF (aws_wafv2_web_acl_association.alb; CKV2_AWS_28 passes) and a TLS 1.2+ listener
+      policy (alb.tf:71).
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: AVD-AWS-0057
+    resource: module.networking
+    reason: >-
+      The only wildcard is the log-stream suffix ":*" on one named log group
+      (modules/networking/main.tf:169-172), which the VPC flow-log service needs.
+      tfsec cannot resolve the ARN at scan time and reports a placeholder.
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: AVD-AWS-0089
+    resource: module.storage
+    reason: >-
+      access_logs is the target bucket for server access logs (modules/storage/main.tf:22).
+      Logging it into itself creates a log loop; the real fix is a separate log-archive
+      bucket, which is out of scope for this workload.
+    owner: Ayush-cloud06
+    expires: 2027-03-31

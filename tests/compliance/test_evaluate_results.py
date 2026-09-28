@@ -56,7 +56,7 @@ TFSEC_CLEAN = {"results": []}
 class EvaluateResultsRegressionTests(unittest.TestCase):
     maxDiff = None
 
-    def run_case(self, *, checkov, tfsec, opa):
+    def run_case(self, *, checkov, tfsec, opa, exceptions=None):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
             output_dir = temp_path / "output"
@@ -75,6 +75,11 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
             control_mapping_file = temp_path / "control-mapping.yaml"
             control_mapping_file.write_text(CONTROL_MAPPING, encoding="utf-8")
 
+            # Always point at a temp file so the repository's real exceptions never leak into tests.
+            exceptions_file = temp_path / "exceptions.yaml"
+            if exceptions is not None:
+                exceptions_file.write_text(exceptions, encoding="utf-8")
+
             summary_file = output_dir / "compliance-summary.json"
             env = os.environ.copy()
             env.update(
@@ -82,6 +87,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
                     "COMPLIANCE_OUTPUT_DIR": str(output_dir),
                     "COMPLIANCE_CONTROL_MAPPING_FILE": str(control_mapping_file),
                     "COMPLIANCE_SUMMARY_FILE": str(summary_file),
+                    "COMPLIANCE_EXCEPTIONS_FILE": str(exceptions_file),
                 }
             )
 
@@ -298,6 +304,49 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(sorted(summary["by_tool"]), ["checkov", "opa", "tfsec"])
         self.assertEqual(sorted(summary["metadata_coverage"]["by_tool"]), ["checkov", "opa", "tfsec"])
+
+    OPEN_SSH_TFSEC = {"results": [{"rule_id": "AVD-AWS-0107", "resource": "module.sg", "severity": "HIGH"}]}
+
+    def exception_yaml(self, expires, owner="Ayush-cloud06"):
+        return textwrap.dedent(
+            f"""\
+            exceptions:
+              - policy_id: AVD-AWS-0107
+                resource: module.sg
+                reason: test
+                owner: "{owner}"
+                expires: {expires}
+            """
+        )
+
+    def test_active_exception_excludes_finding_from_decision(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=self.OPEN_SSH_TFSEC, opa=OPA_CLEAN,
+            exceptions=self.exception_yaml("2999-12-31"),
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(summary["decision"], "pass")
+        self.assertEqual(summary["decision_basis"]["excepted_findings"], 1)
+        self.assertEqual(summary["excepted_findings"][0]["exception"]["owner"], "Ayush-cloud06")
+
+    def test_expired_exception_counts_again(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=self.OPEN_SSH_TFSEC, opa=OPA_CLEAN,
+            exceptions=self.exception_yaml("2020-01-01"),
+        )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(summary["decision"], "fail")
+        self.assertIn("Exception expired", result.stderr)
+
+    def test_exception_without_owner_is_rejected(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=self.OPEN_SSH_TFSEC, opa=OPA_CLEAN,
+            exceptions=self.exception_yaml("2999-12-31", owner=""),
+        )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIsNone(summary)
+        self.assertIn("missing ['owner']", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
