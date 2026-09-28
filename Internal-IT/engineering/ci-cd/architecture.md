@@ -1,14 +1,14 @@
-# CI/CD Architecture
+# CI/CD architecture
 
-This CI/CD design treats infrastructure delivery as a controlled pipeline, not a direct deployment path. Every change moves through validation, security, compliance, planning, approval, and promotion before it is allowed to affect higher environments.
+The pipeline is defined in `.github/` and nowhere else.
 
-The architecture is organized into five layers:
+| What | Where |
+|---|---|
+| Entry workflow, runs on every push | [`.github/workflows/test.yml`](../../../.github/workflows/test.yml) |
+| Reusable gate: validate, plan, scan, decide, evidence, approval, apply | [`.github/workflows/terraform-workflow.yml`](../../../.github/workflows/terraform-workflow.yml) |
+| Drift check | [`.github/workflows/drift-detection.yml`](../../../.github/workflows/drift-detection.yml) |
+| Steps the workflows call | [`.github/actions/`](../../../.github/actions/) (validate, plan, check, policy, decision, evidence, apply) |
+| Scripts the steps run | [`scripts/`](scripts/) |
+| Policies and the control mapping | [`../policy-as-code/`](../policy-as-code/) |
 
-- `pipelines/core`: baseline Terraform execution such as validate, plan, apply, and destroy.
-- `pipelines/code-security`: early checks for secrets exposure and IAM risk before deployment logic runs.
-- `pipelines/compliance`: policy enforcement with tools such as OPA, Checkov, and tfsec.
-- `pipelines/release`: stage-to-prod promotion, rollback, and emergency bypass under explicit governance.
-- `pipelines/drift`: scheduled detection of infrastructure drift outside approved delivery workflows.
-
-The expected execution flow is simple: code is validated first, security and compliance gates run next, a plan is generated, approvals are applied for sensitive environments, and only then can promotion or apply proceed. This keeps deployment speed high in lower environments while preserving strong control for production.
-
+Not built: release promotion, rollback, emergency bypass, secrets scanning and IAM diff checks. Earlier versions of this file described them as if they existed.

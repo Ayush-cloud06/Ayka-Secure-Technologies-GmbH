@@ -10,7 +10,7 @@ This document defines the active  enforcement behavior for the CI/CD compliance 
 
 ## Severity Ownership
 
-- When a finding is mapped in [control-mapping.yaml](/home/ayush/Compliance-Oriented-Cloud-Security-Platform/Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml), the severity comes from metadata.
+- When a finding is mapped in [control-mapping.yaml](../../policy-as-code/metadata/control-mapping.yaml), the severity comes from metadata.
 - When a finding is not mapped:
   - Checkov and tfsec fall back to scanner-provided severity.
   - OPA falls back to `MEDIUM`.
