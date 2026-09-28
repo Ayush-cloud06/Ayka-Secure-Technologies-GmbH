@@ -32,8 +32,35 @@ jobs:
             bash -n "$file"
           done
 
-  compliance:
+  unit-tests:
     needs: validate-scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Evaluator and wrapper tests (pytest)
+        run: |
+          pip install -r tests/requirements.txt
+          python3 -m pytest -q tests/
+
+      - name: Policy tests (opa test)
+        run: |
+          # OPA 0.56.0 is the engine inside conftest v0.45.0, so tests and CI agree
+          wget -q https://github.com/open-policy-agent/opa/releases/download/v0.56.0/opa_linux_amd64_static
+          echo "623771025227588898af1788998d5b5f29068a887682cd8b8e9699136d4cf121  opa_linux_amd64_static" | sha256sum -c -
+          chmod +x opa_linux_amd64_static
+          ./opa_linux_amd64_static test -v Internal-IT/engineering/policy-as-code/OPA | tee opa-test.log
+          # opa test exits 0 when it finds no tests at all, so insist on at least one PASS line
+          grep -q '^PASS: [1-9]' opa-test.log
+
+  compliance:
+    needs: unit-tests
     uses: ./.github/workflows/terraform-workflow.yml
     with:
       workload_dir: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
@@ -43,6 +70,7 @@ jobs:
 
   regression:
     name: Control Validation Regression
+    needs: unit-tests
     runs-on: ubuntu-latest
     # Only run regression if we're not already running it as the primary workload
     if: ${{ github.event.inputs.workload_dir != 'Internal-IT/workloads/control-validation-scenarios' }}
