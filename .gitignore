@@ -119,3 +119,8 @@ desktop.ini
 
 !.github/
 !.github/workflows/
+
+##################################
+# Local planning reference (not part of the project)
+##################################
+docs/restore-plan/
