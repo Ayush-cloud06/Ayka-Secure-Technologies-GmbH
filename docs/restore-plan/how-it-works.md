@@ -192,7 +192,9 @@ Where it currently **fails open** (confirmed; fixed in Phase 4):
 | **tfsec results are always dropped** | `tfsec --format json --out output/tfsec-result` writes a file literally named `tfsec-result`. The script then finds no `tfsec-result.json` and writes `{"results":[]}` | `run-tfsec.sh:13-19`; run #68 log lists `tfsec-result` (4137 bytes) *and* `tfsec-result.json` (15 bytes); `by_tool` shows only checkov + opa |
 | The "missing file" safety net is defeated for tfsec | the fallback creates the file the evaluator was going to check for | `run-tfsec.sh:17-19` vs `evaluate-results.sh:13-18` |
 | tfsec scans the wrong folder in the regression job | `WORKLOAD_DIR` is set to ayka-portal at workflow level and never overridden | `test.yml:13`, `run-tfsec.sh:9`; run #68 regression log env |
-| Unmapped Checkov findings can never block | open-source Checkov usually gives no severity, and `None` becomes LOW | `evaluate-results.py:48-54`, `:229` |
+| Checkov on a missing or unreadable plan still "succeeds" | Checkov exits 0 with `failed_checks: []` plus `parsing_errors`, and the evaluator never looks at `parsing_errors`. Zero findings means `pass` | `run-checkov.sh:13-16`, `evaluate-results.py:222`; reproduced with Checkov 3.3.20 |
+| Unmapped Checkov findings can never block | open-source Checkov reports `severity: null` (all 14 portal and 23 scenario findings), and `None` becomes LOW | `evaluate-results.py:48-54`, `:229` |
+| A realistic bad plan passes | a probe plan with public SSH (via `aws_vpc_security_group_ingress_rule`), a root-module EC2 with IMDSv1 and an IAM policy with `Action = ["*"]` got `pass` (16 LOW, OPA 0). The Checkov checks that catch these (CKV_AWS_24, CKV_AWS_79, CKV_AWS_62/63) aren't mapped, so they fall to LOW | local probe run, 2026-09-28; see section 6 |
 | The regression job cannot fail on a missed violation | if the decision is not `fail` it only prints `WARNING` | `test.yml:94-98` |
 | Human approval may be a rubber stamp | the apply job started ~4 s after it was queued in run #68. That suggests environment `manual-apply-approval` has no required reviewers (**UNVERIFIED**: check Settings → Environments) | run #68 job timings |
 
@@ -232,8 +234,18 @@ sequenceDiagram
 - All rules in `OPA/terraform/*.rego` loop over `input.planned_values.root_module.child_modules[_].resources` (e.g. `aws_ec2.rego:7`). So they only see resources **exactly one module deep**:
   - Resources in the root module, like `ayka-portal/kms.tf`, are invisible to OPA.
   - Resources in nested modules are invisible too.
-- `aws_vpc.rego:18,30` matches VPCs to flow logs by `id`, and `aws_vpc.rego:41` looks for a `gateway_id` starting with `igw-`. Both values are unknown at plan time, so these rules cannot work as intended on a fresh plan (**UNVERIFIED** exact behaviour; Phase 4 has a test).
-- `aws_s3.rego:4-14` flags *every* bucket in a module if *any* public-read ACL exists in that module. The ACL is not linked to its bucket.
+- **SSH/HTTP rules only read inline `ingress` blocks** with exact ports, `protocol == "tcp"` and IPv4 `0.0.0.0/0` (`aws_ec2.rego:6-39`). Standalone rule resources (`aws_vpc_security_group_ingress_rule`, `aws_security_group_rule`), `protocol = "-1"` and `::/0` are missed. ayka-portal uses only standalone rules (`modules/security/main.tf:56-136`).
+- **`IAM_WILDCARD_POLICY` only matches `"Action": "*"` as a string** (`aws_iam.rego:11-15`). It misses `["*"]`, `NotAction`, service wildcards, and policies whose JSON is unknown at plan time.
+- **`VPC_FLOW_LOGS_MISSING` is broken both ways** (`aws_vpc.rego:18,26-31`), confirmed with `opa eval`:
+  - on a new VPC the `id` is unknown, so the rule never fires;
+  - it compares `fl.values.resource_id`, but `aws_flow_log` has no such attribute in provider 5.100.0 (it's `vpc_id`), so on a known VPC id it always fires.
+  - Checkov's `CKV2_AWS_11` still covers this control.
+- **`ROUTE_TABLE_PUBLIC_IGW` never fires on a fresh plan**: `gateway_id` is absent until apply (`aws_vpc.rego:39-41`).
+- **`IAM_USER_MFA_MISSING` compares the wrong fields**: it checks the resource label against `mfa.values.user`, but the attribute is `user_name` (`aws_iam.rego:48-66`). So it fires for every IAM user.
+- `aws_s3.rego:4-30` doesn't link an ACL or encryption config to its bucket:
+  - *any* public-read ACL in a module flags *every* bucket in it;
+  - *any* encryption config satisfies all of them.
+- OPA findings always have `resource: null`, because no rule emits `metadata` (`evaluate-results.py:306`).
 - `OPA/aws/s3.rego` and `OPA/aws/ec2.rego` expect a made-up input (`input.buckets`, `input.instances`). They never fire on a plan, but they are still loaded, because `run-policy-check.sh:14` passes the whole `OPA/` folder. They are dead code.
 - The rules use pre-OPA-1.0 syntax (`deny[msg] { … }`). They work with the pinned conftest `v0.45.0` (`policy/action.yml:11`). A newer conftest/OPA would reject them unless you migrate to `deny contains msg if { … }`.
 
@@ -246,7 +258,18 @@ sequenceDiagram
 | `Internal-IT/workloads/ayka-portal` | realistic app (VPC, ALB, ECS, EC2, RDS, S3, KMS…) | pass with LOW only | `pass`: 0 HIGH / 0 MEDIUM / 14 LOW (all Checkov) |
 | `Internal-IT/workloads/control-validation-scenarios` | deliberately broken ("negative test") | fail with HIGH | `fail`: 4 HIGH / 8 MEDIUM / 17 LOW (29 findings: Checkov 23, OPA 6) |
 
-> **Why this matters:** a gate that has never been shown to *fail* proves nothing. The scenarios are your proof that the gate bites. Once tfsec findings flow again (Phase 4), expect both numbers to change. ayka-portal may stop passing. That's not a regression but the truth becoming visible.
+> **Why this matters:** a gate that has never been shown to *fail* proves nothing. The scenarios are your proof that the gate bites.
+
+**What changes once tfsec is counted** (measured locally on 2026-09-28 by reading the real `tfsec-result` file):
+
+| Workload | Today | With tfsec counted | New tfsec findings |
+|---|---|---|---|
+| ayka-portal | `pass` 0 / 0 / 14 | **`fail`** 3 / 1 / 14 | public ALB AVD-AWS-0053 (by design, unmapped HIGH); IAM wildcard AVD-AWS-0057 ×2 on a log-group ARN (false positive, unmapped HIGH); access-log bucket without logging AVD-AWS-0089 → `S3_LOGGING_DISABLED` (MEDIUM) |
+| scenarios (scanning the right folder) | `fail` 4 / 8 / 17 | `fail` 17 / 16 / 21 | 25 findings, 23 mapped |
+
+That isn't a regression; it's the truth becoming visible. Phase 4 fixes or documents each portal finding.
+
+> **Also worth knowing:** your `# checkov:skip=` comments don't work in this pipeline. Checkov scans `tfplan.json`, which contains no source comments. Eight of the 14 portal findings are ones you tried to skip, e.g. `CKV2_AWS_5` at `modules/security/main.tf:28-49`. Checkov's `--repo-root-for-plan-enrichment` option would honour 3 of them; the other 5 sit outside their resource block.
 
 ---
 
@@ -265,7 +288,7 @@ sequenceDiagram
 2. No HIGH plus at least one MEDIUM (`:419-421`); `medium-risk-approval` (`terraform-workflow.yml:113-125`).
 3. Missing file (`evaluate-results.sh:13-18`), bad JSON (`evaluate-results.py:32-37`); the tfsec fallback (`run-tfsec.sh:17-19`).
 4. It catches accidental change of `tfplan.json` between the scan and apply jobs. It doesn't stop deliberate tampering, because the hash lives in the same artifact.
-5. VPC and flow-log IDs are unknown at plan time (`aws_vpc.rego:18,30`).
+5. On a new VPC the `id` is unknown at plan time, so it never fires. It also reads a `resource_id` attribute that `aws_flow_log` doesn't have, so on a known VPC it always fires (`aws_vpc.rego:18,26-31`).
 6. `test.yml:94-98` only prints a WARNING.
 
 </details>
