@@ -69,7 +69,7 @@ Labels:
 | Workload infrastructure | 🎭 Simulated (mock credentials, never deployed) | — | Phase 6 |
 | AWS Org / SCPs / landing zone / IAM / Identity Center / Entra ID | 📐 Planned: design-only Terraform, validates offline, not gated | — | Phase 6 |
 | Drift detection | 📐 Planned (no remote state yet) | Manual-only until state exists | Phase 4 / 6 |
-| ISMS, GDPR, risk register, org docs | 🎭 Simulated case study (many files are still empty placeholders) | Only real, linked docs | Phase 3 / 6 |
+| ISMS, GDPR, risk register, org docs | 🎭 Simulated case study; placeholders replaced by one [index](Governance/ISMS/README.md) | Governance linked to CI evidence | Phase 6 |
 | No plaintext credentials in source | ⚠️ Removed from source (Phase 1); still in git history, tenant rotation pending | Exposure decision recorded | Phase 1 |
 
 **Deliberately *not* claimed:** Terragrunt, SIEM integration, SOC 2 / NIST / CIS mappings, zero-trust, continuous monitoring, automated remediation, audit-readiness, certification.
@@ -79,7 +79,7 @@ Labels:
 Each item is checkable by someone who doesn't trust the author.
 
 - [ ] **D1** No plaintext credentials in `HEAD`; rotation/history decision written
-- [ ] **D2** Zero empty or title-only tracked files
+- [ ] **D2** Zero empty or title-only tracked files *(one left: the NACL scenario, filled in Phase 4)*
 - [ ] **D3** CI green on `main` with **all three** scanners counted
 - [ ] **D4** pytest and `opa test` run in CI and pass
 - [ ] **D5** Regression job fails the build if the insecure scenarios stop failing
@@ -107,8 +107,8 @@ flowchart LR
 |---|---|---|:---:|
 | 0 Orient | Re-learn, install tools, tag the baseline | tag `baseline-2026-10` pushed; local chain matches CI run #68 | ☑ |
 | 1 Secrets | No plaintext credentials | `git grep -nE 'password\s*=\s*"' -- '*.tf'` is empty | ◐ code done, tenant check pending |
-| 2 Codex triage | Decide the fate of the AI-cleanup branch | decision recorded; branch archived or dropped | ☐ |
-| 3 Prune | Zero placeholder files, one pipeline source | empty-file check prints nothing; 8/8 roots validate | ☐ |
+| 2 Codex triage | Decide the fate of the AI-cleanup branch | decision recorded; branch archived or dropped | ☑ |
+| 3 Prune | Zero placeholder files, one pipeline source | empty-file check prints nothing; 8/8 roots validate | ☑ |
 | 4 Honest green | Gate sees everything; tests bite | green run on `main` with tfsec counted | ☐ |
 | 5 README + demo | Final README, 3-minute demo | D1–D10 ticked | ☐ |
 | 6 Next growth | Remote state → sandbox apply → governance linked to evidence | optional | ☐ |
@@ -125,8 +125,7 @@ flowchart LR
 | [`Internal-IT/workloads/`](Internal-IT/workloads/) | `ayka-portal` (should pass) + insecure scenarios (must fail) | core |
 | [`tests/`](tests/) | Evaluator unit tests | core |
 | [`Internal-IT/platform/`](Internal-IT/platform/) | AWS Org, SCPs, landing zone, IAM, Identity Center, Entra ID | design-only |
-| [`Governance/`](Governance/), [`organization/`](organization/) | Simulated ISMS / GDPR / company docs; the risk-management docs are the model to follow | case study, pruning in Phase 3 |
-| [`Internal-IT/assurance/`](Internal-IT/assurance/) | Empty placeholders | to be removed in Phase 3 |
+| [`Governance/`](Governance/), [`organization/`](organization/) | Simulated ISMS / GDPR / company docs. [`Governance/ISMS/README.md`](Governance/ISMS/README.md) lists every ISMS document: Draft, Covered elsewhere, or Planned | case study |
 
 ---
 
