@@ -1032,6 +1032,8 @@ git add -A && git commit && git push
 
 (`WORKLOAD_DIR` at workflow level is what made the regression job tfsec-scan ayka-portal (F3). Since Step 1 every tfsec run gets its folder explicitly, so the variable goes.)
 
+**8b (optional, 5 min): take the mock keys out of the portal's provider block.** Keys written in a provider block are copied into the plan JSON (`configuration.provider_config.aws.expressions`), and the plan JSON goes into the evidence bundle ([../research/terraform.md](../research/terraform.md) §4). Environment variables are not. Delete `access_key` and `secret_key` (`Internal-IT/workloads/ayka-portal/provider.tf:19-20`) and keep the `skip_*` flags. Measured: the portal still plans (87 to add) with the environment credentials from the plan step, the decision is unchanged, and the plan JSON's provider expressions no longer list any key. Locally, `~/ayka-chain.sh` already supplies mock environment credentials.
+
 ```bash
 actionlint .github/workflows/*.yml
 git grep -n 'id-token\|configure-aws-credentials\|role-to-assume\|aws_role_arn' -- .github
@@ -1039,12 +1041,12 @@ git add -A && git commit && git push
 gh pr view --json url,isDraft -q '"\(.url) draft=\(.isDraft)"'
 ```
 
-- **Files touched:** `.github/actions/plan/action.yml`, `.github/workflows/terraform-workflow.yml`, `.github/workflows/test.yml`.
+- **Files touched:** `.github/actions/plan/action.yml`, `.github/workflows/terraform-workflow.yml`, `.github/workflows/test.yml`; optionally `Internal-IT/workloads/ayka-portal/provider.tf` (8b).
 - **Expected output:** actionlint prints nothing. The `git grep` matches only `.github/workflows/drift-detection.yml` (fixed in Step 14). From now on, branch pushes no longer trigger CI on their own; the draft PR's `pull_request` runs do. In the PR run, the regression job's plan step shows `Plan: 6 to add` with no "Configure AWS credentials" step before it.
 - **If this fails:**
   - Regression plan fails with `No valid credential sources found` → the `env:` block isn't on the *Terraform Plan* step (it must be on the step that runs `terraform plan`).
   - No CI run after the push → the draft PR wasn't created in Step 1; create it now with the `gh pr create` line from Step 1.
-  - The AWS role itself: Phase 1 decides whether to delete or restrict it. Removing it from CI here is safe either way.
+  - The AWS role itself: after this PR is merged (Step 15), nothing in the repository uses it any more. Go back to [Phase 1](phase-1-secrets.md) ("What you change today, and what waits for Phase 4") and delete the role, and the OIDC provider if nothing else uses it, unless you keep a narrowly trusted role for Phase 6b ([ADR-0013](../adr/0013-no-cloud-creds-for-plan-only.md)).
 
 ---
 
