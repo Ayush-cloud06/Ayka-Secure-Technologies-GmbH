@@ -2,11 +2,15 @@
 
 This directory contains intentionally flawed Terraform used to validate CI/CD controls.
 
-Keep it simple: bad EC2, bad S3, bad VPC, bad IAM.
+Keep it simple: bad EC2, bad S3, bad VPC network ACL. There is no IAM scenario yet.
 
 Each folder should contain a small Terraform example that triggers one obvious finding.
 
 Use these scenarios to generate real `terraform plan` output for policy checks instead of relying on dummy JSON.
+
+## Expected findings
+
+[`expected-controls.txt`](expected-controls.txt) is the single source of truth: each line names a control, the tools that must report it and the scenario that triggers it. CI runs `Internal-IT/engineering/ci-cd/scripts/check-regression.sh`, which fails the build if the scenarios stop failing or any expected control/tool pair goes missing.
 
 ## Selective testing
 
