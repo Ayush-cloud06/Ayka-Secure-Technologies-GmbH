@@ -1,4 +1,4 @@
-# Temporary Identity Architecture Change Plan
+# Identity boundary decision: users from Entra ID, groups in IAM Identity Center
 
 ## Context
 
