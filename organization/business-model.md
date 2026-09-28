@@ -4,10 +4,12 @@
 ### Industry: Cloud Security & Regulatory Compliance SaaS
 ### Target Market: EU-based SMEs and automotive suppliers
 
-## 1. Company Overview
-Ayka Secure Technologies GmbH is a stuttgart-based SaaS compnay that provides cloud-native security governance and regulatory compliance solutions for organizations operating within the European Union.
+> This business model is part of the simulated case study; the company and its offerings are fictional.
 
-The company specializes in enabling businesses to achieve and maintain compliance with framworks such as :
+## 1. Company Overview
+Ayka Secure Technologies GmbH is a Stuttgart-based SaaS company that provides cloud-native security governance and regulatory compliance solutions for organizations operating within the European Union.
+
+The company specializes in enabling businesses to achieve and maintain compliance with frameworks such as :
 
 1. ISO/IEC 27001
 2. GDPR (General Data Protection Regulation)
