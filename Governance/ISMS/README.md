@@ -32,7 +32,7 @@
 | 02 Asset management | Remote work policy | Planned | A.6.7 | Policy text |
 | 02 Asset management | Mobile device policy | Planned | A.8.1 | Policy text; device management records |
 | 02 Asset management | Asset return checklist | Planned | A.5.11 | Offboarding records |
-| 03 Risk management | [Risk management methodology](03-risk-management/risk-management-methodology.md) | Draft | Clause 6.1.2 | Replace `AUDIT/` links with CI run links with CI run links |
+| 03 Risk management | [Risk management methodology](03-risk-management/risk-management-methodology.md) | Draft | Clause 6.1.2 | Evidence links point at CI runs |
 | 03 Risk management | [Risk criteria](03-risk-management/risk-criteria.md) | Draft | Clause 6.1.2 a | In your preferred style already |
 | 03 Risk management | [Risk register](03-risk-management/risk-register.md) | Draft | Clause 6.1.2, 8.2 | RISK-001 corrected in Phase 1; other links in Phase 5 |
 | 03 Risk management | [Risk treatment plan](03-risk-management/risk-treatment-plan.md) | Draft | Clause 6.1.3, 8.3 | TRT-003/006 status fixed in Phase 5 |
