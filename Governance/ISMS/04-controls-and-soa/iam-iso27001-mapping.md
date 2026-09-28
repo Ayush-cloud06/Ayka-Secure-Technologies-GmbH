@@ -1,5 +1,7 @@
 # IAM Control Mapping
 
+> **Known issues:** some paths and ISO/IEC 27001:2022 control labels are out of date. Do not cite this mapping as evidence until it is revised.
+
 This document maps the IAM architecture implementation to ISO 27001 controls.
 
 ---
