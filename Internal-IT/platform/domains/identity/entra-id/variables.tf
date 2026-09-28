@@ -8,3 +8,8 @@ variable "enable_conditional_access" {
   type        = bool
   default     = false
 }
+
+variable "break_glass_upn" {
+  description = "User principal name of the manually managed break-glass account (not a secret)."
+  type        = string
+}

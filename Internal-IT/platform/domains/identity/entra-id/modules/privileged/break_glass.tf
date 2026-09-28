@@ -1,14 +1,19 @@
-resource "azuread_user" "break_glass_1" {
-  user_principal_name = "breakglass-01@ayushgta175outlook.onmicrosoft.com"
-  display_name        = "Break Glass Emergency 01"
-  mail_nickname       = "breakglass01"
+# The break-glass account is created and rotated by hand, and its password is
+# kept offline. Terraform only looks it up and keeps it in tier0.
+data "azuread_user" "break_glass_1" {
+  user_principal_name = var.break_glass_upn
+}
 
-  password                    = "SuperStrongTempPassword!"
-  force_password_change       = false
-  disable_password_expiration = true
+# Stop managing the old resource WITHOUT deleting the real account.
+removed {
+  from = azuread_user.break_glass_1
+
+  lifecycle {
+    destroy = false
+  }
 }
 
 resource "azuread_group_member" "break_glass_tier0" {
   group_object_id  = var.tier_groups["tier0"].id
-  member_object_id = azuread_user.break_glass_1.id
+  member_object_id = data.azuread_user.break_glass_1.object_id
 }
