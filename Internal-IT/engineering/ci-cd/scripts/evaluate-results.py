@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from collections import Counter, defaultdict
+from datetime import date
 import os
 from pathlib import Path
 import re
@@ -24,6 +25,12 @@ CONTROL_MAPPING_FILE = Path(
     os.environ.get(
         "COMPLIANCE_CONTROL_MAPPING_FILE",
         "Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml",
+    )
+)
+EXCEPTIONS_FILE = Path(
+    os.environ.get(
+        "COMPLIANCE_EXCEPTIONS_FILE",
+        "Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml",
     )
 )
 OPA_CONTROL_PREFIX = re.compile(r"^\[(?P<control_id>[A-Z0-9_]+)\]\s*(?P<message>.*)$")
@@ -353,6 +360,38 @@ def normalize_opa(data, controls, opa_control_index, opa_package_index):
     return findings
 
 
+def load_exceptions(today):
+    """ADR-0014: accepted findings live in one reviewed file, each with an owner and an expiry."""
+    if not EXCEPTIONS_FILE.exists():
+        return []
+    entries = (load_yaml(EXCEPTIONS_FILE) or {}).get("exceptions") or []
+    active = []
+    for entry in entries:
+        missing = [k for k in ("policy_id", "resource", "reason", "owner", "expires") if not entry.get(k)]
+        if missing:
+            print(f"Exception entry {entry.get('policy_id')} is missing {missing}", file=sys.stderr)
+            sys.exit(1)
+        if date.fromisoformat(str(entry["expires"])) < today:
+            print(f"Exception expired, finding counts again: {entry['policy_id']} on {entry['resource']}", file=sys.stderr)
+            continue
+        active.append(entry)
+    return active
+
+
+def split_excepted(findings, exceptions):
+    kept, excepted = [], []
+    for finding in findings:
+        match = next(
+            (e for e in exceptions if e["policy_id"] == finding["source"] and e["resource"] == finding["resource"]),
+            None,
+        )
+        if match:
+            excepted.append(dict(finding, exception={k: str(match[k]) for k in ("reason", "owner", "expires")}))
+        else:
+            kept.append(finding)
+    return kept, excepted
+
+
 def count_by_severity(findings):
     counter = Counter()
     for finding in findings:
@@ -422,7 +461,7 @@ def build_metadata_coverage(findings):
     }
 
 
-def build_summary(findings):
+def build_summary(findings, excepted=()):
     by_tool_groups = {tool: [] for tool in TOOLS}  # ADR-0011: every scanner is listed, even with 0 findings
     for finding in findings:
         by_tool_groups.setdefault(finding["tool"], []).append(finding)
@@ -440,6 +479,7 @@ def build_summary(findings):
             "medium_findings": totals["MEDIUM"],
             "low_findings": totals["LOW"],
             "unmapped_findings": len(unmapped_findings),
+            "excepted_findings": len(excepted),
         },
         "totals": totals,
         "by_tool": {
@@ -451,7 +491,11 @@ def build_summary(findings):
         "mapped_findings": mapped_findings,
         "unmapped_findings": unmapped_findings,
         "findings": findings,
+        "excepted_findings": list(excepted),
     }
+    for finding in excepted:
+        summary["by_tool"][finding["tool"]].setdefault("excepted_findings", 0)
+        summary["by_tool"][finding["tool"]]["excepted_findings"] += 1
 
     if totals["HIGH"] > 0:
         summary["decision"] = "fail"
@@ -486,7 +530,8 @@ def main():
         + normalize_tfsec(tfsec_data, controls, tfsec_index)
     )
 
-    summary = build_summary(findings)
+    findings, excepted = split_excepted(findings, load_exceptions(date.today()))
+    summary = build_summary(findings, excepted)
     SUMMARY_FILE.parent.mkdir(parents=True, exist_ok=True)
     SUMMARY_FILE.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
