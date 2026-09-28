@@ -33,7 +33,7 @@ This repository is a **non-deploying portfolio case study**. Source definitions 
 | Dated external observation | The observed external state on that date | Current state after the observation date |
 | Operating evidence | A real activity occurred with an attributable owner and result | Anything outside the evidenced scope and period |
 
-The current evidence boundary is maintained in [AUDIT/CURRENT_STATE.md](../../../AUDIT/CURRENT_STATE.md).
+The current evidence boundary is the capability table in the [repository README](../../../README.md) and the dated [CI runs](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/workflows/test.yml) it links.
 
 ## 3. Roles
 
@@ -164,7 +164,6 @@ Risk records are retained for five years under the case-study policy. In a real 
 
 ## 9. References
 
-- [Current State and Audit Conclusion](../../../AUDIT/CURRENT_STATE.md)
-- [Findings, Compliance, and Identity Notes](../../../AUDIT/FINDINGS.md)
-- [Roadmap and Pipeline Reference Notes](../../../AUDIT/ROADMAP_AND_PIPELINE_NOTES.md)
+- [Repository README: capability status and restoration path](../../../README.md)
+- [Compliance gate CI runs](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/workflows/test.yml)
 - [ISMS Scope](../00-context-and-governance/scope.md)
