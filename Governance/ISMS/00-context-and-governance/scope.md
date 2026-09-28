@@ -3,8 +3,7 @@
 **Organization:** Ayka Secure Technologies GmbH  
 **Location:** Stuttgart, Germany  
 **Version:** 1.0  
-**Approved by:** Managing Director  
-**Effective Date:** 21-02-2026  
+**Status:** Draft, simulated case study. Not approved: no approval record exists.  
 
 ---
 
@@ -60,8 +59,8 @@ The ISMS covers the following systems and environments:
 - Cloud-based SaaS application platform  
 - Infrastructure-as-Code configurations (Terraform)  
 - CI/CD pipelines and development environments  
-- Logging, monitoring, and SIEM systems  
-- Backup and disaster recovery systems  
+- Logging, monitoring, and SIEM systems (Planned: no such system exists in this repository)  
+- Backup and disaster recovery systems (Planned: no such system exists in this repository)  
 - Internal IT systems used for business operations  
 
 ---
