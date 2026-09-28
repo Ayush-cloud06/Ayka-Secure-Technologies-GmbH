@@ -240,6 +240,7 @@ sequenceDiagram
   - on a new VPC the `id` is unknown, so the rule never fires;
   - it compares `fl.values.resource_id`, but `aws_flow_log` has no such attribute in provider 5.100.0 (it's `vpc_id`), so on a known VPC id it always fires.
   - Checkov's `CKV2_AWS_11` still covers this control.
+- **`NETWORK_ACL_UNRESTRICTED_INGRESS` has never been able to fire**: it checks `entry.rule_action` (`aws_vpc.rego:57`), but an inline `aws_network_acl` ingress entry has `action`. A new rego unit test fails on the original rule and passes after the one-word fix (planning prototype, see [Phase 4](05-phase-playbooks/phase-4-pipeline-green.md)). Combined with the empty NACL scenario, this HIGH control has never been exercised.
 - **`ROUTE_TABLE_PUBLIC_IGW` never fires on a fresh plan**: `gateway_id` is absent until apply (`aws_vpc.rego:39-41`).
 - **`IAM_USER_MFA_MISSING` compares the wrong fields**: it checks the resource label against `mfa.values.user`, but the attribute is `user_name` (`aws_iam.rego:48-66`). So it fires for every IAM user.
 - `aws_s3.rego:4-30` doesn't link an ACL or encryption config to its bucket:

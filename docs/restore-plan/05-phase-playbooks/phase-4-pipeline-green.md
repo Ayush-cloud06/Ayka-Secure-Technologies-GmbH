@@ -41,7 +41,7 @@ Format: decision, HIGH / MEDIUM / LOW (total findings). "Probe" is a plan built 
 | 12 Checkov equivalents mapped | FAIL 3 / 1 / 14 | FAIL 20 / 33 / 10 (63) | FAIL 9 / 11 / 2 (IAM wildcard now caught) |
 | 13 triage with an exceptions list | **PASS** 0 / 0 / 14, 4 excepted | FAIL 20 / 33 / 10 | — |
 
-The regression expectations after Phase 4: the scenarios **FAIL** with HIGH findings from `EC2_OPEN_SSH`, `EC2_MISSING_IMDSV2`, `S3_PUBLIC_ACCESS`, `EC2_PUBLIC_EGRESS`, `EC2_ROOT_VOLUME_UNENCRYPTED` and `NETWORK_ACL_UNRESTRICTED_INGRESS`, each reported by the tools listed in `expected-controls.txt` (Step 4).
+The regression expectations after Phase 4: the scenarios **FAIL** with HIGH findings from six controls: `EC2_OPEN_SSH`, `EC2_MISSING_IMDSV2`, `S3_PUBLIC_ACCESS`, `EC2_PUBLIC_EGRESS`, `EC2_ROOT_VOLUME_UNENCRYPTED` and `NETWORK_ACL_UNRESTRICTED_INGRESS` (measured). Six control/scenario pairs are asserted per tool in `expected-controls.txt` (Steps 4 and 11); add `EC2_ROOT_VOLUME_UNENCRYPTED tfsec ec2/no-imdsv2` too if you want every HIGH pinned down.
 
 ## 3. Before you start
 
@@ -444,10 +444,9 @@ gh pr create --draft --base main --title "Phase 4: pipeline honest-green" \
 @@ build_metadata_coverage (line 364) @@
 -    for tool in sorted({finding["tool"] for finding in findings}):
 +    for tool in sorted(set(TOOLS) | {finding["tool"] for finding in findings}):
-@@ build_summary (line 386-387) @@
--def build_summary(findings):
+@@ build_summary (line 387) @@
+ def build_summary(findings):
 -    by_tool_groups = defaultdict(list)
-+def build_summary(findings):
 +    by_tool_groups = {tool: [] for tool in TOOLS}  # ADR-0011: every scanner is listed, even with 0 findings
 @@ main (after build_control_indexes, line 438) @@
 +    validate_checkov(checkov_data)

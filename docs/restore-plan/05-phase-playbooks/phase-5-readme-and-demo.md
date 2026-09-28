@@ -304,7 +304,7 @@ git grep -nE 'Internal-IT/(iam|cloud-platform)/' -- '*.md' ':!docs/restore-plan'
 
 - **Files touched:** whatever the grep finds.
 - **Expected output:** `untracked-path links: 1` (nothing found). The second grep should only hit `iam-iso27001-mapping.md` and the platform identity docs that Phase 6c handles; the banner from Step 4 covers them.
-- **If this fails:** `/home/ayush/…` in `ci-cd/compliance-gates/*.md` → Phase 3 should have fixed those (`enforcement-levels.md:13`, `policy-evaluation-flow.md:12`); fix them now with a relative link to `../../policy-as-code/metadata/control-mapping.yaml`.
+- **If this fails:** `/home/<you>/…` in `ci-cd/compliance-gates/*.md` → Phase 3 should have fixed those (`enforcement-levels.md:13`, `policy-evaluation-flow.md:12`); fix them now with a relative link to `../../policy-as-code/metadata/control-mapping.yaml`.
 
 ---
 
