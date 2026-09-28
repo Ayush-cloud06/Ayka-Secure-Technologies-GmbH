@@ -47,7 +47,7 @@ git switch -c chore/p3-prune
 
 ### What the planning session already proved
 
-On 2026-09-28 the planning session ran **every command in this playbook** on a scratch copy: `git archive 53b0532` into a new folder, `git init`, one commit, the tag `baseline-2026-10`, then all Session 1–3 steps in order, then the Step 13 proofs. Results:
+On 2026-09-28 the planning session ran **every command in this playbook** on a scratch copy: `git archive 53b0532` into a new folder, `git init`, one commit, the tag `baseline-2026-10`, then all Session 1–3 steps in order, then the Step 14–15 proofs. Results:
 
 | Check | Result (planning session, 2026-09-28) |
 |---|---|
@@ -62,7 +62,7 @@ On 2026-09-28 the planning session ran **every command in this playbook** on a s
 | Title-only Markdown / symlinks / tracked-but-ignored | 0 / 0 / 0 |
 | ayka-portal chain after the prune | `pass`, HIGH 0 / MEDIUM 0 / LOW 14 (unchanged); `git status` clean afterwards |
 
-You should get the same numbers, except that your file count also includes the files Phases 1 and 2 added.
+You should get the same numbers, except that your file count also includes the files Phase 1 added.
 
 ## 4. Steps
 
@@ -102,7 +102,7 @@ The list is the 170 rows with disposition DELETE and phase P3 in [../inventory/f
 - `control-validation-scenarios/ec2/no-imdsv2/main.tf` (8 lines) and the other scenario `main.tf` files: they *are* the negative tests;
 - `Internal-IT/engineering/policy-as-code/OPA/aws/*.rego`: dead code, but deleted in Phase 4 together with the `run-policy-check.sh` change, not here.
 
-And a few files **on** the list are short but deserve one look before they go: `.github/workflows/policy-check.yml` (21 lines, a real reusable workflow that nothing calls, [../research/pipeline.md](../research/pipeline.md) §1), `control-validation-scenarios/shared/versions.tf` (3 real lines in a folder no module references), and the stubs in Batches E and H (6–24 lines each, describing things that don't exist).
+And a few files **on** the list are short but deserve one look before they go: `.github/workflows/policy-check.yml` (21 lines, a real reusable workflow that nothing calls, [../research/pipeline.md](../research/pipeline.md) §1), `control-validation-scenarios/shared/versions.tf` (3 real lines in a folder no module references), and the stubs in Batches E and H (4–24 lines each, describing things that don't exist).
 
 ### Session 1 (Tue 2026-10-20): Internal-IT
 
@@ -162,7 +162,7 @@ git grep -n -e 'policy-check.yml' -e 'ci-cd/templates' -e 'ci-cd/pipelines' -- .
 git commit -m "chore(ci): make .github the single source of pipeline definitions"
 ```
 
-- **Files touched:** 22 files (removed). `Internal-IT/engineering/ci-cd/architecture.md` still describes the `pipelines/*` layers; you rewrite it in Step 10.
+- **Files touched:** 22 files (removed). `Internal-IT/engineering/ci-cd/architecture.md` still describes the `pipelines/*` layers; you rewrite it in Step 11.
 - **Expected output:** the `git grep` prints nothing: no workflow, action or script refers to the removed files. The "Policy Check Workflow" will disappear from the Actions tab after the merge; nothing called it (`policy-check.yml` is `workflow_call` only and no workflow uses it, [../research/pipeline.md](../research/pipeline.md) §1).
 - **If this fails:** if `git grep` prints a line under `.github/`, don't delete that file yet. Something calls it. Restore it with `git restore --staged --worktree <path>` and check the caller.
 
