@@ -17,6 +17,11 @@ terraform.tfvars.json
 *.auto.tfvars.json
 backend.tfvars
 backend.hcl
+# Variable files can hold secrets. Only these two are tracked on purpose (no secrets in them):
+*.tfvars
+*.tfvars.json
+!Internal-IT/workloads/ayka-portal/envs/dev.tfvars
+!Internal-IT/platform/foundation/landing-zone/enterprise_strict.tfvars
 
 annotations
 graphify-out
@@ -36,7 +41,10 @@ Compliancelisting.md
 *.binary
 *.out
 .codex
-output/
+tfplan.binary
+tfplan.json
+# CI and the local chain write scanner output at the repo root
+/output/
 ##################################
 # Sensitive Files (Just In Case)
 ##################################
@@ -65,7 +73,6 @@ id_ed25519
 *.env
 credentials
 config
-tree.md
 
 !.env.example
 ##################################
@@ -97,7 +104,7 @@ pnpm-lock.yaml
 ##################################
 # Reports / Generated Evidence
 ##################################
-!**/evidence/.gitkeep
+/evidence/
 ##################################
 # Logs
 ##################################
