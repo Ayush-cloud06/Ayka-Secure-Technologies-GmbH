@@ -35,7 +35,7 @@ runs:
           exit 0
         fi
 
-        echo "schema_version=$(jq -r '.schema_version // \"unknown\"' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
+        echo "schema_version=$(jq -r '.schema_version // "unknown"' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
         echo "decision=$(jq -r '.decision' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
         echo "approval_required=$(jq -r '.approval_required' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
         echo "unmapped_findings=$(jq -r '.metadata_coverage.unmapped_findings // 0' output/compliance-summary.json)" >> "$GITHUB_OUTPUT"
@@ -45,5 +45,5 @@ runs:
       shell: bash
       run: |
         if [ -f output/compliance-summary.json ]; then
-          jq '{schema_version, decision, approval_required, totals, metadata_coverage}' output/compliance-summary.json
+          jq '{schema_version, decision, approval_required, decision_basis, totals, metadata_coverage}' output/compliance-summary.json
         fi
