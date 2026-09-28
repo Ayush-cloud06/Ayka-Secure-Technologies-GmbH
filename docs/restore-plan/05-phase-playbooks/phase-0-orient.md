@@ -15,7 +15,7 @@ You're coming back after five months. Before you change anything, you need a fix
 
 Three things make this urgent:
 
-- **The evidence expires.** Run #68 on 2026-08-23 is your last green run on `main` ([run #68](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/32621618951)). GitHub deletes its artifacts on **2026-11-21** ([../research/facts-lead.md](../research/facts-lead.md), "Run #68 evidence"). After that date the only proof of that run is the log text.
+- **The evidence expires.** Run #68 on 2026-08-23 is your last green run on `main` ([run #68](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/32621618951)). GitHub deletes its artifacts on **2026-11-21** (GitHub API `expires_at`; [../01-current-state.md](../01-current-state.md), [../how-it-works.md](../how-it-works.md) §5). After that date the only proof of that run is the log text.
 - **Tool versions drift.** CI installs Checkov with no version (`.github/actions/check/action.yml:15`) and TFLint as `latest` (`.github/actions/validate/action.yml:24`). If you install "whatever is current" today, your numbers may not match CI, and you'll chase differences that are really tool updates. The planning session reproduced run #68 exactly with Checkov 3.3.20, tfsec v1.28.14 and conftest v0.45.0 ([../research/pipeline.md](../research/pipeline.md) §6). Use the same versions.
 - **Green is partly false.** The run is green, but tfsec findings never reach the evaluator (`Internal-IT/engineering/ci-cd/scripts/run-tfsec.sh:13-19`; [../how-it-works.md](../how-it-works.md) §4). Your baseline has to include that bug, so that in Phase 4 you can show the exact moment the gate started seeing tfsec output.
 

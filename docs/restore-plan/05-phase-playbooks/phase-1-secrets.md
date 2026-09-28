@@ -145,7 +145,7 @@ In the AWS console, signed in to account `982081090103` with your own admin user
 
 1. **IAM → Roles → `github-actions-oidc-role` → Trust relationships.** Read the `Condition` block.
 2. **Permissions** tab: list every attached and inline policy.
-3. **Access Advisor** tab (and "Last activity" on the role summary): which services were ever used with it.
+3. **Last Accessed** tab (formerly Access Advisor) and "Last activity" on the role summary: which services were ever used with it.
 4. **IAM → Identity providers**: note the `token.actions.githubusercontent.com` provider.
 5. **CloudTrail → Event history**, region `ap-south-1` (`test.yml:15`): filter *Event name* = `AssumeRoleWithWebIdentity`. Every event should come from this repository's workflow runs.
 
