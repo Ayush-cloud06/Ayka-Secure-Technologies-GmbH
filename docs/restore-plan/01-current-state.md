@@ -1,7 +1,7 @@
 # 01 · Current state: what exists today, honestly
 
 > **Snapshot:** `main` = `53b0532` (2026-08-23), 373 tracked files, checked on 2026-09-28.
-> **How this was checked:** four research passes (Terraform, pipeline, inventory, codex branch) plus the GitHub API and CI job logs of run #68. Every row cites a file, a command or a run.
+> **How this was checked:** four research passes (Terraform, pipeline, inventory, codex branch) plus the GitHub API and CI job logs of run #68. The raw notes are in [research/](research/README.md). Every row cites a file, a command or a run.
 > **One-line verdict:** the core gate is real and its CI is green. But green is partly false (tfsec findings are dropped). About 40% of the files are empty placeholders, and the README claims things the code doesn't do.
 
 ---
@@ -101,7 +101,7 @@ flowchart LR
 | Evidence | `evidence/action.yml:13-32`, `export-evidence.sh:25-26` | artifact `compliance-evidence` | copies `*.json` only, so the bundle holds the *empty* tfsec file |
 | Apply | `run-apply.sh:11-27` | none | verifies, then only echoes "14 added" (the real plan is 87 creates) |
 
-Details and the full list of 29 confirmed issues (F1–F29) live in the research notes; the ones that matter are carried into [Phase 4](05-phase-playbooks/phase-4-pipeline-green.md). The mechanics are explained in [how-it-works.md](how-it-works.md).
+Details and the full list of 29 confirmed issues (F1–F29) are in [research/pipeline.md §3](research/pipeline.md#3-evaluator-semantics-internal-itengineeringci-cdscriptsevaluate-resultspy). The ones that matter are carried into [Phase 4](05-phase-playbooks/phase-4-pipeline-green.md). The mechanics are explained in [how-it-works.md](how-it-works.md).
 
 ---
 

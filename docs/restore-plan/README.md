@@ -45,6 +45,7 @@ flowchart TD
 | [risks-and-open-questions.md](risks-and-open-questions.md) | What could go wrong, and what do only I know? |
 | [how-it-works.md](how-it-works.md) | How does my pipeline actually work? (study guide) |
 | [interview-prep.md](interview-prep.md) | What will I be asked, and what's my honest answer? |
+| [research/](research/README.md) | Where exactly did a claim come from? (raw, sanitised evidence notes) |
 
 ---
 
