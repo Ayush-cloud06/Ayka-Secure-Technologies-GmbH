@@ -83,8 +83,9 @@ git push origin baseline-2026-10
 - [ ] Run the evaluator tests:
 
 ```bash
-python3 -m pip install --user pytest pyyaml
-python3 -m pytest -q tests/               # expect: 5 passed
+python3 -m venv .venv && . .venv/bin/activate   # .venv/ is already in .gitignore (line 79)
+pip install pytest pyyaml
+python3 -m pytest -q tests/                     # expect: 5 passed
 ```
 
 **55–60 min: close the session**
