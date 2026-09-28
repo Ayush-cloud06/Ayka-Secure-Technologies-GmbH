@@ -73,7 +73,7 @@ Answer the **Before Phase 1** questions first; they change what Phase 1 does. Ea
 |---|---|---|---|
 | Q5 | Does `f68766c` / `codex/pre-restore-ai-cleanup-20260823` still exist on your laptop? | Decides whether Phase 2 is a 15-minute close-out or a review session | **Assume lost** |
 | Q6 | The 84 one-line ISMS stubs you added in `fe1b27e`: were they a to-do list you still want? | [ADR-0004](adr/0004-delete-placeholders.md) proposes replacing them with one "planned documents" index | **Replace with one index** |
-| Q7 | **File-count target:** keep the platform Terraform roots (repo ends at about 200 files), or move them to an archive tag (about 105 files)? | Your "80–120 files" goal is only reachable by moving about 95 substantive platform files out | **Keep platform as design-only context** (it shows IAM/SCP/Identity Center skills) |
+| Q7 | **File-count target:** keep the platform Terraform roots (repo ends at about 200 files), or move them to an archive tag (about 103 files)? | Your "80–120 files" goal is only reachable by moving out the 102 platform files that remain after Phase 3 (`Internal-IT/platform` has 118 tracked files, 101 of them substantive) | **Keep platform as design-only context** (it shows IAM/SCP/Identity Center skills) |
 | Q8 | Is there anything in your local `AUDIT/` folder you want public (sanitised)? | The risk docs link to it; on GitHub those links are broken | **Don't publish it**; relink to CI runs |
 
 ### Before Phase 4–5
