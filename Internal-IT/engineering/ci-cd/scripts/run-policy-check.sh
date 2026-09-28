@@ -11,7 +11,7 @@ mkdir -p "$OUTPUT_DIR"
 OPA_RESULT_FILE="$OUTPUT_DIR/opa-result.json"
 OPA_ERROR_LOG="$OUTPUT_DIR/opa-result.stderr.log"
 PLAN_FILE="$OUTPUT_DIR/tfplan.json"
-POLICY_DIR="Internal-IT/engineering/policy-as-code/OPA"
+POLICY_DIR="Internal-IT/engineering/policy-as-code/OPA/terraform"
 
 set +e
 conftest test "$PLAN_FILE" \
