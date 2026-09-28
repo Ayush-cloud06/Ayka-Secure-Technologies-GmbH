@@ -8,7 +8,6 @@ OUTPUT_DIR="output"
 CHECKOV_FILE="$OUTPUT_DIR/checkov-result.json"
 OPA_FILE="$OUTPUT_DIR/opa-result.json"
 TFSEC_FILE="$OUTPUT_DIR/tfsec-result.json"
-SUMMARY_FILE="$OUTPUT_DIR/compliance-summary.json"
 
 for file in "$CHECKOV_FILE" "$OPA_FILE" "$TFSEC_FILE"; do
   if [ ! -f "$file" ]; then

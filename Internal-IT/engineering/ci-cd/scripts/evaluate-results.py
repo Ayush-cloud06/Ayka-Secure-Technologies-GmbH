@@ -27,6 +27,10 @@ CONTROL_MAPPING_FILE = Path(
     )
 )
 OPA_CONTROL_PREFIX = re.compile(r"^\[(?P<control_id>[A-Z0-9_]+)\]\s*(?P<message>.*)$")
+TOOLS = ("checkov", "opa", "tfsec")
+# ADR-0011: a finding nobody has mapped yet is at least MEDIUM, so a human sees it.
+UNMAPPED_MIN_SEVERITY = "MEDIUM"
+SEVERITY_ORDER = ["LOW", "MEDIUM", "HIGH"]
 
 
 def load_json(path: Path):
@@ -52,6 +56,41 @@ def normalize_severity(value):
     if normalized in {"HIGH", "MEDIUM", "LOW"}:
         return normalized
     return "LOW"
+
+
+def at_least(severity, floor):
+    return max(severity, floor, key=SEVERITY_ORDER.index)
+
+
+def reject_input(tool, reason):
+    print(f"Invalid {tool} result: {reason}", file=sys.stderr)
+    sys.exit(1)
+
+
+def validate_checkov(data):
+    if not isinstance(data, dict) or not isinstance(data.get("results"), dict):
+        reject_input("checkov", "no 'results' object (summary-only output means nothing was scanned)")
+    results = data["results"]
+    if not isinstance(results.get("failed_checks"), list):
+        reject_input("checkov", "'results.failed_checks' is missing or not a list")
+    if results.get("parsing_errors"):
+        reject_input("checkov", f"parsing_errors: {results['parsing_errors']}")
+
+
+def validate_tfsec(data):
+    if not isinstance(data, dict) or not isinstance(data.get("results"), list):
+        reject_input("tfsec", "'results' is missing or not a list")
+
+
+def validate_opa(data, opa_package_index):
+    if isinstance(data, dict) and data.get("status") == "error":
+        return  # handled by normalize_opa with the full error payload
+    if not isinstance(data, list) or not data:
+        reject_input("opa", "expected a non-empty list of namespace results")
+    seen = {item.get("namespace") for item in data if isinstance(item, dict)}
+    missing = sorted(set(opa_package_index) - seen)
+    if missing:
+        reject_input("opa", f"no result for mapped policy packages: {missing}")
 
 
 def control_projection(control_id, control):
@@ -141,7 +180,7 @@ def resolve_scanner_mapping(index, source, controls, fallback_severity, fallback
             "mapped": False,
             "control_id": None,
             "control": None,
-            "severity": normalize_severity(fallback_severity),
+            "severity": at_least(normalize_severity(fallback_severity), UNMAPPED_MIN_SEVERITY),
             "severity_source": fallback_source,
             "mapping_method": "scanner_default",
             "unmapped_reason": "No control mapping entry matched this scanner rule.",
@@ -361,7 +400,7 @@ def build_metadata_coverage(findings):
     unmapped_findings = total_findings - mapped_findings
 
     by_tool = {}
-    for tool in sorted({finding["tool"] for finding in findings}):
+    for tool in sorted(set(TOOLS) | {finding["tool"] for finding in findings}):
         tool_findings = [finding for finding in findings if finding["tool"] == tool]
         total = len(tool_findings)
         mapped = sum(1 for finding in tool_findings if finding["mapped"])
@@ -384,9 +423,9 @@ def build_metadata_coverage(findings):
 
 
 def build_summary(findings):
-    by_tool_groups = defaultdict(list)
+    by_tool_groups = {tool: [] for tool in TOOLS}  # ADR-0011: every scanner is listed, even with 0 findings
     for finding in findings:
-        by_tool_groups[finding["tool"]].append(finding)
+        by_tool_groups.setdefault(finding["tool"], []).append(finding)
 
     totals = count_by_severity(findings)
     mapped_findings = [finding for finding in findings if finding["mapped"]]
@@ -436,6 +475,10 @@ def main():
         opa_control_index,
         opa_package_index,
     ) = build_control_indexes(control_mapping_data)
+
+    validate_checkov(checkov_data)
+    validate_tfsec(tfsec_data)
+    validate_opa(opa_data, opa_package_index)
 
     findings = (
         normalize_checkov(checkov_data, controls, checkov_index)

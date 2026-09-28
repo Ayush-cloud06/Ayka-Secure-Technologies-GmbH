@@ -45,6 +45,14 @@ CONTROL_MAPPING = textwrap.dedent(
 )
 
 
+# A clean conftest result for the one policy package the test mapping uses.
+OPA_CLEAN = [
+    {"filename": "output/tfplan.json", "namespace": "policies.terraform.aws_ec2", "successes": 1}
+]
+CHECKOV_CLEAN = {"results": {"failed_checks": [], "parsing_errors": []}}
+TFSEC_CLEAN = {"results": []}
+
+
 class EvaluateResultsRegressionTests(unittest.TestCase):
     maxDiff = None
 
@@ -119,7 +127,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         result, summary = self.run_case(
             checkov={"results": {"failed_checks": []}},
             tfsec={"results": []},
-            opa=[
+            opa=OPA_CLEAN + [
                 {
                     "namespace": "policies.terraform.aws_vpc",
                     "failures": [
@@ -155,7 +163,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
                 }
             },
             tfsec={"results": []},
-            opa=[],
+            opa=OPA_CLEAN,
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -179,7 +187,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
                     }
                 ]
             },
-            opa=[],
+            opa=OPA_CLEAN,
         )
 
         self.assertEqual(result.returncode, 1, result.stderr)
@@ -193,7 +201,8 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         self.assertEqual(summary["findings"][0]["severity_source"], "metadata")
         self.assertEqual(summary["findings"][0]["control_id"], "EC2_OPEN_SSH")
 
-    def test_unmapped_tfsec_finding_uses_scanner_severity(self):
+    def test_unmapped_tfsec_low_finding_is_raised_to_medium(self):
+        # ADR-0011 changed the policy on purpose: an unmapped finding is at least MEDIUM.
         result, summary = self.run_case(
             checkov={"results": {"failed_checks": []}},
             tfsec={
@@ -206,23 +215,89 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
                     }
                 ]
             },
-            opa=[],
+            opa=OPA_CLEAN,
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(summary["decision"], "pass")
-        self.assertEqual(summary["totals"]["LOW"], 1)
+        self.assertEqual(summary["decision"], "approval_required")
+        self.assertEqual(summary["totals"]["MEDIUM"], 1)
         self.assertEqual(summary["metadata_coverage"]["unmapped_findings"], 1)
         self.assertFalse(summary["findings"][0]["mapped"])
         self.assertEqual(summary["findings"][0]["tool"], "tfsec")
         self.assertEqual(summary["findings"][0]["mapping_method"], "scanner_default")
-        self.assertEqual(summary["findings"][0]["severity"], "LOW")
+        self.assertEqual(summary["findings"][0]["severity"], "MEDIUM")
         self.assertEqual(summary["findings"][0]["severity_source"], "scanner_default")
         self.assertEqual(
             summary["findings"][0]["unmapped_reason"],
             "No control mapping entry matched this scanner rule.",
         )
 
+    def test_unmapped_checkov_finding_without_severity_needs_approval(self):
+        result, summary = self.run_case(
+            checkov={
+                "results": {
+                    "failed_checks": [
+                        {"check_id": "CKV_AWS_24", "check_name": "SSH open", "resource": "aws_security_group.x", "severity": None}
+                    ]
+                }
+            },
+            tfsec=TFSEC_CLEAN,
+            opa=OPA_CLEAN,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(summary["decision"], "approval_required")
+        self.assertEqual(summary["findings"][0]["severity"], "MEDIUM")
+
+    def test_unmapped_tfsec_high_finding_stays_high(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN,
+            tfsec={"results": [{"rule_id": "AVD-AWS-0053", "resource": "aws_lb.app", "severity": "HIGH"}]},
+            opa=OPA_CLEAN,
+        )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(summary["decision"], "fail")
+
+    def assert_rejected(self, *, checkov, tfsec, opa, message):
+        result, summary = self.run_case(checkov=checkov, tfsec=tfsec, opa=opa)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIsNone(summary, "no summary may be written for rejected input")
+        self.assertIn(message, result.stderr)
+
+    def test_checkov_parsing_errors_fail_closed(self):
+        self.assert_rejected(
+            checkov={"results": {"failed_checks": [], "parsing_errors": ["output/tfplan.json"]}},
+            tfsec=TFSEC_CLEAN,
+            opa=OPA_CLEAN,
+            message="parsing_errors",
+        )
+
+    def test_checkov_summary_only_output_fails_closed(self):
+        self.assert_rejected(
+            checkov={"passed": 0, "failed": 0, "skipped": 0, "parsing_errors": 0, "resource_count": 0},
+            tfsec=TFSEC_CLEAN,
+            opa=OPA_CLEAN,
+            message="Invalid checkov result",
+        )
+
+    def test_tfsec_without_results_list_fails_closed(self):
+        self.assert_rejected(checkov=CHECKOV_CLEAN, tfsec={}, opa=OPA_CLEAN, message="Invalid tfsec result")
+
+    def test_empty_opa_list_fails_closed(self):
+        self.assert_rejected(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=[], message="Invalid opa result")
+
+    def test_opa_without_mapped_package_fails_closed(self):
+        self.assert_rejected(
+            checkov=CHECKOV_CLEAN,
+            tfsec=TFSEC_CLEAN,
+            opa=[{"namespace": "policies.aws.s3", "successes": 1}],
+            message="policies.terraform.aws_ec2",
+        )
+
+    def test_all_three_tools_listed_even_without_findings(self):
+        result, summary = self.run_case(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=OPA_CLEAN)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(sorted(summary["by_tool"]), ["checkov", "opa", "tfsec"])
+        self.assertEqual(sorted(summary["metadata_coverage"]["by_tool"]), ["checkov", "opa", "tfsec"])
 
 if __name__ == "__main__":
     unittest.main()
