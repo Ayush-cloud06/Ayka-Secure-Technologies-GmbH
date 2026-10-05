@@ -82,3 +82,37 @@ test_literal_bucket_name_binds {
 	]}}}
 	count(denied(p, "[S3_PUBLIC_ACCESS]")) == 1
 }
+
+# Reference binding in the root module (empty configuration path) and in a
+# nested module (module.a.module.b), with no literal bucket name to fall back on.
+bare_bucket(prefix) = {"address": sprintf("%saws_s3_bucket.a", [prefix]), "type": "aws_s3_bucket", "name": "a", "values": {"bucket": null}}
+
+bare_enc(prefix) = {"address": sprintf("%s%s.a", [prefix, enc]), "type": enc, "name": "a", "values": {"bucket": null}}
+
+root_plan(planned, configured) = {
+	"planned_values": {"root_module": {"resources": planned}},
+	"configuration": {"root_module": {"resources": configured}},
+}
+
+nested_plan(planned, configured) = {
+	"planned_values": {"root_module": {"child_modules": [{"address": "module.a", "resources": [], "child_modules": [{"address": "module.a.module.b", "resources": planned}]}]}},
+	"configuration": {"root_module": {"module_calls": {"a": {"module": {"module_calls": {"b": {"module": {"resources": configured}}}}}}}},
+}
+
+test_root_module_reference_binds {
+	count(denied(root_plan([bare_bucket(""), bare_enc("")], [config(enc, "a", "a")]), "[S3_ENCRYPTION_MISSING]")) == 0
+}
+
+test_root_module_without_encryption_is_denied {
+	count(denied(root_plan([bare_bucket("")], []), "[S3_ENCRYPTION_MISSING]")) == 1
+}
+
+test_nested_module_reference_binds {
+	p := "module.a.module.b."
+	count(denied(nested_plan([bare_bucket(p), bare_enc(p)], [config(enc, "a", "a")]), "[S3_ENCRYPTION_MISSING]")) == 0
+}
+
+test_nested_module_without_encryption_is_denied {
+	p := "module.a.module.b."
+	count(denied(nested_plan([bare_bucket(p)], []), "[S3_ENCRYPTION_MISSING]")) == 1
+}

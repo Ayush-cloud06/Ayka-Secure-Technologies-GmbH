@@ -429,6 +429,7 @@ controls:
       policy_package: policies.terraform.aws_iam
     message_patterns:
       - "does not have mfa enabled"
+      - "cannot prove mfa in terraform"
     evidence:
       source: opa
       artifact: opa-result.json
