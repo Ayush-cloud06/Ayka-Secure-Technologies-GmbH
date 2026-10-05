@@ -47,6 +47,7 @@ The register is anchored to the capability table in the [repository README](../.
 |---|---|---|
 | 2026-08-23 | Initial evidence-bounded population | Thirteen risks recorded from the consolidated audit; no risk closed and no acceptance made effective |
 | 2026-09-28 | Correction | RISK-001: literals were still in source on `main` (baseline `53b0532`); replaced with `random_password` and a manually managed break-glass account. Tenant check and rotation still pending. |
+| 2026-10-05 | Evidence update | RISK-005: GitHub ruleset `protect-main` (PR + five required checks, no force-push or deletion) and a required reviewer on `manual-apply-approval` configured; status stays "Treating" until reviewed. RISK-009: S3 encryption traced end to end in [control-chain-s3-encryption.md](../04-controls-and-soa/control-chain-s3-encryption.md). |
 
 ## Status rules
 
