@@ -48,3 +48,68 @@ module_of(r) = addr {
 	some addr
 	r in modules[addr].resources
 }
+
+# ---------------------------------------------------------------------------
+# Relationships between resources.
+#
+# Attributes that point at another resource (bucket = aws_s3_bucket.x.id) are
+# usually unknown at plan time, so planned_values holds null there. The link
+# survives in input.configuration as an expression reference, scoped to the
+# module that declares it. related(child, attr, parent) is true when child's
+# attr refers to parent, either by reference in the same module instance or
+# by an equal known value.
+# ---------------------------------------------------------------------------
+
+related(child, attr, parent) {
+	module_of(child) == module_of(parent)
+	ref := references(child, attr)[_]
+	refers_to(ref, local_address(parent))
+}
+
+related(child, attr, parent) {
+	value := child.values[attr]
+	is_string(value)
+	value != ""
+	value in {object.get(parent.values, "id", null), object.get(parent.values, "bucket", null)}
+}
+
+local_address(r) = sprintf("%s.%s", [r.type, r.name])
+
+refers_to(ref, target) {
+	ref == target
+}
+
+refers_to(ref, target) {
+	startswith(ref, concat("", [target, "."]))
+}
+
+refers_to(ref, target) {
+	startswith(ref, concat("", [target, "["]))
+}
+
+references(r, attr) = refs {
+	config := config_resource(r)
+	refs := object.get(config, ["expressions", attr, "references"], [])
+}
+
+config_resource(r) = config {
+	config := config_module(module_of(r)).resources[_]
+	config.address == local_address(r)
+}
+
+# module.a[0].module.b["x"] -> configuration path module_calls.a.module.module_calls.b.module
+config_module(addr) = object.get(input.configuration.root_module, config_path(addr), {})
+
+config_path(addr) = [] {
+	addr == ""
+}
+
+config_path(addr) = path {
+	addr != ""
+	parts := split(regex.replace(addr, `\[[^\]]*\]`, ""), ".")
+	path := [segment |
+		some i, j
+		parts[i] == "module"
+		segment := ["module_calls", parts[i + 1], "module"][j]
+	]
+}

@@ -6,3 +6,4 @@ EC2_MISSING_IMDSV2      opa,tfsec      ec2/no-imdsv2
 S3_PUBLIC_ACCESS        opa,tfsec      s3/public-bucket
 S3_ENCRYPTION_MISSING   opa,tfsec      s3/missing-encryption
 NETWORK_ACL_UNRESTRICTED_INGRESS opa        vpc/permissive-network-acl
+VPC_FLOW_LOGS_MISSING   opa            vpc/permissive-network-acl

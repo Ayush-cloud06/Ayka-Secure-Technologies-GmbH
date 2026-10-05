@@ -42,21 +42,15 @@ deny[msg] {
     )
 }
 
-# IAM users must have MFA enabled
+# IAM users must have MFA enabled.
+# aws_iam_virtual_mfa_device has no user argument (user_name is read-only), so
+# Terraform cannot prove MFA for a user; any IAM user is flagged. IAM users are
+# prohibited outright by IAM_USER_PROHIBITED above.
 deny[msg] {
-    user := lib.resources[_]
-    user.type == "aws_iam_user"
-
-    not user_has_mfa(user.name)
+    user := lib.resources_of_type("aws_iam_user")[_]
 
     msg := sprintf(
-        "[IAM_USER_MFA_MISSING] IAM user %s does not have MFA enabled",
+        "[IAM_USER_MFA_MISSING] IAM user %s cannot prove MFA in Terraform",
         [user.address]
     )
-}
-
-user_has_mfa(username) {
-    mfa := lib.resources[_]
-    mfa.type == "aws_iam_virtual_mfa_device"
-    mfa.values.user == username
 }

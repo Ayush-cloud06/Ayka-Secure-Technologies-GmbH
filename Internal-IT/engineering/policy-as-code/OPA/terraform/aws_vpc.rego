@@ -12,21 +12,19 @@ deny[msg] {
 
 # VPC must have Flow Logs enabled
 deny[msg] {
-    vpc := lib.resources[_]
-    vpc.type == "aws_vpc"
-
-    not vpc_has_flow_logs(vpc.values.id)
+    vpc := lib.resources_of_type("aws_vpc")[_]
+    not has_flow_log(vpc)
 
     msg := sprintf(
         "[VPC_FLOW_LOGS_MISSING] VPC %s does not have Flow Logs enabled",
-        [vpc.values.cidr_block]
+        [vpc.address]
     )
 }
 
-vpc_has_flow_logs(vpc_id) {
-    fl := lib.resources[_]
-    fl.type == "aws_flow_log"
-    fl.values.resource_id == vpc_id
+# vpc_id is unknown at plan time for a new VPC; bind through the plan reference.
+has_flow_log(vpc) {
+    fl := lib.resources_of_type("aws_flow_log")[_]
+    lib.related(fl, "vpc_id", vpc)
 }
 
 # No route table should expose 0.0.0.0/0 directly to Internet Gateway
