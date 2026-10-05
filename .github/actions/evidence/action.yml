@@ -23,20 +23,7 @@ runs:
     - name: Checksum Artifacts
       if: always()
       shell: bash
-      run: |
-        mkdir -p evidence
-        # Hash every file the apply job will rely on. A fail run is evidence too.
-        files=""
-        for f in output/tfplan.json output/tfplan.binary output/compliance-summary.json; do
-          [ -f "$f" ] && files="$files $f"
-        done
-        if [ -z "$files" ]; then
-          echo "::warning::Nothing to checksum"
-          exit 0
-        fi
-        # shellcheck disable=SC2086
-        sha256sum $files > evidence/artifacts.sha256
-        cat evidence/artifacts.sha256
+      run: bash Internal-IT/engineering/ci-cd/scripts/checksum-evidence.sh
 
     - name: Upload Evidence Artifact
       if: always()

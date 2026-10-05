@@ -129,7 +129,7 @@ bash Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh Internal-IT/worklo
 bash Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh Internal-IT/workloads/control-validation-scenarios
 ```
 
-Expected: `ayka-portal` → `pass` (LOW 14, 4 excepted); scenarios → `fail` (HIGH 20, MEDIUM 34, LOW 10). Results land in `output/`, including `compliance-report.md`.
+Expected: `ayka-portal` → `pass` (LOW 14, 4 excepted); scenarios → `fail` (HIGH 20, MEDIUM 34, LOW 10). Results land in `output/` (summary, raw scanner JSON, `compliance-report.md`) and `evidence/` (raw copy plus `artifacts.sha256`), as in CI. The exit code follows the decision: `0` pass, `1` fail, `2` approval required, `3` tool or input error. Each run first deletes the previous `output/` and `evidence/`.
 
 ---
 
