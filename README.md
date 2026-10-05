@@ -55,13 +55,13 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 | Capability | Status | Evidence |
 |---|---|---|
 | Checkov scan of the Terraform plan | ✅ Implemented | `run-checkov.sh`, evidence run |
-| OPA/conftest custom rules on the plan | ✅ Implemented (known blind spots, see Limitations) | `OPA/terraform/*.rego`, `OPA/tests/` |
+| OPA/conftest custom rules on the plan, all modules, resources linked through plan references | ✅ Implemented (one known blind spot, see Limitations) | `OPA/terraform/*.rego`, `OPA/tests/` |
 | tfsec scan of the Terraform source | ✅ Implemented (until 2026-09 a wrapper bug dropped every tfsec finding; fixed and now tested) | `run-tfsec.sh`, `tests/compliance/test_run_tfsec.py` |
 | Finding → control mapping (38 controls, ISO/IEC 27001:2022 Annex A references) | ✅ Implemented | `control-mapping.yaml`, `tests/compliance/test_control_mapping.py` |
 | Three-way decision, fail-closed on missing or malformed scanner output | ✅ Implemented | `evaluate-results.py`, `tests/compliance/test_evaluate_results.py` |
 | Reviewed exceptions with reason, owner and expiry | ✅ Implemented | `exceptions.yaml`, "Excepted Findings" in `compliance-report.md` |
 | Negative test that must fail with named controls and tools | ✅ Implemented | `check-regression.sh`, `expected-controls.txt` |
-| Unit tests and policy tests in CI | ✅ Implemented | `unit-tests` job (21 pytest, 4 Rego tests) |
+| Unit tests and policy tests in CI | ✅ Implemented | `unit-tests` job (21 pytest, 23 Rego tests) |
 | Pinned tools and actions (checksums, commit SHAs) | ✅ Implemented | `.github/actions/*/action.yml` |
 | Evidence bundle: raw JSON, summary, Markdown report | ✅ Implemented | `.github/actions/evidence/action.yml` |
 | SHA-256 integrity check between scan and apply | ✅ Implemented (integrity, **not** tamper-proof: the hash travels with the files) | `run-apply.sh` |
