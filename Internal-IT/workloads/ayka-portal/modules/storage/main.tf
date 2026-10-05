@@ -18,7 +18,6 @@ data "aws_iam_policy_document" "bucket_notifications" {
   }
 }
 
-# checkov:skip=CKV_AWS_144:Replication is out of scope for dev
 resource "aws_s3_bucket" "access_logs" {
   bucket = "${var.name_prefix}-${var.bucket_suffix}-logs"
 }
@@ -79,7 +78,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "access_logs" {
 }
 
 resource "aws_s3_bucket" "this" {
-  # checkov:skip=CKV_AWS_144:Replication is out of scope for dev
   bucket = "${var.name_prefix}-${var.bucket_suffix}"
 }
 
