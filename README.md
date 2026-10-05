@@ -63,8 +63,8 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 | Negative test that must fail with named controls and tools | ✅ Implemented | `check-regression.sh`, `expected-controls.txt` |
 | Unit tests and policy tests in CI | ✅ Implemented | `unit-tests` job (pytest and Rego tests) |
 | Pinned tools and actions (checksums, commit SHAs) | ✅ Implemented | `.github/actions/*/action.yml` |
-| Evidence bundle: raw JSON, summary, Markdown report | ✅ Implemented | `.github/actions/evidence/action.yml` |
-| SHA-256 integrity check between scan and apply | ✅ Implemented (integrity, **not** tamper-proof: the hash travels with the files) | `run-apply.sh` |
+| Evidence bundle: plan, raw scanner JSON, summary, Markdown report, logs, and a run manifest (commit, run, tool versions, SHA-256 of mapping, exceptions, evaluator and every Rego file) | ✅ Implemented | `.github/actions/evidence/action.yml`, `write-manifest.py` |
+| SHA-256 integrity check between scan and apply over every bundled file, required files enforced, evidence must match the applied commit | ✅ Implemented (integrity, **not** tamper-proof: the hash travels with the files) | `run-apply.sh`, `tests/compliance/test_evidence.py` |
 | No cloud credentials in plan-only CI | ✅ Implemented | no OIDC or `id-token` anywhere in `.github/` |
 | Human approval before apply | ✅ Configured: `manual-apply-approval` and `medium-risk-approval` environments require the owner's review (solo repo, so self-review is allowed) | GitHub environment settings |
 | Branch protection with required checks | ✅ Configured: ruleset `protect-main` requires a PR and the five pipeline checks, and blocks force-push and deletion (0 approvals: a solo owner can't approve their own PR) | GitHub ruleset |
