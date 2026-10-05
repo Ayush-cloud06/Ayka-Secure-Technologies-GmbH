@@ -341,6 +341,37 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         self.assertEqual(sorted(summary["by_tool"]), ["checkov", "opa", "tfsec"])
         self.assertEqual(sorted(summary["metadata_coverage"]["by_tool"]), ["checkov", "opa", "tfsec"])
 
+    # Issue #16: one problem reported by several tools is one distinct issue.
+    def test_same_issue_from_three_tools_is_one_distinct_finding(self):
+        checkov = {"results": {"failed_checks": [{"check_id": "CKV_AWS_24", "check_name": "ssh",
+                                                  "resource": "module.sg.aws_security_group.web", "severity": None}]},
+                   "summary": CHECKOV_SUMMARY}
+        mapping = CONTROL_MAPPING.replace("        policy_id: AVD-AWS-0107",
+                                          "        policy_id: AVD-AWS-0107\n      - tool: checkov\n        policy_id: CKV_AWS_24")
+        self.assertIn("CKV_AWS_24", mapping)
+        opa = [{"namespace": "policies.terraform.aws_ec2", "successes": 0, "failures": [
+            {"msg": "[EC2_OPEN_SSH] Security group module.sg.aws_security_group.web allows SSH (22) from the internet"}]}]
+        result, summary = self.run_case(checkov=checkov, tfsec=self.OPEN_SSH_TFSEC, opa=opa, mapping=mapping)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(summary["totals"]["HIGH"], 3)
+        self.assertEqual(summary["distinct_totals"]["HIGH"], 1)
+        self.assertEqual(summary["distinct_findings"], [{
+            "issue": "EC2_OPEN_SSH", "resource": "module.sg.aws_security_group.web", "severity": "HIGH",
+            "tools": ["checkov", "opa", "tfsec"], "reports": 3}])
+
+    def test_opa_finding_carries_the_resource_from_its_message(self):
+        opa = [{"namespace": "policies.terraform.aws_ec2", "successes": 0, "failures": [
+            {"msg": "[EC2_OPEN_SSH] Security group module.a[0].aws_security_group.x allows SSH (22) from the internet"}]}]
+        _, summary = self.run_case(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=opa)
+        self.assertEqual(summary["findings"][0]["resource"], "module.a[0].aws_security_group.x")
+
+    def test_mapped_share_is_undefined_without_findings(self):
+        _, summary = self.run_case(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=OPA_CLEAN)
+        coverage = summary["metadata_coverage"]
+        self.assertIsNone(coverage["findings_mapped_percentage"])
+        self.assertIn("not detection coverage", coverage["description"])
+        self.assertEqual(summary["schema_version"], "2.1")
+
     OPEN_SSH_TFSEC = {"results": [{"rule_id": "AVD-AWS-0107", "resource": "module.sg", "severity": "HIGH"}]}
 
     def exception_yaml(self, expires, owner="Ayush-cloud06"):

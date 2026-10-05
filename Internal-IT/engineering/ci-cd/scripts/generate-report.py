@@ -21,18 +21,38 @@ def generate_markdown_report(summary_path, output_path):
     
     report.append("## Summary Totals")
     totals = summary.get('totals', {})
-    report.append(f"- **HIGH:** {totals.get('HIGH', 0)}")
-    report.append(f"- **MEDIUM:** {totals.get('MEDIUM', 0)}")
-    report.append(f"- **LOW:** {totals.get('LOW', 0)}")
+    distinct = summary.get('distinct_totals')
+    if distinct is None:
+        for sev in ("HIGH", "MEDIUM", "LOW"):
+            report.append(f"- **{sev}:** {totals.get(sev, 0)}")
+    else:
+        report.append("Raw findings count every report from every tool; distinct issues count one issue on one resource once.")
+        report.append("")
+        report.append("| Severity | Distinct issues | Raw findings |")
+        report.append("|----------|-----------------|--------------|")
+        for sev in ("HIGH", "MEDIUM", "LOW"):
+            report.append(f"| {sev} | {distinct.get(sev, 0)} | {totals.get(sev, 0)} |")
     report.append("")
 
-    report.append("## Metadata Coverage")
+    report.append("## Mapping Coverage")
     coverage = summary.get('metadata_coverage', {})
-    report.append(f"- **Total Findings:** {coverage.get('total_findings', 0)}")
-    report.append(f"- **Mapped Findings:** {coverage.get('mapped_findings', 0)}")
-    report.append(f"- **Unmapped Findings:** {coverage.get('unmapped_findings', 0)}")
-    report.append(f"- **Coverage Percentage:** {coverage.get('mapped_percentage', 0)}%")
+    if coverage.get('description'):
+        report.append(f"_{coverage['description']}_")
+        report.append("")
+    share = coverage.get('findings_mapped_percentage', coverage.get('mapped_percentage'))
+    report.append(f"- **Reported findings:** {coverage.get('total_findings', 0)}")
+    report.append(f"- **Mapped to a control:** {coverage.get('mapped_findings', 0)}")
+    report.append(f"- **Unmapped:** {coverage.get('unmapped_findings', 0)}")
+    report.append(f"- **Share mapped:** {'n/a (no findings)' if share is None else f'{share}%'}")
     report.append("")
+
+    if summary.get('distinct_findings'):
+        report.append("## Distinct Issues")
+        report.append("| Issue | Resource | Severity | Tools | Reports |")
+        report.append("|-------|----------|----------|-------|---------|")
+        for item in summary['distinct_findings']:
+            report.append(f"| {item['issue']} | {item.get('resource') or '-'} | {item['severity']} | {', '.join(item['tools'])} | {item['reports']} |")
+        report.append("")
 
     report.append("## Findings by Control")
     by_control = summary.get('by_control', {})
