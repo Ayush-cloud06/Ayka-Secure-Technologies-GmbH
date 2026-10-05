@@ -103,6 +103,7 @@ jobs:
         uses: ./.github/actions/evidence
         with:
           artifact_name: 'compliance-evidence-regression'
+          workload_dir: ${{ env.REGRESSION_DIR }}
 
       - name: Check Regression Results
         shell: bash

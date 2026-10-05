@@ -6,6 +6,10 @@ inputs:
     description: 'Name of the uploaded artifact'
     required: false
     default: 'compliance-evidence'
+  workload_dir:
+    description: 'Terraform workload directory, recorded in the run manifest'
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
@@ -20,6 +24,13 @@ runs:
       shell: bash
       run: bash Internal-IT/engineering/ci-cd/scripts/export-evidence.sh
 
+    - name: Write Run Manifest
+      if: always()
+      shell: bash
+      env:
+        WORKLOAD_DIR: ${{ inputs.workload_dir }}
+      run: python3 Internal-IT/engineering/ci-cd/scripts/write-manifest.py
+
     - name: Checksum Artifacts
       if: always()
       shell: bash
@@ -32,7 +43,4 @@ runs:
         name: ${{ inputs.artifact_name }}
         path: |
           evidence/
-          output/compliance-report.md
-          output/compliance-summary.json
-          output/tfplan.json
-          output/tfplan.binary
+          output/

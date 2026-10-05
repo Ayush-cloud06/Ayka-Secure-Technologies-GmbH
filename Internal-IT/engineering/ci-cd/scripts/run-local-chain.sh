@@ -31,6 +31,7 @@ echo "== 7 report and evidence (as in CI, also for a fail decision)"
 if [ -f output/compliance-summary.json ]; then
   python3 "$S/generate-report.py" > /dev/null
   bash "$S/export-evidence.sh" > /dev/null
+  WORKLOAD_DIR="$WL" python3 "$S/write-manifest.py" > /dev/null
   bash "$S/checksum-evidence.sh" > /dev/null
 fi
 if ! decision=$(jq -er '.decision' output/compliance-summary.json 2> /dev/null); then
