@@ -58,7 +58,7 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 | OPA/conftest custom rules on the plan, all modules, resources linked through plan references | ✅ Implemented (one known blind spot, see Limitations) | `OPA/terraform/*.rego`, `OPA/tests/` |
 | tfsec scan of the Terraform source | ✅ Implemented (until 2026-09 a wrapper bug dropped every tfsec finding; fixed and now tested) | `run-tfsec.sh`, `tests/compliance/test_run_tfsec.py` |
 | Finding → control mapping (38 controls, ISO/IEC 27001:2022 Annex A references) | ✅ Implemented | `control-mapping.yaml`, `tests/compliance/test_control_mapping.py` |
-| Three-way decision, fail-closed on missing or malformed scanner output | ✅ Implemented | `evaluate-results.py`, `tests/compliance/test_evaluate_results.py` |
+| Three-way decision, fail-closed on missing, malformed, errored or empty scanner output and on invalid severities | ✅ Implemented | `evaluate-results.py`, `tests/compliance/test_evaluate_results.py` |
 | Reviewed exceptions with reason, owner and expiry | ✅ Implemented | `exceptions.yaml`, "Excepted Findings" in `compliance-report.md` |
 | Negative test that must fail with named controls and tools | ✅ Implemented | `check-regression.sh`, `expected-controls.txt` |
 | Unit tests and policy tests in CI | ✅ Implemented | `unit-tests` job (pytest and Rego tests) |
@@ -66,8 +66,8 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 | Evidence bundle: raw JSON, summary, Markdown report | ✅ Implemented | `.github/actions/evidence/action.yml` |
 | SHA-256 integrity check between scan and apply | ✅ Implemented (integrity, **not** tamper-proof: the hash travels with the files) | `run-apply.sh` |
 | No cloud credentials in plan-only CI | ✅ Implemented | no OIDC or `id-token` anywhere in `.github/` |
-| Human approval before apply | ❌ Not configured yet (environment reviewers are a GitHub setting) | — |
-| Branch protection with required checks | ❌ Not configured yet (GitHub ruleset) | — |
+| Human approval before apply | ✅ Configured: `manual-apply-approval` and `medium-risk-approval` environments require the owner's review (solo repo, so self-review is allowed) | GitHub environment settings |
+| Branch protection with required checks | ✅ Configured: ruleset `protect-main` requires a PR and the five pipeline checks, and blocks force-push and deletion (0 approvals: a solo owner can't approve their own PR) | GitHub ruleset |
 | Terraform apply | 🎭 Simulated: the verified plan is not applied; the job prints `SIMULATED APPLY` | `run-apply.sh` |
 | Cost estimation | 🎭 Simulated: infracost isn't installed; the step says so and gates nothing | `run-cost-check.sh` |
 | Workload infrastructure | 🎭 Simulated: mock credentials, plan-only, never deployed | `ayka-portal/provider.tf` |
@@ -129,7 +129,7 @@ bash Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh Internal-IT/worklo
 bash Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh Internal-IT/workloads/control-validation-scenarios
 ```
 
-Expected: `ayka-portal` → `pass` (LOW 14, 4 excepted); scenarios → `fail` (HIGH 20, MEDIUM 34, LOW 10). Results land in `output/`, including `compliance-report.md`.
+Expected: `ayka-portal` → `pass` (LOW 14, 4 excepted); scenarios → `fail` (HIGH 20, MEDIUM 34, LOW 10). Results land in `output/` (summary, raw scanner JSON, `compliance-report.md`) and `evidence/` (raw copy plus `artifacts.sha256`), as in CI. The exit code follows the decision: `0` pass, `1` fail, `2` approval required, `3` tool or input error. Each run first deletes the previous `output/` and `evidence/`.
 
 ---
 

@@ -56,13 +56,19 @@ def load_yaml(path: Path):
         sys.exit(1)
 
 
-def normalize_severity(value):
-    normalized = (value or "LOW").upper()
+def normalize_severity(value, tool="scanner"):
+    """No severity means LOW (unmapped findings are raised to MEDIUM later).
+    A severity we don't recognise is malformed input, not LOW."""
+    if value is None or value == "":
+        return "LOW"
+    normalized = str(value).upper()
     if normalized == "CRITICAL":
         return "HIGH"
-    if normalized in {"HIGH", "MEDIUM", "LOW"}:
+    if normalized in {"INFO", "INFORMATIONAL"}:
+        return "LOW"
+    if normalized in SEVERITY_ORDER:
         return normalized
-    return "LOW"
+    reject_input(tool, f"unknown severity {value!r}")
 
 
 def at_least(severity, floor):
@@ -82,6 +88,13 @@ def validate_checkov(data):
         reject_input("checkov", "'results.failed_checks' is missing or not a list")
     if results.get("parsing_errors"):
         reject_input("checkov", f"parsing_errors: {results['parsing_errors']}")
+    # "Nothing failed" only means something if something was checked.
+    summary = data.get("summary")
+    if not isinstance(summary, dict):
+        reject_input("checkov", "no 'summary' object, cannot prove anything was scanned")
+    if not summary.get("resource_count") or not (summary.get("passed", 0) + summary.get("failed", 0)):
+        reject_input("checkov", f"scanned nothing (resource_count={summary.get('resource_count')}, "
+                                f"passed={summary.get('passed')}, failed={summary.get('failed')})")
 
 
 def validate_tfsec(data):
@@ -94,10 +107,33 @@ def validate_opa(data, opa_package_index):
         return  # handled by normalize_opa with the full error payload
     if not isinstance(data, list) or not data:
         reject_input("opa", "expected a non-empty list of namespace results")
-    seen = {item.get("namespace") for item in data if isinstance(item, dict)}
+    if not all(isinstance(item, dict) for item in data):
+        reject_input("opa", "every namespace result must be an object")
+    errored = {item.get("namespace"): item["errors"] for item in data if item.get("errors")}
+    if errored:
+        reject_input("opa", f"policy evaluation errors: {errored}")
+    seen = {item.get("namespace") for item in data}
     missing = sorted(set(opa_package_index) - seen)
     if missing:
         reject_input("opa", f"no result for mapped policy packages: {missing}")
+    # A mapped package with no passes and no failures ran no rules at all.
+    evaluated = {
+        item.get("namespace"): item.get("successes", 0) + len(item.get("failures") or [])
+        + len(item.get("warnings") or []) + len(item.get("exceptions") or [])
+        for item in data
+    }
+    idle = sorted(ns for ns in opa_package_index if not evaluated.get(ns))
+    if idle:
+        reject_input("opa", f"mapped policy packages evaluated no rules: {idle}")
+
+
+def validate_control_mapping(controls):
+    """The mapping decides the gate, so a typo in it must stop the run, not become LOW."""
+    bad = {cid: c.get("severity") for cid, c in controls.items()
+           if not isinstance(c, dict) or c.get("severity") not in SEVERITY_ORDER}
+    if bad:
+        print(f"Invalid control mapping: severity must be one of {SEVERITY_ORDER}: {bad}", file=sys.stderr)
+        sys.exit(1)
 
 
 def control_projection(control_id, control):
@@ -520,6 +556,7 @@ def main():
         opa_package_index,
     ) = build_control_indexes(control_mapping_data)
 
+    validate_control_mapping(controls)
     validate_checkov(checkov_data)
     validate_tfsec(tfsec_data)
     validate_opa(opa_data, opa_package_index)

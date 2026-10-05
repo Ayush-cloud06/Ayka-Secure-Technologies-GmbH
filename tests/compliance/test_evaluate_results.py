@@ -49,14 +49,16 @@ CONTROL_MAPPING = textwrap.dedent(
 OPA_CLEAN = [
     {"filename": "output/tfplan.json", "namespace": "policies.terraform.aws_ec2", "successes": 1}
 ]
-CHECKOV_CLEAN = {"results": {"failed_checks": [], "parsing_errors": []}}
+# Real checkov output always carries a summary; the evaluator needs it to prove a scan happened.
+CHECKOV_SUMMARY = {"passed": 10, "failed": 0, "skipped": 0, "parsing_errors": 0, "resource_count": 5}
+CHECKOV_CLEAN = {"results": {"failed_checks": [], "parsing_errors": []}, "summary": CHECKOV_SUMMARY}
 TFSEC_CLEAN = {"results": []}
 
 
 class EvaluateResultsRegressionTests(unittest.TestCase):
     maxDiff = None
 
-    def run_case(self, *, checkov, tfsec, opa, exceptions=None):
+    def run_case(self, *, checkov, tfsec, opa, exceptions=None, mapping=CONTROL_MAPPING):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
             output_dir = temp_path / "output"
@@ -73,7 +75,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
             )
 
             control_mapping_file = temp_path / "control-mapping.yaml"
-            control_mapping_file.write_text(CONTROL_MAPPING, encoding="utf-8")
+            control_mapping_file.write_text(mapping, encoding="utf-8")
 
             # Always point at a temp file so the repository's real exceptions never leak into tests.
             exceptions_file = temp_path / "exceptions.yaml"
@@ -107,7 +109,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
 
     def test_mapped_high_finding_fails_pipeline(self):
         result, summary = self.run_case(
-            checkov={"results": {"failed_checks": []}},
+            checkov=CHECKOV_CLEAN,
             tfsec={"results": []},
             opa=[
                 {
@@ -131,7 +133,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
 
     def test_unmapped_opa_finding_defaults_to_medium_and_requires_approval(self):
         result, summary = self.run_case(
-            checkov={"results": {"failed_checks": []}},
+            checkov=CHECKOV_CLEAN,
             tfsec={"results": []},
             opa=OPA_CLEAN + [
                 {
@@ -166,7 +168,8 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
                             "severity": "LOW",
                         }
                     ]
-                }
+                },
+                "summary": CHECKOV_SUMMARY,
             },
             tfsec={"results": []},
             opa=OPA_CLEAN,
@@ -182,7 +185,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
 
     def test_mapped_tfsec_finding_uses_metadata_severity(self):
         result, summary = self.run_case(
-            checkov={"results": {"failed_checks": []}},
+            checkov=CHECKOV_CLEAN,
             tfsec={
                 "results": [
                     {
@@ -210,7 +213,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
     def test_unmapped_tfsec_low_finding_is_raised_to_medium(self):
         # ADR-0011 changed the policy on purpose: an unmapped finding is at least MEDIUM.
         result, summary = self.run_case(
-            checkov={"results": {"failed_checks": []}},
+            checkov=CHECKOV_CLEAN,
             tfsec={
                 "results": [
                     {
@@ -245,7 +248,8 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
                     "failed_checks": [
                         {"check_id": "CKV_AWS_24", "check_name": "SSH open", "resource": "aws_security_group.x", "severity": None}
                     ]
-                }
+                },
+                "summary": CHECKOV_SUMMARY,
             },
             tfsec=TFSEC_CLEAN,
             opa=OPA_CLEAN,
@@ -298,6 +302,38 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
             opa=[{"namespace": "policies.aws.s3", "successes": 1}],
             message="policies.terraform.aws_ec2",
         )
+
+    # Issue #13: "nothing failed" must not pass when nothing was evaluated.
+    def test_checkov_that_scanned_no_resources_fails_closed(self):
+        empty = {"results": {"failed_checks": []}, "summary": dict(CHECKOV_SUMMARY, passed=0, resource_count=0)}
+        self.assert_rejected(checkov=empty, tfsec=TFSEC_CLEAN, opa=OPA_CLEAN, message="scanned nothing")
+
+    def test_checkov_without_summary_fails_closed(self):
+        self.assert_rejected(
+            checkov={"results": {"failed_checks": []}}, tfsec=TFSEC_CLEAN, opa=OPA_CLEAN, message="no 'summary'"
+        )
+
+    def test_opa_namespace_with_errors_fails_closed(self):
+        opa = [{"namespace": "policies.terraform.aws_ec2", "successes": 0, "errors": [{"msg": "evaluation failed"}]}]
+        self.assert_rejected(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=opa, message="policy evaluation errors")
+
+    def test_opa_mapped_package_that_ran_no_rules_fails_closed(self):
+        opa = [{"namespace": "policies.terraform.aws_ec2", "successes": 0}]
+        self.assert_rejected(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=opa, message="evaluated no rules")
+
+    def test_unknown_scanner_severity_fails_closed(self):
+        tfsec = {"results": [{"rule_id": "AVD-AWS-9999", "long_id": "x", "description": "x",
+                              "severity": "HGIH", "location": {"filename": "main.tf"}}]}
+        self.assert_rejected(checkov=CHECKOV_CLEAN, tfsec=tfsec, opa=OPA_CLEAN, message="unknown severity")
+
+    def test_invalid_mapping_severity_fails_closed(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=OPA_CLEAN,
+            mapping=CONTROL_MAPPING.replace("severity: MEDIUM", "severity: MEDUIM"),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIsNone(summary)
+        self.assertIn("Invalid control mapping", result.stderr)
 
     def test_all_three_tools_listed_even_without_findings(self):
         result, summary = self.run_case(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=OPA_CLEAN)
