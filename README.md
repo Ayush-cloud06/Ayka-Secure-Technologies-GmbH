@@ -137,7 +137,7 @@ Expected: `ayka-portal` → `pass` (LOW 14, 4 excepted); scenarios → `fail` (H
 
 - Nothing is deployed; the apply is simulated. Drift detection needs remote state, which doesn't exist yet.
 - OPA cannot judge an IAM policy whose JSON is unknown at plan time (it references a resource created in the same apply). Checkov is mapped to the same control.
-- The same problem reported by two or three tools counts two or three times (no de-duplication).
+- The decision counts raw findings, so one problem reported by three tools counts three times there; the summary and report also give `distinct_findings` (one issue on one resource). tfsec only names a module, so its findings are matched to resources inside that module.
 - tfsec reports findings per module, so an exception is as coarse as the module; expiry dates and CODEOWNERS review are the safety net.
 - The checksum proves integrity between jobs, not authenticity.
 - Rego uses pre-1.0 syntax pinned to conftest v0.45.0; tfsec is being folded into Trivy upstream.

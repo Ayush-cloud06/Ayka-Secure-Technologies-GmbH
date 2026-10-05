@@ -33,6 +33,10 @@ EXCEPTIONS_FILE = Path(
         "Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml",
     )
 )
+# A Terraform resource address inside an OPA message, e.g. module.a[0].aws_s3_bucket.b
+TF_ADDRESS = re.compile(
+    r"((?:module\.[A-Za-z0-9_-]+(?:\[[^\]]+\])?\.)*(?:data\.)?aws_[a-z0-9_]+\.[A-Za-z0-9_-]+(?:\[[^\]]+\])?)"
+)
 OPA_CONTROL_PREFIX = re.compile(r"^\[(?P<control_id>[A-Z0-9_]+)\]\s*(?P<message>.*)$")
 TOOLS = ("checkov", "opa", "tfsec")
 # ADR-0011: a finding nobody has mapped yet is at least MEDIUM, so a human sees it.
@@ -385,7 +389,7 @@ def normalize_opa(data, controls, opa_control_index, opa_package_index):
                     severity=mapping["severity"],
                     severity_source=mapping["severity_source"],
                     message=mapping["message"],
-                    resource=failure.get("metadata", {}).get("resource"),
+                    resource=failure.get("metadata", {}).get("resource") or address_in(raw_message),
                     mapped=mapping["mapped"],
                     mapping_method=mapping["mapping_method"],
                     control_id=mapping["control_id"],
@@ -394,6 +398,12 @@ def normalize_opa(data, controls, opa_control_index, opa_package_index):
                 )
             )
     return findings
+
+
+def address_in(message):
+    """Rego rules return strings, so the resource address is read from the message."""
+    match = TF_ADDRESS.search(message or "")
+    return match.group(1) if match else None
 
 
 def load_exceptions(today):
@@ -469,6 +479,11 @@ def build_control_summary(findings):
     return by_control
 
 
+def mapped_share(mapped, total):
+    # No findings means nothing to map: the share is undefined, not 100%.
+    return round((mapped / total) * 100, 2) if total else None
+
+
 def build_metadata_coverage(findings):
     total_findings = len(findings)
     mapped_findings = sum(1 for finding in findings if finding["mapped"])
@@ -483,18 +498,64 @@ def build_metadata_coverage(findings):
             "total_findings": total,
             "mapped_findings": mapped,
             "unmapped_findings": total - mapped,
+            "findings_mapped_percentage": mapped_share(mapped, total),
             "mapped_percentage": round((mapped / total) * 100, 2) if total else 100.0,
         }
 
     return {
+        "description": (
+            "Share of reported findings that map to a control. It is not detection coverage: "
+            "a problem no scanner reports never enters the denominator."
+        ),
         "total_findings": total_findings,
         "mapped_findings": mapped_findings,
         "unmapped_findings": unmapped_findings,
+        "findings_mapped_percentage": mapped_share(mapped_findings, total_findings),
+        # Deprecated in schema 2.1, removed in 3.0: reads 100.0 when there are no findings.
         "mapped_percentage": round((mapped_findings / total_findings) * 100, 2)
         if total_findings
         else 100.0,
         "by_tool": by_tool,
     }
+
+
+def issue_key(finding):
+    """What a finding is about: its control (or tool rule if unmapped)."""
+    if finding.get("control_id") and finding["mapped"]:
+        return finding["control_id"]
+    return f"{finding['tool']}:{finding['source']}"
+
+
+def build_distinct_findings(findings):
+    """One entry per issue on one resource, however many tools or rules reported it.
+
+    tfsec reports a module, not a resource, so a tfsec finding joins a
+    resource-level finding for the same control inside that module; on its own
+    it stays one module-level entry.
+    """
+    groups = {}
+    precise = [f for f in findings if f["tool"] != "tfsec" or not f.get("resource")]
+    coarse = [f for f in findings if f["tool"] == "tfsec" and f.get("resource")]
+    for finding in precise:
+        key = (issue_key(finding), finding.get("resource"))
+        groups.setdefault(key, []).append(finding)
+    for finding in coarse:
+        module = finding["resource"]
+        targets = [k for k in groups
+                   if k[0] == issue_key(finding) and k[1] and (k[1] == module or k[1].startswith(module + "."))]
+        for key in targets or [(issue_key(finding), module)]:
+            groups.setdefault(key, []).append(finding)
+
+    distinct = []
+    for (issue, resource), members in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][1] or "")):
+        distinct.append({
+            "issue": issue,
+            "resource": resource,
+            "severity": max((f["severity"] for f in members), key=SEVERITY_ORDER.index),
+            "tools": sorted({f["tool"] for f in members}),
+            "reports": len(members),
+        })
+    return distinct
 
 
 def build_summary(findings, excepted=()):
@@ -503,11 +564,12 @@ def build_summary(findings, excepted=()):
         by_tool_groups.setdefault(finding["tool"], []).append(finding)
 
     totals = count_by_severity(findings)
+    distinct = build_distinct_findings(findings)
     mapped_findings = [finding for finding in findings if finding["mapped"]]
     unmapped_findings = [finding for finding in findings if not finding["mapped"]]
 
     summary = {
-        "schema_version": "2.0",
+        "schema_version": "2.1",
         "decision": "pass",
         "approval_required": False,
         "decision_basis": {
@@ -524,6 +586,8 @@ def build_summary(findings, excepted=()):
         },
         "by_control": build_control_summary(mapped_findings),
         "metadata_coverage": build_metadata_coverage(findings),
+        "distinct_totals": count_by_severity(distinct),
+        "distinct_findings": distinct,
         "mapped_findings": mapped_findings,
         "unmapped_findings": unmapped_findings,
         "findings": findings,
