@@ -1,11 +1,11 @@
 package policies.terraform.aws_iam
 
+import data.policies.terraform.lib
 import future.keywords.in
 
 # No IAM policy should allow wildcard permissions
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type in {"aws_iam_policy", "aws_iam_role_policy", "aws_iam_user_policy"}
 
     policy := json.unmarshal(r.values.policy)
@@ -22,8 +22,7 @@ deny[msg] {
 
 # No inline IAM policies allowed
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type in {"aws_iam_role_policy", "aws_iam_user_policy"}
 
     msg := sprintf(
@@ -34,8 +33,7 @@ deny[msg] {
 
 # No IAM users allowed (role-only organization)
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type == "aws_iam_user"
 
     msg := sprintf(
@@ -44,23 +42,15 @@ deny[msg] {
     )
 }
 
-# IAM users must have MFA enabled
+# IAM users must have MFA enabled.
+# aws_iam_virtual_mfa_device has no user argument (user_name is read-only), so
+# Terraform cannot prove MFA for a user; any IAM user is flagged. IAM users are
+# prohibited outright by IAM_USER_PROHIBITED above.
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    user := module.resources[_]
-    user.type == "aws_iam_user"
-
-    not user_has_mfa(user.name)
+    user := lib.resources_of_type("aws_iam_user")[_]
 
     msg := sprintf(
-        "[IAM_USER_MFA_MISSING] IAM user %s does not have MFA enabled",
+        "[IAM_USER_MFA_MISSING] IAM user %s cannot prove MFA in Terraform",
         [user.address]
     )
-}
-
-user_has_mfa(username) {
-    module := input.planned_values.root_module.child_modules[_]
-    mfa := module.resources[_]
-    mfa.type == "aws_iam_virtual_mfa_device"
-    mfa.values.user == username
 }

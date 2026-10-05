@@ -131,3 +131,6 @@ desktop.ini
 # Local planning reference (not part of the project)
 ##################################
 docs/restore-plan/
+
+# Local planning docs, never committed
+.local-plans/

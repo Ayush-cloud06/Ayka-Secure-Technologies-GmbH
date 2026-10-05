@@ -1,30 +1,42 @@
 package policies.terraform.aws_s3
 
-# Buckets must not be publicly readable through ACL resources.
-deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    bucket := module.resources[_]
-    bucket.type == "aws_s3_bucket"
+import data.policies.terraform.lib
+import future.keywords.in
 
-    acl := module.resources[_]
-    acl.type == "aws_s3_bucket_acl"
-    acl.values.acl == "public-read"
+public_acls := {"public-read", "public-read-write", "authenticated-read"}
+
+# Buckets must not be publicly readable through an ACL bound to that bucket.
+deny[msg] {
+    bucket := lib.resources_of_type("aws_s3_bucket")[_]
+    acl := lib.resources_of_type("aws_s3_bucket_acl")[_]
+    lib.related(acl, "bucket", bucket)
+    acl.values.acl in public_acls
 
     msg := sprintf("[S3_PUBLIC_ACCESS] S3 bucket %s is public", [bucket.address])
 }
 
-# Buckets must define server-side encryption configuration.
+# Legacy inline acl argument on the bucket itself.
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    bucket := module.resources[_]
-    bucket.type == "aws_s3_bucket"
+    bucket := lib.resources_of_type("aws_s3_bucket")[_]
+    object.get(bucket.values, "acl", "") in public_acls
 
-    not module_has_s3_encryption(module)
+    msg := sprintf("[S3_PUBLIC_ACCESS] S3 bucket %s is public", [bucket.address])
+}
+
+# Every bucket must have its own server-side encryption configuration.
+deny[msg] {
+    bucket := lib.resources_of_type("aws_s3_bucket")[_]
+    not has_encryption(bucket)
 
     msg := sprintf("[S3_ENCRYPTION_MISSING] S3 bucket %s is not encrypted", [bucket.address])
 }
 
-module_has_s3_encryption(module) {
-    encryption := module.resources[_]
-    encryption.type == "aws_s3_bucket_server_side_encryption_configuration"
+has_encryption(bucket) {
+    encryption := lib.resources_of_type("aws_s3_bucket_server_side_encryption_configuration")[_]
+    lib.related(encryption, "bucket", bucket)
+}
+
+# Legacy inline server_side_encryption_configuration block on the bucket.
+has_encryption(bucket) {
+    count(object.get(bucket.values, "server_side_encryption_configuration", [])) > 0
 }
