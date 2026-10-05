@@ -39,7 +39,7 @@ Two workloads exercise the gate:
 
 | Workload | Role | Decision |
 |---|---|---|
-| [`ayka-portal`](Internal-IT/workloads/ayka-portal/) | Realistic workload, ~87 resources (VPC, ALB + WAF, ECS Fargate, Multi-AZ RDS, S3, KMS) | **pass**: 14 LOW, 4 findings excepted with reasons |
+| [`ayka-portal`](Internal-IT/workloads/ayka-portal/) | Realistic workload, ~87 resources (VPC, ALB + WAF, ECS Fargate, Multi-AZ RDS, S3, KMS) | **pass**: 6 LOW, 12 findings excepted with reasons |
 | [`control-validation-scenarios`](Internal-IT/workloads/control-validation-scenarios/) | Deliberately insecure (public S3, open SSH, IMDSv1, no encryption, open NACL) | **fail**: 20 HIGH, 33 MEDIUM, 10 LOW, with the controls in [`expected-controls.txt`](Internal-IT/workloads/control-validation-scenarios/expected-controls.txt) |
 
 ---
