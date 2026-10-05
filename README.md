@@ -136,7 +136,7 @@ Expected: `ayka-portal` → `pass` (LOW 14, 4 excepted); scenarios → `fail` (H
 ## 5. Known limitations
 
 - Nothing is deployed; the apply is simulated. Drift detection needs remote state, which doesn't exist yet.
-- OPA misses standalone security-group rule resources and list-form IAM actions. Checkov covers both through the mapping; the Rego fix is tracked in #12 and #20.
+- OPA's IAM wildcard rule misses list-form actions and service wildcards. Checkov covers this through the mapping; the Rego fix is tracked in #20.
 - The same problem reported by two or three tools counts two or three times (no de-duplication).
 - tfsec reports findings per module, so an exception is as coarse as the module; expiry dates and CODEOWNERS review are the safety net.
 - The checksum proves integrity between jobs, not authenticity.

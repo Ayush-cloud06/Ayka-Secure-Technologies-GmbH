@@ -5,36 +5,92 @@ import future.keywords.in
 
 # Public SSH open to the internet
 deny[msg] {
-    sg := lib.resources[_]
-    sg.type == "aws_security_group"
-
-    rule := sg.values.ingress[_]
-    rule.from_port == 22
-    rule.to_port == 22
-    rule.protocol == "tcp"
-    rule.cidr_blocks[_] == "0.0.0.0/0"
+    rule := ingress_rules[_]
+    exposes_port(rule, 22)
 
     msg := sprintf(
         "[EC2_OPEN_SSH] Security group %s allows SSH (22) from the internet",
-        [sg.address]
+        [rule.address]
     )
 }
 
 # HTTP open to the internet
 deny[msg] {
-    sg := lib.resources[_]
-    sg.type == "aws_security_group"
-
-    rule := sg.values.ingress[_]
-    rule.from_port == 80
-    rule.to_port == 80
-    rule.protocol == "tcp"
-    rule.cidr_blocks[_] == "0.0.0.0/0"
+    rule := ingress_rules[_]
+    exposes_port(rule, 80)
 
     msg := sprintf(
         "[EC2_HTTP_OPEN] Security group %s allows HTTP (80) from the internet",
-        [sg.address]
+        [rule.address]
     )
+}
+
+# Ingress rules from all three ways Terraform can declare them, in one shape:
+# {address, protocol, from_port, to_port, cidrs}.
+
+# Inline ingress blocks on aws_security_group.
+ingress_rules[rule] {
+    sg := lib.resources_of_type("aws_security_group")[_]
+    block := object.get(sg.values, "ingress", [])[_]
+    rule := {
+        "address": sg.address,
+        "protocol": lower(sprintf("%v", [block.protocol])),
+        "from_port": object.get(block, "from_port", null),
+        "to_port": object.get(block, "to_port", null),
+        "cidrs": cidrs(block, "cidr_blocks", "ipv6_cidr_blocks"),
+    }
+}
+
+# Legacy standalone aws_security_group_rule (type = "ingress").
+ingress_rules[rule] {
+    r := lib.resources_of_type("aws_security_group_rule")[_]
+    r.values.type == "ingress"
+    rule := {
+        "address": r.address,
+        "protocol": lower(sprintf("%v", [r.values.protocol])),
+        "from_port": object.get(r.values, "from_port", null),
+        "to_port": object.get(r.values, "to_port", null),
+        "cidrs": cidrs(r.values, "cidr_blocks", "ipv6_cidr_blocks"),
+    }
+}
+
+# Current standalone aws_vpc_security_group_ingress_rule.
+ingress_rules[rule] {
+    r := lib.resources_of_type("aws_vpc_security_group_ingress_rule")[_]
+    rule := {
+        "address": r.address,
+        "protocol": lower(sprintf("%v", [r.values.ip_protocol])),
+        "from_port": object.get(r.values, "from_port", null),
+        "to_port": object.get(r.values, "to_port", null),
+        "cidrs": {c | c := [object.get(r.values, "cidr_ipv4", null), object.get(r.values, "cidr_ipv6", null)][_]; is_string(c)},
+    }
+}
+
+cidrs(obj, v4, v6) = {c | c := array.concat(list_or_empty(obj, v4), list_or_empty(obj, v6))[_]}
+
+list_or_empty(obj, key) = value {
+    value := obj[key]
+    is_array(value)
+} else = []
+
+internet := {"0.0.0.0/0", "::/0"}
+
+all_protocols := {"-1", "all"}
+
+tcp := {"tcp", "6"}
+
+# All traffic: ports do not matter.
+exposes_port(rule, port) {
+    rule.protocol in all_protocols
+    rule.cidrs[_] in internet
+}
+
+# TCP range that contains the port.
+exposes_port(rule, port) {
+    rule.protocol in tcp
+    rule.cidrs[_] in internet
+    rule.from_port <= port
+    port <= rule.to_port
 }
 
 # EC2 must enforce IMDSv2 (http_tokens = "required")
