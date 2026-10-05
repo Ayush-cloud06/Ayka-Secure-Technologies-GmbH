@@ -10,10 +10,17 @@ data "aws_iam_policy_document" "bucket_notifications" {
       identifiers = ["s3.amazonaws.com"]
     }
 
+    # Both buckets publish ObjectCreated events to this topic.
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = [aws_s3_bucket.this.arn]
+      values   = [aws_s3_bucket.this.arn, aws_s3_bucket.access_logs.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [var.account_id]
     }
   }
 }
@@ -31,15 +38,84 @@ resource "aws_s3_bucket_public_access_block" "access_logs" {
   restrict_public_buckets = true
 }
 
+# SSE-S3, not KMS: ALB access logs and S3 server access logs can only be
+# delivered to a bucket encrypted with SSE-S3. See exceptions.yaml.
 resource "aws_s3_bucket_server_side_encryption_configuration" "access_logs" {
   bucket = aws_s3_bucket.access_logs.id
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = var.kms_key_arn
-      sse_algorithm     = "aws:kms"
+      sse_algorithm = "AES256"
     }
   }
+}
+
+# Who may write logs here: the regional ELB log-delivery account (ALB access
+# logs under alb/) and the S3 logging service (server access logs under s3/,
+# only from this workload's bucket and account). Plain HTTP is refused.
+data "aws_elb_service_account" "this" {}
+
+data "aws_iam_policy_document" "access_logs" {
+  statement {
+    sid       = "AlbAccessLogDelivery"
+    effect    = "Allow"
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.access_logs.arn}/alb/AWSLogs/${var.account_id}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_elb_service_account.this.arn]
+    }
+  }
+
+  statement {
+    sid       = "S3ServerAccessLogDelivery"
+    effect    = "Allow"
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.access_logs.arn}/s3/*"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["logging.s3.amazonaws.com"]
+    }
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = [aws_s3_bucket.this.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [var.account_id]
+    }
+  }
+
+  statement {
+    sid       = "DenyInsecureTransport"
+    effect    = "Deny"
+    actions   = ["s3:*"]
+    resources = [aws_s3_bucket.access_logs.arn, "${aws_s3_bucket.access_logs.arn}/*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "access_logs" {
+  bucket = aws_s3_bucket.access_logs.id
+  policy = data.aws_iam_policy_document.access_logs.json
+
+  depends_on = [aws_s3_bucket_public_access_block.access_logs]
 }
 
 resource "aws_s3_bucket_ownership_controls" "access_logs" {
@@ -155,7 +231,7 @@ resource "aws_s3_bucket_notification" "this" {
   depends_on = [aws_sns_topic_policy.bucket_events]
 }
 
-# Add notification for access_logs to satisfy CKV2_AWS_62
+# Log-bucket writes are events too; the topic policy above allows this bucket.
 resource "aws_s3_bucket_notification" "access_logs" {
   bucket = aws_s3_bucket.access_logs.id
 

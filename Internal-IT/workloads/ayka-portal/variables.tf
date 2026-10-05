@@ -1,3 +1,14 @@
+variable "account_id" {
+  description = "AWS account that owns the workload. The default is AWS's documentation account, enough for plan-only CI; set the real account for any apply."
+  type        = string
+  default     = "123456789012"
+
+  validation {
+    condition     = can(regex("^[0-9]{12}$", var.account_id))
+    error_message = "account_id must be a 12-digit AWS account ID."
+  }
+}
+
 variable "aws_region" {
   type    = string
   default = "ap-south-1"

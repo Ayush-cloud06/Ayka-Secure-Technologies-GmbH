@@ -79,3 +79,22 @@ exceptions:
       aws_wafv2_web_acl_association to the ACL.
     owner: Ayush-cloud06
     expires: 2027-03-31
+  # The log bucket must use SSE-S3 (#19).
+  - policy_id: CKV_AWS_145
+    resource: module.storage.aws_s3_bucket.access_logs
+    reason: &log_bucket_sse_s3 >-
+      ALB access logs and S3 server access logs can only be delivered to a bucket
+      encrypted with SSE-S3 (AES256), not SSE-KMS:
+      https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+      https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+      The data bucket (aws_s3_bucket.this) still uses the workload KMS key.
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: AVD-AWS-0132
+    resource: module.storage
+    reason: >-
+      Same SSE-S3 requirement for aws_s3_bucket.access_logs. tfsec names only the module,
+      so this entry would also hide a customer-key gap on aws_s3_bucket.this; Checkov
+      CKV_AWS_145 still checks that bucket by resource address.
+    owner: Ayush-cloud06
+    expires: 2027-03-31
