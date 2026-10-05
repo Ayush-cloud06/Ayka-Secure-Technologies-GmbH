@@ -28,9 +28,22 @@ test_ssh_from_private_range_is_allowed {
 	count(denied) == 0
 }
 
-# Known gap: resources in the root module are not inspected.
-# This test documents today's behaviour. When you fix the gap, flip it to expect a denial.
-test_known_gap_root_module_is_not_inspected {
+# Resources in the root module are inspected (issue #10).
+test_root_module_is_inspected {
 	root_only := {"planned_values": {"root_module": {"resources": [open_ssh_sg]}}}
-	count(aws_ec2.deny) == 0 with input as root_only
+	some msg
+	aws_ec2.deny[msg] with input as root_only
+	startswith(msg, "[EC2_OPEN_SSH]")
+}
+
+# Resources in nested modules (module.a.module.b) are inspected (issue #10).
+test_nested_module_is_inspected {
+	nested := {"planned_values": {"root_module": {"child_modules": [{
+		"address": "module.a",
+		"resources": [],
+		"child_modules": [{"address": "module.a.module.b", "resources": [open_ssh_sg]}],
+	}]}}}
+	some msg
+	aws_ec2.deny[msg] with input as nested
+	startswith(msg, "[EC2_OPEN_SSH]")
 }

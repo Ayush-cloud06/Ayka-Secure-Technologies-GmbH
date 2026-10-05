@@ -1,8 +1,10 @@
 package policies.terraform.aws_s3
 
+import data.policies.terraform.lib
+
 # Buckets must not be publicly readable through ACL resources.
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
+    module := lib.modules[_]
     bucket := module.resources[_]
     bucket.type == "aws_s3_bucket"
 
@@ -15,7 +17,7 @@ deny[msg] {
 
 # Buckets must define server-side encryption configuration.
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
+    module := lib.modules[_]
     bucket := module.resources[_]
     bucket.type == "aws_s3_bucket"
 

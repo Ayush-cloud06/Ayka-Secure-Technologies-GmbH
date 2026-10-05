@@ -1,11 +1,11 @@
 package policies.terraform.aws_ec2
 
+import data.policies.terraform.lib
 import future.keywords.in
 
 # Public SSH open to the internet
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    sg := module.resources[_]
+    sg := lib.resources[_]
     sg.type == "aws_security_group"
 
     rule := sg.values.ingress[_]
@@ -22,8 +22,7 @@ deny[msg] {
 
 # HTTP open to the internet
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    sg := module.resources[_]
+    sg := lib.resources[_]
     sg.type == "aws_security_group"
 
     rule := sg.values.ingress[_]
@@ -40,8 +39,7 @@ deny[msg] {
 
 # EC2 must enforce IMDSv2 (http_tokens = "required")
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type == "aws_instance"
 
     metadata := r.values.metadata_options[_]
@@ -54,8 +52,7 @@ deny[msg] {
 }
 
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type == "aws_instance"
     count(r.values.metadata_options) == 0
 
@@ -67,8 +64,7 @@ deny[msg] {
 
 # Instance root volume must be encrypted when root block devices are explicitly defined
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type == "aws_instance"
 
     disk := r.values.root_block_device[_]
@@ -82,8 +78,7 @@ deny[msg] {
 
 # EC2 instances must have mandatory tags: Environment, Owner, CostCenter
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type == "aws_instance"
 
     missing := missing_tags(r.values.tags)
@@ -108,8 +103,7 @@ missing_tags(tags) = missing {
 
 # Small instance types not allowed in Production
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type == "aws_instance"
 
     r.values.tags != null
@@ -126,8 +120,7 @@ deny[msg] {
 
 # No Spot instances allowed in Production
 deny[msg] {
-    module := input.planned_values.root_module.child_modules[_]
-    r := module.resources[_]
+    r := lib.resources[_]
     r.type == "aws_instance"
 
     r.values.tags != null
