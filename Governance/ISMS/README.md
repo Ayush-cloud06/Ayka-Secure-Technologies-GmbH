@@ -41,6 +41,7 @@
 | 03 Risk management | [2026 Q1 risk assessment](03-risk-management/risk-assessment-results/2026-q1-risk-assessment.md) | Draft | Clause 8.2 | Marked as a retrospective reconstruction |
 | 03 Risk management | [2026 Q2 risk review](03-risk-management/risk-assessment-results/2026-q2-risk-review.md) | Draft | Clause 8.2 | Its drift reading matches the workflow history |
 | 04 Controls and SoA | [IAM to ISO 27001 mapping](04-controls-and-soa/iam-iso27001-mapping.md) | Draft | A.5.15 to A.5.18, A.8.2 to A.8.5 | Has broken `Internal-IT/iam/` paths and shifted A.5 labels; fix before relying on it |
+| 04 Controls and SoA | [Control chain: S3 encryption](04-controls-and-soa/control-chain-s3-encryption.md) | Draft | A.8.24 | Risk → requirement → implementation → tests → CI evidence; owner review pending. Template for other controls |
 | 04 Controls and SoA | Statement of Applicability | Planned | Clause 6.1.3 d | Every Annex A control: applicable or not, and why; link applicable ones to `control-mapping.yaml` |
 | 04 Controls and SoA | [Control mapping to Internal-IT](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) | Covered elsewhere | Clause 6.1.3 | The real mapping: 38 controls with ISO 27001 refs, read by the evaluator |
 | 04 Controls and SoA | Control gap analysis | Planned | Clause 6.1.3 | Difference between the SoA and the controls the gate enforces |
