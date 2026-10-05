@@ -58,7 +58,7 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 | OPA/conftest custom rules on the plan, all modules, resources linked through plan references | ✅ Implemented (one known blind spot, see Limitations) | `OPA/terraform/*.rego`, `OPA/tests/` |
 | tfsec scan of the Terraform source | ✅ Implemented (until 2026-09 a wrapper bug dropped every tfsec finding; fixed and now tested) | `run-tfsec.sh`, `tests/compliance/test_run_tfsec.py` |
 | Finding → control mapping (38 controls, ISO/IEC 27001:2022 Annex A references) | ✅ Implemented | `control-mapping.yaml`, `tests/compliance/test_control_mapping.py` |
-| Three-way decision, fail-closed on missing or malformed scanner output | ✅ Implemented | `evaluate-results.py`, `tests/compliance/test_evaluate_results.py` |
+| Three-way decision, fail-closed on missing, malformed, errored or empty scanner output and on invalid severities | ✅ Implemented | `evaluate-results.py`, `tests/compliance/test_evaluate_results.py` |
 | Reviewed exceptions with reason, owner and expiry | ✅ Implemented | `exceptions.yaml`, "Excepted Findings" in `compliance-report.md` |
 | Negative test that must fail with named controls and tools | ✅ Implemented | `check-regression.sh`, `expected-controls.txt` |
 | Unit tests and policy tests in CI | ✅ Implemented | `unit-tests` job (pytest and Rego tests) |
