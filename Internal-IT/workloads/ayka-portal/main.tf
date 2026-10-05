@@ -25,6 +25,7 @@ module "storage" {
   name_prefix   = var.name_prefix
   bucket_suffix = var.bucket_suffix
   kms_key_arn   = aws_kms_key.workload.arn
+  account_id    = var.account_id
 }
 
 module "database" {

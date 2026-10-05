@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "kms_workload" {
     resources = ["*"]
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::123456789012:root"]
+      identifiers = ["arn:aws:iam::${var.account_id}:root"]
     }
   }
 
