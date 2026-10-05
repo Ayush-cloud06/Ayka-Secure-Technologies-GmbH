@@ -1,14 +1,32 @@
-# Ayka: a compliance-as-code gate for Terraform
+# Ayka: a compliance-as-code gate for Terraform plans
 
 [![PR Compliance Pipeline](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/workflows/test.yml)
 
-> **A compliance-as-code gate for Terraform.** Checkov + tfsec + OPA scan a Terraform plan → findings are mapped to controls → a fail-closed evaluator decides pass / approval / fail → a checksummed evidence bundle and a human-readable report are produced. It is demonstrated on **Ayka Secure Technologies GmbH**, a **simulated** ISO 27001 case-study company.
+Every pull request's Terraform plan is scanned by **Checkov, tfsec and custom OPA rules**. Findings are mapped to **38 controls** (ISO/IEC 27001:2022 Annex A references), a **fail-closed evaluator** decides **pass / approval required / fail**, and the run leaves a **checksummed evidence bundle** that the apply job verifies. `main` only accepts changes through that gate.
 
-**What this is not.** Nothing is deployed. Terraform plans run offline with mock credentials, and the apply step is simulated and says so at runtime. The company, its ISMS and its people are a simulated case study, not a certified or operating ISMS.
+## 1. What it shows
 
----
+One pipeline run on `main` ([run 37265256207](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/37265256207), commit `26d08f1`) checks two workloads:
 
-## 1. How it works
+| Workload | What it is | Decision | Detail |
+|---|---|---|---|
+| [`ayka-portal`](Internal-IT/workloads/ayka-portal/) | Reference workload, ~88 resources: VPC, ALB + WAF, ECS Fargate, Multi-AZ RDS, S3, KMS | **pass** | 6 LOW; 14 findings set aside in [`exceptions.yaml`](Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml), each with a reason, owner and expiry |
+| [`control-validation-scenarios`](Internal-IT/workloads/control-validation-scenarios/) | Deliberately insecure: public S3, open SSH, IMDSv1, no encryption, open NACL, VPC without flow logs | **fail** (required) | 20 HIGH / 34 MEDIUM / 10 LOW raw, 7 / 25 / 9 as distinct issues; every control in [`expected-controls.txt`](Internal-IT/workloads/control-validation-scenarios/expected-controls.txt) must be reported by its named tools, or the build fails |
+
+The second row is the point: a gate that has never been shown to fail proves nothing. Any MEDIUM finding stops the run at a GitHub environment that needs a human reviewer; the evaluator tests cover that path.
+
+Each run's `compliance-evidence` artifact holds the plan, raw scanner output, `compliance-summary.json`, a Markdown report, `manifest.json` (commit, run, tool versions, SHA-256 of the mapping, exceptions, evaluator and every Rego file) and `artifacts.sha256` over all of it. One control is traced end to end, from risk to evidence, in [control-chain-s3-encryption.md](Governance/ISMS/04-controls-and-soa/control-chain-s3-encryption.md).
+
+## 2. Scope: a plan-analysis gate
+
+This project judges **Terraform plans**. It does not deploy them.
+
+- Plans run offline with mock credentials. The apply job verifies the evidence and then prints `SIMULATED APPLY`; nothing is created.
+- `ayka-portal` is realistic enough to give the scanners real work, but its runtime parts are placeholders: the `nginx:stable` container image, a placeholder AMI, AWS's documentation account ID (`123456789012`, a validated variable) and a self-signed certificate.
+- So a pass means "this plan meets the mapped controls", not "this system runs securely". Operating evidence would need a deployment, which is out of scope.
+- Ayka Secure Technologies GmbH and its ISMS are a simulated case study, not a certified or operating ISMS.
+
+## 3. How it works
 
 ```mermaid
 flowchart LR
@@ -30,27 +48,16 @@ flowchart LR
     D -->|"only LOW"| OK["pass"]
     A --> AP["apply job<br/>SIMULATED, labelled"]
     OK --> AP
-    E --> EV["evidence bundle<br/>summary, report, sha256"]
+    E --> EV["evidence bundle<br/>summary, report,<br/>manifest, sha256"]
 ```
 
 **How a finding becomes a decision.** A scanner reports a rule ID (for example tfsec `AVD-AWS-0107`, Checkov `CKV_AWS_24`, or OPA `[EC2_OPEN_SSH]`). The evaluator looks it up in [`control-mapping.yaml`](Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml), and the *control's* severity counts, not the scanner's. A finding nobody has mapped counts as at least MEDIUM, so a human sees it. Any HIGH fails the build, any MEDIUM needs approval. A finding can only be set aside through [`exceptions.yaml`](Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml), with a reason, an owner and an expiry date, and it still appears in the report.
 
-Two workloads exercise the gate:
-
-| Workload | Role | Decision |
-|---|---|---|
-| [`ayka-portal`](Internal-IT/workloads/ayka-portal/) | Realistic workload, ~88 resources (VPC, ALB + WAF, ECS Fargate, Multi-AZ RDS, S3, KMS) | **pass**: 6 LOW, 14 findings excepted with reasons |
-| [`control-validation-scenarios`](Internal-IT/workloads/control-validation-scenarios/) | Deliberately insecure (public S3, open SSH, IMDSv1, no encryption, open NACL) | **fail**: 20 HIGH, 34 MEDIUM, 10 LOW, with the controls in [`expected-controls.txt`](Internal-IT/workloads/control-validation-scenarios/expected-controls.txt) |
-
----
-
-## 2. Yardstick: capability status
+## 4. Capability status
 
 - **Implemented** = runs in CI, and a run or a test shows it doing the real thing.
 - **Simulated** = runs, but its effect is faked on purpose, and it says so.
 - **Planned** = designed or written down only, including Terraform the gate never scans.
-
-Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/36444940223) on [PR #7](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/pull/7).
 
 | Capability | Status | Evidence |
 |---|---|---|
@@ -70,7 +77,7 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 | Branch protection with required checks | ✅ Configured: ruleset `protect-main` requires a PR and the five pipeline checks, and blocks force-push and deletion (0 approvals: a solo owner can't approve their own PR) | GitHub ruleset |
 | Terraform apply | 🎭 Simulated: the verified plan is not applied; the job prints `SIMULATED APPLY` | `run-apply.sh` |
 | Cost estimation | 🎭 Simulated: infracost isn't installed; the step says so and gates nothing | `run-cost-check.sh` |
-| Workload infrastructure | 🎭 Simulated: mock credentials, plan-only, never deployed | `ayka-portal/provider.tf` |
+| Workload infrastructure | 🎭 Simulated: mock credentials, plan-only, never deployed (by design, see "Scope") | `ayka-portal/provider.tf` |
 | The company, ISMS, personnel, risk register | 🎭 Simulated case study; placeholders replaced by one [ISMS index](Governance/ISMS/README.md) | `Governance/`, `organization/` |
 | AWS Organizations, SCPs, landing zone, IAM core, Identity Center, Entra ID | 📐 Planned: design-only (validates locally, not gated) | `Internal-IT/platform/` |
 | Drift detection | 📐 Planned: a manual workflow exists and refuses to run without a remote backend | `drift-detection.yml` |
@@ -78,46 +85,9 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 
 **Not claimed:** Terragrunt, SIEM integration, SOC 2 / NIST CSF / CIS mappings, zero-trust, continuous monitoring, automated remediation, delegated administration, incident-response workflows, audit-readiness, certification.
 
-### Definition of Done: "flagship-ready"
-
-- [ ] **D1** No plaintext credentials in `HEAD` ✅; tenant check and rotation decision recorded ⏳ *(owner action)*
-- [x] **D2** Zero empty or title-only tracked files
-- [ ] **D3** CI green on `main` with all three scanners counted *(green on PR #7; pending merge)*
-- [x] **D4** pytest and `opa test` run in CI and pass
-- [x] **D5** Regression job fails the build if the insecure scenarios stop failing (it reports 5 missing tfsec pairs on the old run #68 data)
-- [x] **D6** Every non-LOW finding on `ayka-portal` is fixed or excepted with a written reason, owner and expiry
-- [ ] **D7** Branch protection + environment reviewer configured *(owner action)*
-- [x] **D8** This capability table matches reality
-- [x] **D9** No links to untracked or local paths
-- [ ] **D10** The author can explain every line of the evaluator and demo it in 3 minutes
-
 ---
 
-## 3. The path
-
-```mermaid
-flowchart LR
-    P0["0 Orient<br/>baseline tag, tools"] --> P1["1 Secrets<br/>remove credentials"]
-    P1 --> P2["2 Codex triage<br/>archive AI branch"]
-    P2 --> P3["3 Prune<br/>delete placeholders"]
-    P3 --> P4["4 Honest green<br/>fix tfsec, tests in CI"]
-    P4 --> P5["5 README + demo"]
-    P5 --> P6["6 Growth, optional<br/>state, sandbox apply"]
-```
-
-| Phase | Goal | Proof | Status |
-|---|---|---|:---:|
-| 0 Orient | Re-learn, pin tools, tag the baseline | tag `baseline-2026-10`; local chain reproduced CI run #68 exactly | ☑ |
-| 1 Secrets | No plaintext credentials | password literals replaced (`random_password`, manual break-glass); tenant check pending | ◐ |
-| 2 Codex triage | Decide the fate of the AI-cleanup branch | archived privately; nothing taken | ☑ |
-| 3 Prune | Zero placeholders, one pipeline source | 170 files removed; 8/8 roots validate | ☑ |
-| 4 Honest green | Gate sees everything; tests bite | [green PR run](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/36444940223) with tfsec counted; GitHub settings pending | ◐ |
-| 5 README + demo | Honest docs, 3-minute demo | this README; demo rehearsal pending | ◐ |
-| 6 Next growth | Remote state → sandbox apply → governance linked to evidence | optional | ☐ |
-
----
-
-## 4. Run it locally
+## 5. Run it locally
 
 Every tool is pinned in [`toolchain.versions`](Internal-IT/engineering/ci-cd/toolchain.versions), with the same versions and checksums as CI (a test keeps them in sync). One command installs them into `.tools/` (Linux x86-64; needs `curl`, `unzip`, `python3`, `jq`):
 
@@ -136,16 +106,16 @@ Expected: `ayka-portal` → `pass` (LOW 6, 14 excepted); scenarios → `fail` (H
 
 ---
 
-## 5. Known limitations
+## 6. Known limitations
 
 - Nothing is deployed; the apply is simulated. Drift detection needs remote state, which doesn't exist yet.
 - OPA cannot judge an IAM policy whose JSON is unknown at plan time (it references a resource created in the same apply). Checkov is mapped to the same control.
 - The decision counts raw findings, so one problem reported by three tools counts three times there; the summary and report also give `distinct_findings` (one issue on one resource). tfsec only names a module, so its findings are matched to resources inside that module.
-- tfsec reports findings per module, so an exception is as coarse as the module; expiry dates and CODEOWNERS review are the safety net.
 - The checksum proves integrity between jobs, not authenticity.
 - Rego uses pre-1.0 syntax pinned to conftest v0.45.0 (OPA 0.56.0). Upgrade path: rewrite rules as `deny contains msg if`, which OPA 0.56 already accepts with `future.keywords`, then raise the conftest and OPA pins together in `toolchain.versions` and `.github/`. tfsec is being folded into Trivy upstream.
+- Exceptions for tfsec name a whole module (tfsec reports no resource), so one entry can cover more than one resource.
 
-## 6. Repository map
+## 7. Repository map
 
 | Path | What it is |
 |---|---|
@@ -156,6 +126,9 @@ Expected: `ayka-portal` → `pass` (LOW 6, 14 excepted); scenarios → `fail` (H
 | [`tests/`](tests/) | Evaluator, wrapper and mapping tests |
 | [`Internal-IT/platform/`](Internal-IT/platform/) | Design-only context: organization, landing zone, identity (not gated) |
 | [`Governance/`](Governance/), [`organization/`](organization/) | The simulated ISMS case study; [`Governance/ISMS/README.md`](Governance/ISMS/README.md) lists every document as Draft, Covered elsewhere or Planned |
+| [`docs/restoration-history.md`](docs/restoration-history.md) | How the repository was restored in 2026: phases, Definition of Done, audit remediation |
+
+How the repository was restored in 2026, including the Definition of Done, is in [docs/restoration-history.md](docs/restoration-history.md).
 
 ## License
 
