@@ -55,7 +55,7 @@ Evidence run: [first honest-green run, 2026-09-28](https://github.com/Ayush-clou
 | Capability | Status | Evidence |
 |---|---|---|
 | Checkov scan of the Terraform plan | ✅ Implemented | `run-checkov.sh`, evidence run |
-| OPA/conftest custom rules on the plan, all modules, resources linked through plan references | ✅ Implemented (one known blind spot, see Limitations) | `OPA/terraform/*.rego`, `OPA/tests/` |
+| OPA/conftest custom rules on the plan, all modules, resources linked through plan references | ✅ Implemented (blind spot: policy JSON unknown at plan time, see Limitations) | `OPA/terraform/*.rego`, `OPA/tests/` |
 | tfsec scan of the Terraform source | ✅ Implemented (until 2026-09 a wrapper bug dropped every tfsec finding; fixed and now tested) | `run-tfsec.sh`, `tests/compliance/test_run_tfsec.py` |
 | Finding → control mapping (38 controls, ISO/IEC 27001:2022 Annex A references) | ✅ Implemented | `control-mapping.yaml`, `tests/compliance/test_control_mapping.py` |
 | Three-way decision, fail-closed on missing, malformed, errored or empty scanner output and on invalid severities | ✅ Implemented | `evaluate-results.py`, `tests/compliance/test_evaluate_results.py` |
@@ -136,7 +136,7 @@ Expected: `ayka-portal` → `pass` (LOW 14, 4 excepted); scenarios → `fail` (H
 ## 5. Known limitations
 
 - Nothing is deployed; the apply is simulated. Drift detection needs remote state, which doesn't exist yet.
-- OPA's IAM wildcard rule misses list-form actions and service wildcards. Checkov covers this through the mapping; the Rego fix is tracked in #20.
+- OPA cannot judge an IAM policy whose JSON is unknown at plan time (it references a resource created in the same apply). Checkov is mapped to the same control.
 - The same problem reported by two or three tools counts two or three times (no de-duplication).
 - tfsec reports findings per module, so an exception is as coarse as the module; expiry dates and CODEOWNERS review are the safety net.
 - The checksum proves integrity between jobs, not authenticity.
