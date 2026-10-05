@@ -27,3 +27,55 @@ exceptions:
       bucket, which is out of scope for this workload.
     owner: Ayush-cloud06
     expires: 2027-03-31
+  # Moved from inline checkov:skip comments (#18). Checkov scans the plan JSON, where
+  # inline skips are ignored, so these findings were counted while the source said skipped.
+  - policy_id: CKV2_AWS_5
+    resource: module.security.aws_security_group.alb
+    reason: &cross_module_sg >-
+      False positive. The group is attached in another module (compute/alb.tf,
+      compute/ecs.tf, compute/ec2.tf, database/main.tf); CKV2_AWS_5 only checks
+      attachments inside the module that declares the group.
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: CKV2_AWS_5
+    resource: module.security.aws_security_group.ecs
+    reason: *cross_module_sg
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: CKV2_AWS_5
+    resource: module.security.aws_security_group.ec2
+    reason: *cross_module_sg
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: CKV2_AWS_5
+    resource: module.security.aws_security_group.rds
+    reason: *cross_module_sg
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: CKV2_AWS_57
+    resource: module.database.aws_secretsmanager_secret.db
+    reason: >-
+      Rotation needs a rotation Lambda, which this plan-only dev workload does not
+      deploy. Accepted for dev only; see the SECRETS_MANAGER_ROTATION_DISABLED rationale.
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: CKV_AWS_144
+    resource: module.storage.aws_s3_bucket.this
+    reason: &no_replication >-
+      Cross-region replication is out of scope for a single-region dev workload;
+      versioning covers recovery (see the S3_REPLICATION_DISABLED rationale).
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: CKV_AWS_144
+    resource: module.storage.aws_s3_bucket.access_logs
+    reason: *no_replication
+    owner: Ayush-cloud06
+    expires: 2027-03-31
+  - policy_id: CKV2_AWS_76
+    resource: module.compute.aws_lb.app
+    reason: >-
+      The ALB's web ACL attaches AWSManagedRulesKnownBadInputsRuleSet, which carries the
+      Log4j rules (compute/alb.tf); Checkov does not follow the separate
+      aws_wafv2_web_acl_association to the ACL.
+    owner: Ayush-cloud06
+    expires: 2027-03-31

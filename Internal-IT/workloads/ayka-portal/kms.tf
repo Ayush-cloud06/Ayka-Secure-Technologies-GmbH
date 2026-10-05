@@ -6,9 +6,6 @@ resource "aws_kms_key" "workload" {
 }
 
 data "aws_iam_policy_document" "kms_workload" {
-  # checkov:skip=CKV_AWS_109:KMS key policies require resource=*
-  # checkov:skip=CKV_AWS_111:KMS key policies require resource=*
-  # checkov:skip=CKV_AWS_356:KMS key policies require resource=*
   statement {
     sid       = "Enable IAM User Permissions"
     effect    = "Allow"

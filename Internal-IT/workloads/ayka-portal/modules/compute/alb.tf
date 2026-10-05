@@ -29,7 +29,6 @@ resource "aws_acm_certificate" "alb" {
 }
 
 resource "aws_lb" "app" {
-  # checkov:skip=CKV2_AWS_76:WAF is associated correctly but checkov cannot resolve it across modules/resources
   name                       = "${var.name_prefix}-alb"
   internal                   = false
   load_balancer_type         = "application"
