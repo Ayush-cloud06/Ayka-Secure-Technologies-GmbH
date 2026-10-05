@@ -119,15 +119,18 @@ flowchart LR
 
 ## 4. Run it locally
 
-Pinned versions: Terraform 1.7.5, TFLint 0.53.0, tfsec 1.28.14, conftest 0.45.0 (OPA 0.56.0), Checkov 3.3.20, Python 3 with `tests/requirements.txt`, jq.
+Every tool is pinned in [`toolchain.versions`](Internal-IT/engineering/ci-cd/toolchain.versions), with the same versions and checksums as CI (a test keeps them in sync). One command installs them into `.tools/` (Linux x86-64; needs `curl`, `unzip`, `python3`, `jq`):
 
 ```bash
 git clone https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH.git && cd Ayka-Secure-Technologies-GmbH
-python3 -m venv .venv && . .venv/bin/activate && pip install -r tests/requirements.txt
-python3 -m pytest -q tests/ && opa test Internal-IT/engineering/policy-as-code/OPA
+bash Internal-IT/engineering/ci-cd/scripts/bootstrap-tools.sh
+export PATH="$PWD/.tools/bin:$PATH"
+.tools/venv/bin/python -m pytest -q tests/ && opa test Internal-IT/engineering/policy-as-code/OPA
 bash Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh Internal-IT/workloads/ayka-portal
 bash Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh Internal-IT/workloads/control-validation-scenarios
 ```
+
+The local runner checks the tool versions first and stops if they differ from CI (`ALLOW_TOOL_DRIFT=1` turns that into a warning).
 
 Expected: `ayka-portal` → `pass` (LOW 6, 14 excepted); scenarios → `fail` (HIGH 20, MEDIUM 34, LOW 10). Results land in `output/` (summary, raw scanner JSON, `compliance-report.md`) and `evidence/` (raw copy plus `artifacts.sha256`), as in CI. The exit code follows the decision: `0` pass, `1` fail, `2` approval required, `3` tool or input error. Each run first deletes the previous `output/` and `evidence/`.
 
@@ -140,7 +143,7 @@ Expected: `ayka-portal` → `pass` (LOW 6, 14 excepted); scenarios → `fail` (H
 - The decision counts raw findings, so one problem reported by three tools counts three times there; the summary and report also give `distinct_findings` (one issue on one resource). tfsec only names a module, so its findings are matched to resources inside that module.
 - tfsec reports findings per module, so an exception is as coarse as the module; expiry dates and CODEOWNERS review are the safety net.
 - The checksum proves integrity between jobs, not authenticity.
-- Rego uses pre-1.0 syntax pinned to conftest v0.45.0; tfsec is being folded into Trivy upstream.
+- Rego uses pre-1.0 syntax pinned to conftest v0.45.0 (OPA 0.56.0). Upgrade path: rewrite rules as `deny contains msg if`, which OPA 0.56 already accepts with `future.keywords`, then raise the conftest and OPA pins together in `toolchain.versions` and `.github/`. tfsec is being folded into Trivy upstream.
 
 ## 6. Repository map
 

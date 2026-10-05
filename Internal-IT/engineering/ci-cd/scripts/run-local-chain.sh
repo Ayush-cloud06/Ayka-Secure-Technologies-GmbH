@@ -1,11 +1,14 @@
 #!/bin/bash
 # run-local-chain.sh <workload_dir>: run the whole gate locally in the same order as CI.
-# Needs terraform, checkov, tfsec, conftest and jq on PATH (versions: see README).
+# Needs the pinned tools (bootstrap-tools.sh installs them into .tools/) and jq.
 # Exit code follows the decision: 0 pass, 1 fail, 2 approval_required, 3 tool or input error.
 set -uo pipefail
 WL="${1:?usage: run-local-chain.sh <workload_dir>}"
 cd "$(git rev-parse --show-toplevel)" || exit 1
 S=Internal-IT/engineering/ci-cd/scripts
+# Prefer the pinned tools from bootstrap-tools.sh, then refuse to run on drift.
+[ -d .tools/bin ] && export PATH="$PWD/.tools/bin:$PATH"
+bash "$S/check-tool-versions.sh" || exit 3
 # Plan-only: never use your real AWS login, even by accident (ADR-0013).
 mockenv() {
   env -u AWS_SESSION_TOKEN -u AWS_PROFILE AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock \

@@ -1,0 +1,14 @@
+# Pinned toolchain: the single list for local runs. CI pins the same versions and
+# checksums in .github/ (tests/compliance/test_toolchain.py keeps them in sync).
+TERRAFORM_VERSION=1.7.5
+TERRAFORM_SHA256=3ff056b5e8259003f67fd0f0ed7229499cfb0b41f3ff55cc184088589994f7a5
+TFLINT_VERSION=0.53.0
+TFLINT_SHA256=bb0a3a6043ea1bcd221fc95d49bac831bb511eb31946ca6a4050983e9e584578
+CONFTEST_VERSION=0.45.0
+CONFTEST_SHA256=65edcf630f5cd2142138555542f10f8cbc99588e5dfcefbfa1e8074c7cc82c23
+# OPA is the engine inside conftest 0.45.0; the standalone binary runs `opa test`.
+OPA_VERSION=0.56.0
+OPA_SHA256=623771025227588898af1788998d5b5f29068a887682cd8b8e9699136d4cf121
+TFSEC_VERSION=1.28.14
+TFSEC_SHA256=a32d0799bbefababaa4fcd814da9f4d251cd932789590b99d1d5fcb89ace6f68
+CHECKOV_VERSION=3.3.20
