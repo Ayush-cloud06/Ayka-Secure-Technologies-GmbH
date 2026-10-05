@@ -134,3 +134,9 @@ docs/restore-plan/
 
 # Local planning docs, never committed
 .local-plans/
+
+# Local interactive project learning guide
+/project-explorer.html
+
+# Pinned toolchain installed by bootstrap-tools.sh
+.tools/
