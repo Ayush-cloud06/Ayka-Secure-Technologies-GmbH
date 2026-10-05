@@ -27,7 +27,11 @@ class ControlMappingTests(unittest.TestCase):
                     ids.append(enf["policy_id"])
         self.assertEqual([i for i, n in Counter(ids).items() if n > 1], [])
 
-    @unittest.skip("enable once every control has a rationale")
     def test_every_control_has_a_rationale(self):
         missing = [cid for cid, c in self.controls.items() if not c.get("rationale")]
         self.assertEqual(missing, [])
+
+    def test_rationale_starts_with_its_severity(self):
+        """A rationale must justify the level it sits next to, so a level change forces a rewrite."""
+        wrong = [cid for cid, c in self.controls.items() if not str(c.get("rationale", "")).startswith(c["severity"])]
+        self.assertEqual(wrong, [])

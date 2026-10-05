@@ -3,7 +3,7 @@ controls:
     title: "Security groups must not allow public SSH access"
     description: "Ingress on TCP/22 from 0.0.0.0/0 is treated as an internet-exposed administrative access path."
     severity: HIGH
-    rationale: "HIGH because an internet-reachable admin port is a direct intrusion path; mapped to Checkov too because the OPA rule misses standalone rule resources."
+    rationale: "HIGH because an internet-reachable admin port is a direct intrusion path. OPA and tfsec both report it; Checkov is mapped too as a second opinion."
     category: network_security
     domain: compute_security
     frameworks:
@@ -29,6 +29,7 @@ controls:
     title: "S3 buckets must not be publicly accessible"
     description: "Public-read ACLs or equivalent public exposure on S3 buckets are treated as internet data exposure."
     severity: HIGH
+    rationale: "HIGH because a public bucket exposes its data to anyone on the internet with no further step needed."
     category: data_security
     domain: storage_security
     frameworks:
@@ -60,7 +61,7 @@ controls:
     title: "EC2 instances must enforce IMDSv2"
     description: "EC2 metadata access must require IMDSv2 to reduce SSRF-style credential exposure risk."
     severity: HIGH
-    rationale: "HIGH because IMDSv1 lets an SSRF bug steal instance credentials; mapped to Checkov too because the OPA rule misses root-module instances."
+    rationale: "HIGH because IMDSv1 lets any SSRF bug read instance role credentials, which turns an app bug into cloud account access."
     category: compute_security
     domain: instance_hardening
     frameworks:
@@ -87,6 +88,7 @@ controls:
     title: "S3 bucket versioning should be enabled"
     description: "Versioning improves recoverability and protection against accidental deletion or overwrite."
     severity: MEDIUM
+    rationale: "MEDIUM because without versioning an overwrite, delete or ransomware encryption cannot be rolled back; it is a recovery control, not an exposure."
     category: resilience
     domain: storage_resilience
     frameworks:
@@ -108,6 +110,7 @@ controls:
     title: "EC2 instances should include mandatory governance tags"
     description: "Missing Environment, Owner, or CostCenter tags reduce governance, ownership tracking, and cost attribution."
     severity: LOW
+    rationale: "LOW because missing tags hurt ownership and cost tracking but expose nothing."
     category: governance
     domain: asset_management
     frameworks:
@@ -128,6 +131,7 @@ controls:
     title: "S3 buckets should use server-side encryption"
     description: "Missing bucket encryption weakens data protection at rest and increases recovery and compliance risk."
     severity: MEDIUM
+    rationale: "MEDIUM because S3 encrypts new objects by default since 2023, so a missing config weakens key control and audit evidence rather than leaving data in clear text."
     category: data_security
     domain: storage_security
     frameworks:
@@ -153,6 +157,7 @@ controls:
     title: "EC2 root volumes should be encrypted"
     description: "Unencrypted root volumes weaken protection of instance data at rest."
     severity: HIGH
+    rationale: "HIGH because a snapshot or detached unencrypted volume exposes the whole disk, including secrets on it."
     category: compute_security
     domain: storage_encryption
     frameworks:
@@ -176,6 +181,7 @@ controls:
     title: "Security groups should not expose HTTP broadly without an explicit exception"
     description: "Public HTTP exposure should be intentional and tightly governed."
     severity: MEDIUM
+    rationale: "MEDIUM because plain HTTP leaks traffic in transit; a human should confirm a redirect-only listener rather than block it outright."
     category: network_security
     domain: perimeter_security
     frameworks:
@@ -199,6 +205,7 @@ controls:
     title: "Production EC2 instances should not use undersized instance types"
     description: "Undersized production instances increase performance and resilience risk."
     severity: LOW
+    rationale: "LOW because it is an availability and cost concern, not a security exposure."
     category: reliability
     domain: production_readiness
     frameworks:
@@ -219,6 +226,7 @@ controls:
     title: "Production EC2 instances should not rely on Spot pricing"
     description: "Spot capacity in production creates avoidable interruption risk for critical workloads."
     severity: MEDIUM
+    rationale: "MEDIUM because Spot capacity can be reclaimed at two minutes' notice, which threatens production availability."
     category: reliability
     domain: production_readiness
     frameworks:
@@ -239,6 +247,7 @@ controls:
     title: "Security groups should not allow unrestricted public egress"
     description: "Unrestricted egress can expose workloads to unwanted outbound communication and data exfiltration risk."
     severity: HIGH
+    rationale: "HIGH because unrestricted egress lets a compromised host exfiltrate data or reach command-and-control freely."
     category: network_security
     domain: egress_control
     frameworks:
@@ -259,6 +268,7 @@ controls:
     title: "Security group rules should include descriptions"
     description: "Missing descriptions weaken maintainability and reviewability of network access rules."
     severity: LOW
+    rationale: "LOW because missing descriptions slow reviews but do not open access."
     category: governance
     domain: change_clarity
     frameworks:
@@ -276,6 +286,7 @@ controls:
     title: "S3 buckets should have access logging enabled"
     description: "Bucket access logging improves monitoring and investigation capability."
     severity: MEDIUM
+    rationale: "MEDIUM because without access logs a data access incident cannot be investigated (A.8.15)."
     category: logging_and_monitoring
     domain: storage_visibility
     frameworks:
@@ -296,6 +307,7 @@ controls:
     title: "S3 buckets should use KMS-backed server-side encryption"
     description: "KMS-backed encryption improves key governance and auditability compared to default encryption alone."
     severity: MEDIUM
+    rationale: "MEDIUM because SSE-S3 already encrypts; a customer-managed key adds access control and audit on the key itself."
     category: data_security
     domain: storage_encryption
     frameworks:
@@ -313,6 +325,7 @@ controls:
     title: "Public-facing ALBs should be protected by WAF"
     description: "Internet-facing load balancers should have web application firewall protection to reduce common web attack exposure."
     severity: HIGH
+    rationale: "HIGH because a public ALB without WAF passes common web attacks straight to the application."
     category: application_security
     domain: edge_protection
     frameworks:
@@ -330,6 +343,7 @@ controls:
     title: "Application load balancers should enforce HTTPS and modern TLS"
     description: "Public application load balancers should terminate traffic over HTTPS and use a modern TLS policy."
     severity: HIGH
+    rationale: "HIGH because a public listener without HTTPS or with old TLS exposes credentials and session data in transit."
     category: network_security
     domain: transport_security
     frameworks:
@@ -352,7 +366,7 @@ controls:
     title: "IAM policies must not allow wildcard actions"
     description: "Allow statements with action '*' create excessive privilege and weaken least-privilege enforcement."
     severity: HIGH
-    rationale: "HIGH because a wildcard action grants every current and future permission; mapped to Checkov too because the OPA rule misses list-form actions."
+    rationale: "HIGH because a wildcard action grants every current and future permission; mapped to Checkov too because the OPA rule misses list-form actions (#20)."
     category: identity_security
     domain: access_control
     frameworks:
@@ -378,6 +392,7 @@ controls:
     title: "Inline IAM policies should be avoided"
     description: "Inline policies reduce central governance and make policy review harder than managed policy use."
     severity: MEDIUM
+    rationale: "MEDIUM because inline policies are hard to review and reuse, which lets privilege drift unnoticed; the policy itself may still be narrow."
     category: identity_security
     domain: access_control
     frameworks:
@@ -398,6 +413,7 @@ controls:
     title: "IAM users should not be provisioned in a role-based environment"
     description: "Long-lived IAM users increase credential management and compromise risk in federated environments."
     severity: HIGH
+    rationale: "HIGH because IAM users carry long-lived keys, the most common source of leaked AWS credentials; the organisation uses roles only."
     category: identity_security
     domain: identity_governance
     frameworks:
@@ -419,6 +435,7 @@ controls:
     title: "IAM users must have MFA enabled"
     description: "If IAM users exist, they must enforce MFA to reduce account takeover risk."
     severity: HIGH
+    rationale: "HIGH because a user without MFA falls to one leaked password; Terraform cannot prove MFA, so any user is flagged."
     category: identity_security
     domain: authentication
     frameworks:
@@ -440,6 +457,7 @@ controls:
     title: "Default VPC usage is not allowed"
     description: "Default VPCs weaken network standardization and governance compared to explicitly designed VPCs."
     severity: MEDIUM
+    rationale: "MEDIUM because the default VPC has permissive defaults and public subnets that bypass the reviewed network design."
     category: network_security
     domain: network_governance
     frameworks:
@@ -460,6 +478,7 @@ controls:
     title: "VPCs should have flow logs enabled"
     description: "VPC flow logs improve visibility for investigation, monitoring, and network control evidence."
     severity: MEDIUM
+    rationale: "MEDIUM because without flow logs network incidents cannot be investigated (A.8.15, A.8.16); it does not open access."
     category: logging_and_monitoring
     domain: network_visibility
     frameworks:
@@ -483,6 +502,7 @@ controls:
     title: "Route tables should not expose default routes directly to the internet"
     description: "Direct 0.0.0.0/0 internet routes increase public exposure and should be tightly controlled."
     severity: LOW
+    rationale: "LOW because public subnets legitimately route to an internet gateway (the ALB needs it); exposure is decided by security groups, which have their own HIGH controls."
     category: network_security
     domain: perimeter_security
     frameworks:
@@ -503,6 +523,7 @@ controls:
     title: "Network ACLs must not allow unrestricted ingress"
     description: "Allowing ingress from 0.0.0.0/0 at the NACL layer creates broad network exposure."
     severity: HIGH
+    rationale: "HIGH because an allow-all NACL removes the subnet-level layer of network defence."
     category: network_security
     domain: network_hardening
     frameworks:
@@ -523,6 +544,7 @@ controls:
     title: "CloudWatch log groups should use KMS-backed encryption"
     description: "KMS-backed encryption strengthens confidentiality and key governance for retained log data."
     severity: LOW
+    rationale: "LOW because CloudWatch Logs are always encrypted at rest; a customer key only adds key-level access control."
     category: logging_and_monitoring
     domain: log_protection
     frameworks:
@@ -540,6 +562,7 @@ controls:
     title: "Secrets Manager secrets should use a customer-managed KMS key"
     description: "Customer-managed KMS keys improve governance, access control, and auditability for stored secrets."
     severity: LOW
+    rationale: "LOW because secrets are always encrypted with the AWS-managed key; a customer key adds separate key policy and audit."
     category: data_security
     domain: secret_protection
     frameworks:
@@ -557,6 +580,7 @@ controls:
     title: "SNS topics should use KMS-backed encryption"
     description: "Encrypting SNS topics protects message content at rest and improves key governance."
     severity: LOW
+    rationale: "LOW because the topic carries S3 event metadata, not business data."
     category: data_security
     domain: event_protection
     frameworks:
@@ -574,6 +598,7 @@ controls:
     title: "Security groups should be attached to a resource"
     description: "Unused security groups increase management complexity and may be accidentally applied with insecure rules."
     severity: LOW
+    rationale: "LOW because an unattached group grants nothing; it is clutter that can mislead reviews."
     category: network_security
     domain: resource_management
     frameworks:
@@ -591,6 +616,7 @@ controls:
     title: "S3 bucket replication should be enabled"
     description: "Cross-region replication improves availability and disaster recovery readiness."
     severity: LOW
+    rationale: "LOW because cross-region replication is a resilience choice; versioning and backups cover recovery for this dev workload."
     category: resilience
     domain: storage_resilience
     frameworks:
@@ -608,6 +634,7 @@ controls:
     title: "S3 bucket ACLs should be disabled"
     description: "Disabling ACLs in favor of bucket policies simplifies access control and reduces misconfiguration risk."
     severity: LOW
+    rationale: "LOW because public access is blocked separately (S3_PUBLIC_ACCESS is HIGH); disabling ACLs is defence in depth."
     category: data_security
     domain: storage_security
     frameworks:
@@ -625,6 +652,7 @@ controls:
     title: "KMS key policy should be explicitly defined"
     description: "Explicit key policies ensure that access to cryptographic keys is tightly controlled and audited."
     severity: LOW
+    rationale: "LOW because the default key policy still limits use to the account; an explicit policy makes intent reviewable."
     category: data_security
     domain: encryption_governance
     frameworks:
@@ -642,6 +670,7 @@ controls:
     title: "WAF should prevent Log4j message lookup exploitation"
     description: "Configuring WAF to block Log4j lookups reduces exposure to remote code execution vulnerabilities like CVE-2021-44228."
     severity: LOW
+    rationale: "LOW because the workload runs no Java service and the ALB WAF already attaches AWSManagedRulesKnownBadInputsRuleSet, which carries the Log4j rules; review if a Java service is added."
     category: application_security
     domain: edge_protection
     frameworks:
@@ -662,6 +691,7 @@ controls:
     title: "RDS Performance Insights should use KMS-backed encryption"
     description: "Encrypting Performance Insights data protects sensitive database performance metrics at rest."
     severity: LOW
+    rationale: "LOW because Performance Insights data is encrypted with the AWS key by default and holds query metadata, not table data."
     category: data_security
     domain: database_security
     frameworks:
@@ -679,6 +709,7 @@ controls:
     title: "S3 buckets should have event notifications enabled"
     description: "Event notifications enable automated responses to bucket activity, improving visibility and reactivity."
     severity: LOW
+    rationale: "LOW because event notifications support monitoring but are not a protective control."
     category: logging_and_monitoring
     domain: storage_visibility
     frameworks:
@@ -696,6 +727,7 @@ controls:
     title: "Secrets Manager secrets should have automatic rotation enabled"
     description: "Automatic rotation reduces the risk of long-lived credential compromise."
     severity: LOW
+    rationale: "LOW for this dev workload, where the secret never leaves the VPC. Owner review: should be MEDIUM before any production use, because a leaked secret stays valid forever."
     category: identity_security
     domain: secret_protection
     frameworks:
@@ -713,6 +745,7 @@ controls:
     title: "RDS database instances should enforce encryption in transit"
     description: "Requiring SSL/TLS for database connections protects sensitive data from interception during transmission."
     severity: LOW
+    rationale: "LOW because the database is reachable only from the app security groups inside private subnets. Owner review: should be MEDIUM before any production use (A.8.24)."
     category: network_security
     domain: database_security
     frameworks:
@@ -730,6 +763,7 @@ controls:
     title: "S3 buckets should have a lifecycle configuration"
     description: "Lifecycle rules improve data governance and cost-efficiency by automating object transitions and expirations."
     severity: LOW
+    rationale: "LOW because lifecycle rules control cost and retention, not exposure."
     category: resilience
     domain: storage_resilience
     frameworks:
@@ -747,6 +781,7 @@ controls:
     title: "WAF should have a logging configuration"
     description: "WAF logging is essential for monitoring web requests, detecting attacks, and investigating incidents."
     severity: LOW
+    rationale: "LOW while the ALB access logs record every request. Owner review: should be MEDIUM before any production use, because WAF logs are the only record of blocked attacks."
     category: logging_and_monitoring
     domain: edge_visibility
     frameworks:
