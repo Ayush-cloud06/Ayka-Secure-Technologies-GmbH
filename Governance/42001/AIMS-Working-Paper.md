@@ -65,7 +65,7 @@ The brain dump, cleaned up a bit. Each one -> later a policy statement + a contr
 | R1 | AI can review PRs, but **must not receive production PII** | Nothing technical. Holds because there is no production data (mock provider). | Holds by accident |
 | R2 | AI-generated code must pass **SAST / SCA / IaC scanning** before merge | IaC: yes (Checkov 3.3.20, tfsec 1.28.14 w/ sha256 pin, OPA). SAST for Python/shell: no. SCA: no. | Partial |
 | R3 | AI can access **sanitised logs**, not raw customer data | No sanitisation step exists. No log pipeline feeds AI. | Not started |
-| R4 | **Human approval** for security-sensitive changes | CODEOWNERS covers policy-as-code, ci-cd scripts, `.github/` -> but branch protection is off, so not enforced (RISK-005) | Designed, not enforced |
+| R4 | **Human approval** for security-sensitive changes | CODEOWNERS covers policy-as-code, ci-cd scripts, `.github/`. A ruleset on `main` now blocks direct pushes and requires status checks (seen 2026-10-06). **TODO** check whether code-owner review is required too (RISK-005) | Partial |
 | R5 | Test cases for **hallucinated dependencies / insecure code / secret leakage** | None | Not started |
 | R6 | Define **approved models + data classes** | Only one line in POL-DATA-01 5.2(3): "AI tools ... not approved by the CISO" are off-limits for customer data. No list of approved tools exists. | Not started |
 | R7 | AI never holds credentials with write access to cloud accounts | Claude sessions run in a container with repo access only; no AWS creds. Not written down. | Holds, undocumented |
@@ -129,7 +129,7 @@ flowchart LR
 What should be added to this flow (target state):
 - secret scan + SCA + SAST jobs in the pipeline (see [section 8](#8-gates-what-exists-vs-whats-missing))
 - PR label `ai-assisted` (auto or manual) so later we can query "what % of changes were AI-drafted, how many got reverted"
-- required status checks + branch protection so the gate is actually blocking
+- confirm the `main` ruleset also requires code-owner review, not just status checks
 
 ## 8. Gates: what exists vs what's missing
 
@@ -147,7 +147,7 @@ What should be added to this flow (target state):
 | **SAST** for Python/shell (semgrep / bandit / CodeQL) | Insecure code patterns | **No** | - |
 | **SCA** (pip-audit / Dependabot / OSV-Scanner) | Vulnerable + non-existent packages | **No** | - |
 | GitHub Actions pinning check | Unpinned `uses:` | Manual (actions are SHA-pinned already) | - |
-| **Branch protection / required checks** | Makes all of the above blocking | **No** (RISK-005) | GitHub settings |
+| **Branch protection / required checks** | Makes all of the above blocking | Partly: ruleset on `main` rejects direct pushes and requires 5 status checks (seen 2026-10-06). Review requirement unverified | GitHub settings |
 
 Honest summary: the IaC gate is strong; the non-IaC code (Python evaluator, shell scripts, workflows) that AI also writes has no scanner at all. R2 is only true for Terraform.
 
@@ -222,7 +222,7 @@ AI-R6 is real and specific to this repo: a lot of Governance/ was AI-drafted. Mi
 
 Pulled from existing ISMS / SOC 2 / NIS2 work. These undercut every AI rule above:
 
-- **Branch protection off / no required reviewers or env reviewers** (RISK-005). CODEOWNERS is decorative until this is on. R4 and R8 are not enforced.
+- **Branch protection only partly there** (RISK-005). `main` ruleset now forces PRs + required checks (seen 2026-10-06), but required reviewers / env reviewers not verified. With one human, a required review can't be self-approved anyway, so R4/R8 stay soft.
 - **MFA / Conditional Access off** (Entra Free tier). Whoever holds the GitHub/Entra session can approve AI output; account takeover = unreviewed merge.
 - **No alerting** (no EventBridge rules despite break-glass SOP). Nobody would notice a bad AI-driven change in a live account. Mitigated only because nothing is live.
 - No SAST / SCA / secret scan (section 8).
@@ -292,7 +292,7 @@ No entries. Do not fill with examples.
 
 Rough order, cheapest/highest value first:
 
-1. Turn on branch protection + required checks (fixes R4/R8 enforcement, RISK-005). Owner action in GitHub settings.
+1. Required checks on `main` are on (2026-10-06). Verify the ruleset, record it as RISK-005 evidence, decide on review requirement (owner action in GitHub settings).
 2. Add gitleaks + pip-audit + semgrep job to `test.yml` (R2, R11).
 3. Write `POL-AI-01 AI Acceptable Use Policy` from sections 4-6 (short, 2 pages).
 4. Fill section 5 register after reading vendor terms.
