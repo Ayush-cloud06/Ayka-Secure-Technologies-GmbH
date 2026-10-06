@@ -8,7 +8,7 @@
 
 **NIS2 still reaches Ayka through its customers.** Automotive and manufacturing customers with 50+ staff are in scope and must manage the security of their suppliers. They will put NIS2-style requirements into Ayka's contracts: fast incident notification, audit rights, supplier transparency.
 
-**There is no transition period.** If Ayka reaches 50 employees, every duty applies from that day. Preparation starts at 40.
+**There is no transition period.** Ayka qualifies once it exceeds the thresholds in two consecutive financial years; from that day every duty applies. Preparation starts at 40 employees.
 
 The full reasoning is in the [applicability assessment](01-applicability-assessment.md).
 

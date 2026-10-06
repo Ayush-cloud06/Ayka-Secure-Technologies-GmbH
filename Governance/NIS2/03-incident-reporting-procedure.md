@@ -23,7 +23,7 @@ Three reporting regimes can apply to the same incident. Today only two of them b
 | GDPR Art. 33 as a controller (employee data) | **Yes** | LfDI Baden-Württemberg | 72 hours after awareness |
 | NIS2 Art. 23 / §32 BSIG | **No** ([NIS2-01](01-applicability-assessment.md)). Voluntary reporting to the BSI is possible | BSI | 24 hours / 72 hours / 1 month |
 
-The BSI steps are written out in full anyway. Ayka's customers need Ayka to report fast enough for **their** 24-hour early warning, so Ayka has to run on the NIS2 clock even when the law does not require it. And if Ayka crosses 50 employees, this procedure must work on day one.
+The BSI steps are written out in full anyway. Ayka's customers need Ayka to report fast enough for **their** 24-hour early warning, so Ayka has to run on the NIS2 clock even when the law does not require it. And if Ayka comes into scope, this procedure must work on day one.
 
 ## 2. Roles
 
@@ -56,11 +56,13 @@ For a cloud computing service provider, Implementing Regulation (EU) 2024/2690 r
 | S-2 | Availability is limited for more than **5 %** of EU users, or more than 1 million EU users, whichever is smaller, for more than **one hour** | Art. 7(b) |
 | S-3 | Integrity, confidentiality or authenticity of stored, transmitted or processed data is compromised by a **suspectedly malicious** action | Art. 7(c) |
 | S-4 | Integrity, confidentiality or authenticity of data is compromised with impact on more than 5 % of EU users or 1 million, whichever is smaller | Art. 7(d) |
-| S-5 | Direct financial loss above EUR 500,000 or 5 % of last year's turnover, whichever is lower | Art. 3(1)(a) |
-| S-6 | Exfiltration of trade secrets | Art. 3(1)(b) |
-| S-7 | Death or considerable damage to a person's health | Art. 3(1)(c), (d) |
+| S-5 | Has caused **or is capable of causing** direct financial loss above EUR 500,000 or 5 % of last year's turnover, whichever is lower | Art. 3(1)(a) |
+| S-6 | Has caused **or is capable of causing** exfiltration of trade secrets | Art. 3(1)(b) |
+| S-7 | Has caused **or is capable of causing** death or considerable damage to a person's health | Art. 3(1)(c), (d) |
 | S-8 | Successful, suspectedly malicious and unauthorised access capable of causing severe operational disruption | Art. 3(1)(e) |
 | S-9 | Two or more incidents within six months, with the same apparent root cause, that together meet S-5 | Art. 4 |
+
+S-5 to S-7 look forward: ransomware that is contained before any money is lost is still significant if it was credibly capable of causing a loss above the threshold. Judge the potential, not only the damage done.
 
 For Ayka at its size S-3 and S-8 are the realistic ones: almost any confirmed intrusion into the AWS accounts, the Entra ID tenant or the GitHub repository meets them, regardless of how many customers were affected. A leaked credential that was **used** by someone else is S-8. A leaked credential that was rotated before anyone used it is not significant, but it is still logged.
 

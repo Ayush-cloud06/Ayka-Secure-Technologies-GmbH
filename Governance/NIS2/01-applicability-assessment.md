@@ -98,8 +98,9 @@ NIS2 Art. 2(1) and §28 BSIG exclude small and micro enterprises from the size-c
 Counting rules to apply at every check:
 
 - Count AWU, not heads: part-time staff and seasonal workers count pro rata; apprentices and students in vocational training do not count; staff on parental leave do not count.
-- Under the Recommendation, the class is only lost after the threshold is exceeded in **two consecutive** financial years. §28 BSIG does not obviously carry that grace over, and the BSI's guidance has to be checked when the question becomes real. Plan on the stricter reading: Ayka is in scope as soon as it reaches 50 AWU.
-- Linked enterprises (more than 50 % control) and partner enterprises (25 to 50 %) are aggregated. A future investment round can change Ayka's class overnight without one new hire (trigger T-3).
+- AWU is the **annual average** for the reference year, taken from the last approved annual accounts, not the headcount on a given day. Ayka, founded in 2026, has no approved accounts yet; until it does, the figures are a good-faith estimate made during the financial year (Recommendation Annex Art. 4(3)).
+- §28(4) BSIG applies the Recommendation in full except Annex Art. 3(4) (public bodies). So the two-year rule of Annex Art. 4(2) applies: Ayka loses small-enterprise status only when the thresholds are exceeded in **two consecutive** financial years. Hiring the 50th employee does not by itself bring Ayka into scope. Legal scope is determined from the annual figures; the 40-AWU trigger below is for preparation only.
+- Linked enterprises (more than 50 % control) and partner enterprises (25 to 50 %) are normally aggregated. §28(4) BSIG makes an exception: their data are not added if Ayka is independent of them in the nature and operation of its IT systems, components and processes, judged on the legal, economic and actual circumstances. A future investment round is therefore a reason to reassess (trigger T-3), not an automatic change of class.
 
 **Step 2 result:** small enterprise. Out of scope.
 
@@ -124,7 +125,7 @@ The review is scheduled every six months. Each of these triggers forces an earli
 
 | ID | Trigger | Watched by | How it is noticed |
 |---|---|---|---|
-| T-1 | Headcount reaches **40 AWU** | HR & Administration | Quarterly count from the personnel register. 40 rather than 50, because the BSIG has no transition period: the measures, the reporting process and the registration must be ready **on the day** Ayka reaches 50 |
+| T-1 | Headcount reaches **40 AWU** | HR & Administration | Quarterly count from the personnel register, as a running annual average. 40 rather than 50, because once Ayka qualifies the BSIG gives no transition period: the measures, the reporting process and the registration must be ready **on the day** Ayka qualifies. Under the two-year rule that day is foreseeable from the annual figures, so preparation can start early enough |
 | T-2 | Annual accounts show turnover **and** balance sheet above EUR 8 m | Financial Controller | Annual financial statements |
 | T-3 | Any investment, acquisition or shareholding of 25 % or more, in either direction | Managing Director | Shareholder resolution |
 | T-4 | A new service in which Ayka operates, monitors or administers ICT or security tooling for customers (possible MSP or MSSP) | Product Manager | Product requirements review; CISO sign-off before launch |
@@ -134,7 +135,7 @@ The review is scheduled every six months. Each of these triggers forces an earli
 
 ## 8. If Ayka comes into scope
 
-This section keeps the reassessment short. As a cloud computing service provider with 50 to 249 AWU, Ayka would be a **wichtige Einrichtung**. From the day the threshold is crossed:
+This section keeps the reassessment short. As a cloud computing service provider with 50 to 249 AWU, Ayka would be a **wichtige Einrichtung**. From the day it qualifies under the two-year rule (section 4):
 
 1. **Measures.** §30 BSIG applies, with the detailed technical content taken from Implementing Regulation 2024/2690 and its annex. Starting point: [NIS2-02](02-risk-management-measures.md).
 2. **Registration.** Within three months via the joint BSI/BBK registration portal (§33 BSIG), plus the additional data that §34 requires from cloud providers. The portal sign-in uses the company's *Mein Unternehmenskonto* (ELSTER organisation certificate). Getting that certificate takes days to weeks by post, so request it at trigger T-1, not at 50 AWU. Data needed: legal name and form, address, contact details including an incident contact reachable around the clock, IP ranges in public use, sector and entity type, EU Member States served, and the EU establishments.
@@ -149,7 +150,7 @@ This section keeps the reassessment short. As a cloud computing service provider
 | O-1 | Confirm turnover and balance sheet from the first annual accounts | Financial Controller | Next scheduled review |
 | O-2 | Confirm that no linked or partner enterprise exists (shareholder list) | Managing Director | Next scheduled review |
 | O-3 | Legal opinion: does a compliance SaaS on AWS count as a "cloud computing service" under Art. 6(30)? | Compliance Officer with external counsel | Trigger T-1 |
-| O-4 | Check whether the BSI applies the two-consecutive-years rule of Recommendation 2003/361 under §28 BSIG | Compliance Officer | Trigger T-1 |
+| O-4 | Confirm with the BSI's published guidance how it dates the moment of qualification under the two-year rule (end of the second financial year, or approval of its accounts) | Compliance Officer | Trigger T-1 |
 
 ## 10. Decision record
 

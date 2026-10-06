@@ -16,7 +16,7 @@
 Ayka is out of scope ([NIS2-01](01-applicability-assessment.md)). This assessment still matters for two reasons:
 
 1. **Customers ask for it.** In-scope customers must judge the security practices of their suppliers. They will ask the questions in this table, in this order, because it is the order of NIS2 Art. 21(2) and §30(2) BSIG.
-2. **There is no transition period.** If Ayka reaches 50 employees, these measures are a legal duty from that day. Everything below that is "Planned" on that day is a breach.
+2. **There is no transition period.** Once Ayka qualifies (50 AWU or the financial thresholds in two consecutive financial years, see NIS2-01 section 4), these measures are a legal duty from that day. Everything below that is still "Planned" on that day is a breach.
 
 The yardstick is the BSIG list, not ISO 27001. ISO 27001 controls are given for cross-reference because the [ISMS](../ISMS/README.md) is the management system Ayka will use to run these measures. For cloud computing service providers, the detailed content of each measure is set by the annex of Implementing Regulation (EU) 2024/2690, which is more specific than §30 BSIG; section 4 covers what it adds.
 
