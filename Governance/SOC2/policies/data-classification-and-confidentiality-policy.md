@@ -59,7 +59,7 @@ Customer data is Confidential by default. Information without a label is treated
 | Data | Retention | Disposal method |
 |---|---|---|
 | Customer data in the portal | Contract term + 30 days | Deletion of the customer's records and S3 prefix; KMS-encrypted backups age out within 35 further days (7-day RDS backups, 30-day S3 noncurrent versions) |
-| Application and access logs | 365 days | Automatic expiry (CloudWatch retention, S3 lifecycle) |
+| Application and access logs | 365 days | Automatic expiry (CloudWatch retention, S3 lifecycle). The access-log bucket still needs a noncurrent-version expiry (readiness gap G13) |
 | CloudTrail | 1 year online, 6 years archive | Lifecycle expiry |
 | SOC 2 and audit evidence | Report period + 12 months, at least 18 months | Lifecycle expiry after Object Lock period |
 | Personnel records | Per HR retention rules under German law | HR system deletion |

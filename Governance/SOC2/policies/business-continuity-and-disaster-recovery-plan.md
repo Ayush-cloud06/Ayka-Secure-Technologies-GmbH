@@ -62,7 +62,7 @@ The RPO of 24 hours is a deliberately conservative commitment: RDS automated bac
 | Region outage | No automated recovery. Re-create in a second EU Region from Terraform and the latest snapshot copy (once copies exist) | Exceeds RTO today |
 | Production account compromise | Incident Response Plan; rebuild in a clean account from Terraform; restore from backups held outside the account (once they exist) | Exceeds RTO today |
 | Entra ID outage | Break-glass access to AWS per the procedure | 1 hour for administrative access |
-| GitHub outage | Wait for recovery; emergency changes with the CISO's approval only through a documented manual plan run from a clean clone, with the same scanners run locally (`run-local-chain.sh`) | Same day |
+| GitHub outage | No deployments until GitHub recovers; the running service is unaffected. If a SEV 1 incident needs a production change during the outage, the Incident Commander uses break-glass access for the smallest manual change that contains it, logs every step in the incident record, and codifies or reverts it through a pull request once GitHub is back. Before any manual change, the proposed Terraform is checked locally with `run-local-chain.sh`, which plans, scans and decides but never applies | Pipeline: when GitHub recovers. Emergency containment: within the SEV 1 response |
 
 ## 7. Activation and roles
 

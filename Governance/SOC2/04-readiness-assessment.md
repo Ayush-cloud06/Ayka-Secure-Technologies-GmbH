@@ -16,7 +16,7 @@
 
 The reason is not paperwork. A SOC 2 examination reports on a system that runs, and the Ayka Portal has never been deployed: the pipeline applies nothing (`SIMULATED APPLY`), the workload uses mock credentials, and the platform roots have never been applied. An auditor can test the change-management pipeline today, but a report on the pipeline alone would not answer any customer's question about the service.
 
-What is already strong is unusual for a company this size: every infrastructure change is scanned by three tools against 38 mapped rules, decided fail-closed, recorded in a checksummed evidence bundle, and the gate proves on every run that it still catches known-bad configurations. Those controls (CA-01, CA-02, CM-01 to CM-04, MO-01, IC-01) would pass a Type I design test now and generate Type II evidence automatically.
+What is already strong is unusual for a company this size: every change to the `ayka-portal` workload is scanned by three tools against 38 mapped rules, decided fail-closed, recorded in a checksummed evidence bundle, and the gate proves on every run that it still catches known-bad configurations. Those controls (CA-01, CA-02, CM-01 to CM-04, MO-01, IC-01) would pass a Type I design test now and generate Type II evidence automatically. They do not yet cover the platform roots (G12).
 
 ## 2. Results by area
 
@@ -50,6 +50,7 @@ Each gap names the criteria it blocks, why an auditor would care, and the fix.
 | G10 | No vulnerability scanning beyond infrastructure code; container image referenced by mutable tag | CC7.1, CC6.8 | CC7.1 covers newly discovered vulnerabilities in the running system, not only misconfiguration | Pin images by digest; add image and dependency scanning to CI; Amazon Inspector for ECR | Product and Engineering |
 | G11 | No restore test and no uptime monitoring | A1.1, A1.3 | Availability claims need tested recovery and measured uptime | Quarterly automated restore of the latest RDS snapshot into an isolated account; external uptime checks | Cloud Platform Engineering |
 | G12 | Platform roots (organization, landing zone, identity) are not scanned by the gate | CC7.1, CC8.1 | The most privileged infrastructure bypasses the strongest control | Add the platform roots as gated workloads in `test.yml` | Repository owner |
+| G13 | The access-log bucket is versioned, but its lifecycle rule only expires current versions, so noncurrent ALB and S3 access-log versions would be kept indefinitely | CC7.2, C1.2 | The 365-day retention stated in OP-04 and POL-DATA-01 would not hold, and personal data in logs would be kept longer than stated | Add `noncurrent_version_expiration` to the `access_logs` lifecycle rule in [`storage/main.tf`](../../Internal-IT/workloads/ayka-portal/modules/storage/main.tf) | Cloud Platform Engineering |
 
 ## 4. Non-blocking observations
 
@@ -66,9 +67,9 @@ Months are counted from the decision to proceed. They are sequencing, not commit
 | Phase | When | Work | Exit criterion |
 |---|---|---|---|
 | 1. Foundations | Months 1 to 2 | G2 Region move, G1 remote state and bootstrap order, G5 credential closure, G4 MFA, G9 policy approval | Platform applied in `eu-central-1`; MFA enforced; RISK-001 closed with evidence |
-| 2. Production and detection | Months 2 to 4 | G1 first production release through the gate, G6 alerting, G7 evidence archive, G10 image scanning, G12 gate the platform roots | Portal live; one tested alert per rule; evidence lands in Object Lock |
+| 2. Production and detection | Months 2 to 4 | G1 first production release through the gate, G6 alerting, G7 evidence archive, G10 image scanning, G12 gate the platform roots, G13 access-log expiry | Portal live; one tested alert per rule; evidence lands in Object Lock |
 | 3. People processes | Months 3 to 4 | G8: first quarterly access review, training campaign, vendor reviews, first management report; G3 second approver or compensating review | One complete cycle of each recurring control on record |
-| 4. Readiness check | Month 5 | Optional auditor readiness review; internal self-assessment (MO-02); fix findings | No control in the matrix below Partial, none Planned |
+| 4. Readiness check | Month 5 | Optional auditor readiness review; internal self-assessment (MO-02); fix findings Every control in the matrix is Implemented or carved out; any exception is written into the system description with the reason it is not needed for the in-scope criteria |
 | 5. Type I | Month 6 | Type I as of a date | Report issued |
 | 6. Type II | Months 6 to 12 | 6-month observation period, then fieldwork | Report issued around month 14 |
 

@@ -36,7 +36,7 @@ AWS accounts in the organization, the `ayka-portal` workload, Entra ID, IAM Iden
 | VPC flow logs | Accepted and rejected network flows | CloudWatch Logs, KMS-encrypted | 365 days | Gated design |
 | AWS WAF logs | Requests evaluated by the web ACL | CloudWatch Logs | 365 days | Gated design |
 | ECS application logs | Application events, including authentication and authorisation decisions | CloudWatch Logs | 365 days | Gated design |
-| ALB and S3 server access logs | HTTP requests; object access | S3 access-log bucket | 365 days | Gated design |
+| ALB and S3 server access logs | HTTP requests; object access | S3 access-log bucket | 365 days | Gated design; noncurrent versions do not expire yet (readiness gap G13) |
 | RDS PostgreSQL logs | Connections, errors, DDL | CloudWatch Logs | 90 days | Planned |
 | Entra ID sign-in and audit logs | Sign-ins, MFA, directory changes | Export to the log archive | 1 year (Free tier keeps only 7 days in the portal) | Planned |
 | GitHub audit log and Actions logs | Repository settings, ruleset and environment changes, workflow runs | Export to the log archive each month | 1 year | Planned |
