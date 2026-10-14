@@ -6,7 +6,7 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval |
 | Status | Draft. Not approved |
@@ -58,7 +58,7 @@ Customer data is Confidential by default. Information without a label is treated
 
 | Data | Retention | Disposal method |
 |---|---|---|
-| Customer data in the portal | Contract term + 30 days | Deletion of the customer's records and S3 prefix; KMS-encrypted backups age out within 35 further days (7-day RDS backups, 30-day S3 noncurrent versions) |
+| Customer data in the portal | Contract term + 30 days | Proposed deletion of customer records and S3 prefix; a maximum further 35-day backup expiry is unimplemented and untested. RDS/S3 retention settings do not cover all snapshots and current objects; see [retention policy](records-and-data-retention-policy.md) |
 | Application and access logs | 365 days | Automatic expiry (CloudWatch retention, S3 lifecycle). The access-log bucket still needs a noncurrent-version expiry (readiness gap G13) |
 | CloudTrail | 1 year online, 6 years archive | Lifecycle expiry |
 | SOC 2 and audit evidence | Report period + 12 months, at least 18 months | Lifecycle expiry after Object Lock period |
@@ -95,3 +95,4 @@ No Terraform sets a `DataClassification` tag. No confidentiality agreements, del
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-10-14 | Clarify proposed backup deletion period and link the retention schedule |

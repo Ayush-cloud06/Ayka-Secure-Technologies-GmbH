@@ -6,18 +6,18 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, after every test and after every activation |
 | Status | Draft. Not approved. Never tested |
 
 ## 1. Purpose
 
-Keeps the Ayka Portal available to customers within the commitments in the [system description](../SOC2/01-system-description.md#21-service-commitments-to-customers), and restores it within the stated objectives when something fails.
+Defines proposed recovery requirements for the Ayka Portal design and the service commitments contemplated in the [system description](../SOC2/01-system-description.md#21-service-commitments-to-customers). No production service, customers, backups or recovery tests exist.
 
 ## 2. Scope
 
-The Ayka Portal production environment, its data, the pipeline that deploys it, and the people needed to run a recovery. Office facilities matter only as far as staff can work remotely, which they can.
+The intended Ayka Portal environment, its future data, the plan-analysis pipeline and the roles needed for recovery. Actual remote-working capability, premises and recovery resources must be assessed before operation. The pipeline currently performs a simulated apply only.
 
 ## 3. References
 
@@ -32,11 +32,11 @@ The Ayka Portal production environment, its data, the pipeline that deploys it, 
 | Function | Impact of outage | Maximum tolerable downtime | RTO | RPO |
 |---|---|---|---|---|
 | Customer access to the portal | Customers cannot prepare for or answer their auditors; reputational damage grows after one business day | 24 hours | 8 hours | 24 hours |
-| Customer evidence files (S3) | Loss would break customers' audit trails | 24 hours | 8 hours | 0 for committed objects (versioned) |
+| Customer evidence files (S3) | Loss would break customers' audit trails | 24 hours | 8 hours | Zero-loss aspiration for committed objects; not established by versioning |
 | Deploying changes (pipeline) | Fixes cannot be released through the gate | 3 days | 1 business day | Not applicable (Git is the source) |
 | Workforce identity (Entra ID, Identity Center) | Staff cannot administer AWS | 8 hours | Break-glass within 1 hour | Not applicable |
 
-The RPO of 24 hours is a deliberately conservative commitment: RDS automated backups allow point-in-time recovery to within about five minutes, so the commitment leaves room for a failed restore attempt.
+These are proposed, unvalidated targets, not customer commitments or measured capability. In particular, versioning cannot establish zero data loss across account compromise, key loss or version deletion. The actual recovery point and time must be measured using the [backup and restore procedure](../ISMS/06-operational-procedures/backup-and-restore-procedure.md) before any commitment is made.
 
 ## 5. Resilience in the design
 
@@ -49,9 +49,11 @@ The RPO of 24 hours is a deliberately conservative commitment: RDS automated bac
 | Everything in Terraform | Loss of an environment or account | `Internal-IT/` | Implemented as code; never applied |
 | Code and history on GitHub, with local clones | Loss of the repository host | Git | Implemented |
 
-**Known weaknesses.** All copies of data are in one Region and one account. There is no cross-Region or cross-account backup (gate control `S3_REPLICATION_DISABLED` open, LOW). A Region-wide outage or a compromise of the production account that deletes backups would exceed the RTO and RPO. The planned fix is AWS Backup with a vault in a separate account, vault lock, and copies to a second EU Region.
+**Known weaknesses.** The design keeps copies in one Region and one account; no real copies exist. There is no cross-Region or cross-account backup (gate control `S3_REPLICATION_DISABLED` open, LOW). A Region-wide outage or a compromise of the production account that deletes backups would exceed the RTO and RPO. The planned fix is AWS Backup with a vault in a separate account, vault lock, and copies to a second EU Region.
 
 ## 6. Scenarios and response
+
+The responses and times below are untested design estimates. No live recovery path, automatic failover or emergency access is established.
 
 | Scenario | Response | Expected recovery |
 |---|---|---|
@@ -86,3 +88,4 @@ Tests are recorded on the restore test template in [SOC2-05](../SOC2/05-audit-ap
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-10-14 | Clarify recovery targets and estimates are unvalidated; link restore procedure |

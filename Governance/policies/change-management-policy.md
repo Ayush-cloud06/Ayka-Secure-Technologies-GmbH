@@ -6,14 +6,14 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval |
 | Status | Draft. Not approved |
 
 ## 1. Purpose
 
-Every change to the production system is authorised, tested, approved and traceable, and no single person can put a change into production unseen. Most of this policy is already enforced by the repository's pipeline; this document states the rules the pipeline implements and the ones it cannot.
+Require changes to be authorized, tested, approved and traceable before future production use. The repository implements plan checks and configured approval environments; no production system exists, and one maintainer cannot provide independent review. This policy distinguishes intended requirements from those limited operating controls.
 
 ## 2. Scope
 
@@ -85,3 +85,4 @@ The repository has one maintainer, so the ruleset requires 0 approvals and the a
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-10-14 | Clarify plan-only scope and independent-review limitation |
