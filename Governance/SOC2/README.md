@@ -46,15 +46,15 @@ The system boundary is defined in the [system description](01-system-description
 | SOC2-03 | [Control matrix](03-control-matrix.md) | The controls themselves: owner, frequency, type, evidence, test approach and status | Draft |
 | SOC2-04 | [Readiness assessment](04-readiness-assessment.md) | Gaps against Type I and Type II, ranked, with the remediation plan | Draft |
 | SOC2-05 | [Audit approach and evidence management](05-audit-approach-and-evidence.md) | How an examination would run: auditor selection, period, PBC list, sampling, evidence retention; record templates | Draft |
-| POL-AC-01 | [Logical Access Control Policy](policies/access-control-policy.md) | CC6.1 to CC6.3 | Draft |
-| POL-CHG-01 | [Change Management Policy](policies/change-management-policy.md) | CC8.1, CC7.1 | Draft |
-| POL-IR-01 | [Incident Response Plan](policies/incident-response-plan.md) | CC7.3 to CC7.5 | Draft |
-| STD-LOG-01 | [Logging and Monitoring Standard](policies/logging-and-monitoring-standard.md) | CC7.2, CC4.1 | Draft |
-| POL-VEN-01 | [Vendor and Subservice Organization Management Policy](policies/vendor-management-policy.md) | CC9.2, CC3.2 | Draft |
-| POL-BCDR-01 | [Business Continuity and Disaster Recovery Plan](policies/business-continuity-and-disaster-recovery-plan.md) | A1.2, A1.3, CC9.1 | Draft |
-| POL-DATA-01 | [Data Classification and Confidentiality Policy](policies/data-classification-and-confidentiality-policy.md) | C1.1, C1.2, CC6.5, CC6.7 | Draft |
+| POL-AC-01 | [Logical Access Control Policy](../policies/access-control-policy.md) | CC6.1 to CC6.3 | Draft |
+| POL-CHG-01 | [Change Management Policy](../policies/change-management-policy.md) | CC8.1, CC7.1 | Draft |
+| POL-IR-01 | [Incident Response Plan](../policies/incident-response-plan.md) | CC7.3 to CC7.5 | Draft |
+| STD-LOG-01 | [Logging and Monitoring Standard](../policies/logging-and-monitoring-standard.md) | CC7.2, CC4.1 | Draft |
+| POL-VEN-01 | [Vendor and Subservice Organization Management Policy](../policies/vendor-management-policy.md) | CC9.2, CC3.2 | Draft |
+| POL-BCDR-01 | [Business Continuity and Disaster Recovery Plan](../policies/business-continuity-and-disaster-recovery-plan.md) | A1.2, A1.3, CC9.1 | Draft |
+| POL-DATA-01 | [Data Classification and Confidentiality Policy](../policies/data-classification-and-confidentiality-policy.md) | C1.1, C1.2, CC6.5, CC6.7 | Draft |
 
-The policies are company policies, not SOC 2-only documents. Each lists the ISO/IEC 27001:2022 Annex A controls it also satisfies. When the matching row in the [ISMS index](../ISMS/README.md) (section 05 Operational policies) is written, it should link to the policy here instead of starting a second one.
+The policies are company policies, not SOC 2-only documents, and live in [`Governance/policies/`](../policies/). Each lists the ISO/IEC 27001:2022 Annex A controls it also satisfies; the [ISMS index](../ISMS/README.md) (section 05 Operational policies) links to the same files.
 
 ## 4. Status vocabulary
 

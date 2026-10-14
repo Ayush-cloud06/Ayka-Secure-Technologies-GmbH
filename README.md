@@ -81,7 +81,8 @@ flowchart LR
 | The company, ISMS, personnel, risk register | 🎭 Simulated case study; placeholders replaced by one [ISMS index](Governance/ISMS/README.md) | `Governance/`, `organization/` |
 | AWS Organizations, SCPs, landing zone, IAM core, Identity Center, Entra ID | 📐 Planned: design-only (validates locally, not gated) | `Internal-IT/platform/` |
 | Drift detection | 📐 Planned: a manual workflow exists and refuses to run without a remote backend | `drift-detection.yml` |
-| Remote state, real sandbox apply, governance ↔ evidence links (SoA) | 📐 Planned | — |
+| Governance ↔ evidence links (SoA) | 📐 Draft documentation: applicability, gaps and dated plan evidence | [SoA](Governance/ISMS/04-controls-and-soa/statement-of-applicability.md), [evidence index](Governance/ISMS/07-technical-evidence/control-evidence-index.md) |
+| Remote state and real sandbox apply | 📐 Planned | — |
 
 **Not claimed:** Terragrunt, SIEM integration, SOC 2 / NIST CSF / CIS mappings, zero-trust, continuous monitoring, automated remediation, delegated administration, incident-response workflows, audit-readiness, certification.
 

@@ -32,7 +32,7 @@ AWS accounts in the organization, the `ayka-portal` workload, Entra ID, IAM Iden
 
 | Source | What it records | Destination | Online retention | Status |
 |---|---|---|---|---|
-| AWS CloudTrail (multi-Region trail per account, log file validation; an organization trail is the target) | API calls and console logins | Dedicated, public-access-blocked trail bucket | 1 year, then archive 6 years | Designed ([`cloudtrail.tf`](../../../Internal-IT/platform/foundation/landing-zone/modules/core/logging/cloudtrail.tf)) |
+| AWS CloudTrail (multi-Region trail per account, log file validation; an organization trail is the target) | API calls and console logins | Dedicated, public-access-blocked trail bucket | 1 year, then archive 6 years | Designed ([`cloudtrail.tf`](../../Internal-IT/platform/foundation/landing-zone/modules/core/logging/cloudtrail.tf)) |
 | VPC flow logs | Accepted and rejected network flows | CloudWatch Logs, KMS-encrypted | 365 days | Gated design |
 | AWS WAF logs | Requests evaluated by the web ACL | CloudWatch Logs | 365 days | Gated design |
 | ECS application logs | Application events, including authentication and authorisation decisions | CloudWatch Logs | 365 days | Gated design |
@@ -49,7 +49,7 @@ Workload retention values are set in Terraform and checked by the gate through `
 2. **Integrity.** CloudTrail log file validation is on. The trail cannot be stopped, deleted or changed (SCP `deny-disable-cloudtrail`). The archive bucket uses Object Lock once it exists.
 3. **Access.** Only Security Operations and the CISO can read the log archive; nobody can delete from it. Workload engineers read their own application logs.
 4. **Content.** Application logs record who, what, when, from where and the outcome for: logins, failed logins, permission changes, data exports, and administrative actions. They never contain passwords, tokens, session cookies or the content of customer evidence files.
-5. **Personal data.** IP addresses and user identifiers are personal data. They are kept only for the retention above and used only for security and operations (RoPA activity PA-03 in [Governance/GDPR](../../GDPR/record-of-processing-activities.md)).
+5. **Personal data.** IP addresses and user identifiers are personal data. They are kept only for the retention above and used only for security and operations (RoPA activity PA-03 in [Governance/GDPR](../GDPR/record-of-processing-activities.md)).
 
 ## 6. Alerting
 
@@ -67,7 +67,7 @@ The following events publish to the `security-alerts` SNS topic and page the on-
 | ALR-08 | Ruleset `protect-main` or an approval environment changed | SEV 2 | GitHub audit log |
 | ALR-09 | Spike in WAF blocked requests or ALB 5xx above threshold | SEV 3 | CloudWatch alarm |
 
-None of these rules exists yet. Today the topic and its e-mail subscription are designed in [`sns.tf`](../../../Internal-IT/platform/foundation/landing-zone/modules/core/alerts/sns.tf), with no publisher.
+None of these rules exists yet. Today the topic and its e-mail subscription are designed in [`sns.tf`](../../Internal-IT/platform/foundation/landing-zone/modules/core/alerts/sns.tf), with no publisher.
 
 ## 7. Review
 

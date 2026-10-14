@@ -1,104 +1,128 @@
 # Information Security Management System (ISMS)
 
-> Simulated ISO/IEC 27001:2022 case study. This table is the single list of ISMS documents: the ones that exist and the ones that are only planned.
-> A `Planned` row is an intention, not a document. When you write one, create the file in the matching folder, link it here and change the status.
-> Status: `Draft` = file exists, not approved (no real approver exists) · `Covered elsewhere` = content lives in another file · `Planned` = not written.
+> Simulated ISO/IEC 27001:2022 case study. Documentation baseline: 2026-10-14. Drafts have no management approval; the company and infrastructure do not operate. The repository's plan-analysis gate does operate.
 
-| Area | Planned document | Status | Why it would exist | Evidence it would need |
-|---|---|---|---|---|
-| 00 Context and governance | [Scope](00-context-and-governance/scope.md) | Draft | Clause 4.3: what the ISMS covers | Label the approval line as simulated (Phase 5) |
-| 00 Context and governance | [Information security policy](00-context-and-governance/information-security-policy.md) | Draft | Clause 5.2, A.5.1: top-level policy | Label the approval line as simulated (Phase 5) |
-| 00 Context and governance | Context of the organization | Planned | Clause 4.1: issues that shape the ISMS | Dated list of issues; can build on `organization/business-model.md` |
-| 00 Context and governance | Interested parties | Planned | Clause 4.2: who has requirements on the ISMS | List of parties and their requirements, with a review date |
-| 00 Context and governance | Legal and regulatory requirements | Planned | Clause 4.2, A.5.31 | Register of laws and contracts (e.g. GDPR) with an owner |
-| 00 Context and governance | ISMS objectives | Planned | Clause 6.2: measurable objectives | Each objective names a data source, e.g. CI run history |
-| 00 Context and governance | Management commitment statement | Planned | Clause 5.1 | A real dated decision by a real person; don't write one for the simulated company |
-| 00 Context and governance | Document control procedure | Planned | Clause 7.5.2, 7.5.3 | Git history, pull requests and branch protection (after Phase 4) |
-| 00 Context and governance | Document register | Planned | Clause 7.5 | This table can be the register; add owner and review-date columns |
-| 00 Context and governance | Record retention policy | Planned | A.5.33 | Retention that is actually configured, e.g. GitHub artifact retention |
-| 01 Organization | [Org chart](../../organization/org-structure.md) | Covered elsewhere | Clause 5.3 | Already written in `organization/` |
-| 01 Organization | [Roles and responsibilities](../../organization/roles-and-responsibilities.md) | Covered elsewhere | Clause 5.3, A.5.2 | Already written in `organization/` (fix the SIEM claim in Phase 5) |
-| 01 Organization | [Personnel register](../../organization/personnel-register.md) | Covered elsewhere | A.6.1, joiner and leaver tracking | Already written in `organization/` (fictional people) |
-| 01 Organization | NDA template | Planned | A.6.6 | Template text only |
-| 01 Organization | Signed NDA index | Planned | A.6.6 | Only real signed agreements; stays Planned in a simulation |
-| 01 Organization | Competence matrix | Planned | Clause 7.2 | Roles against required skills, with a dated assessment |
-| 01 Organization | [Training and awareness programme](../../organization/training-and-awareness.md) | Covered elsewhere | Clause 7.3, A.6.3 | Already written in `organization/`; no training records exist |
-| 01 Organization | Disciplinary process | Planned | A.6.4 | Process text; no records in a simulation |
-| 01 Organization | Onboarding and offboarding procedure | Planned | A.5.16, A.5.18, A.6.5 | Link the identity provisioning workflow and the Entra ID Terraform |
-| 02 Asset management | Asset inventory | Planned | A.5.9 | Generated from the plan JSON resource list, not typed by hand |
-| 02 Asset management | Asset classification policy | Planned | A.5.12 | A classification tag that Terraform actually sets |
-| 02 Asset management | Asset ownership register | Planned | A.5.9 | Owner tags or a CODEOWNERS file |
-| 02 Asset management | Acceptable use policy | Planned | A.5.10 | Policy text; acknowledgements would be records |
-| 02 Asset management | Remote work policy | Planned | A.6.7 | Policy text |
-| 02 Asset management | Mobile device policy | Planned | A.8.1 | Policy text; device management records |
-| 02 Asset management | Asset return checklist | Planned | A.5.11 | Offboarding records |
-| 03 Risk management | [Risk management methodology](03-risk-management/risk-management-methodology.md) | Draft | Clause 6.1.2 | Evidence links point at CI runs |
-| 03 Risk management | [Risk criteria](03-risk-management/risk-criteria.md) | Draft | Clause 6.1.2 a | In your preferred style already |
-| 03 Risk management | [Risk register](03-risk-management/risk-register.md) | Draft | Clause 6.1.2, 8.2 | RISK-001 corrected in Phase 1; other links in Phase 5 |
-| 03 Risk management | [Risk treatment plan](03-risk-management/risk-treatment-plan.md) | Draft | Clause 6.1.3, 8.3 | TRT-003/006 status fixed in Phase 5 |
-| 03 Risk management | [Risk acceptance log](03-risk-management/risk-acceptance-log.md) | Draft | Clause 6.1.3 f | No approver exists yet, and the log says so |
-| 03 Risk management | [Threat scenarios catalogue](03-risk-management/threat-scenarios-catalog.md) | Draft | Clause 6.1.2 c | Scenarios already point at real repo conditions |
-| 03 Risk management | [2026 Q1 risk assessment](03-risk-management/risk-assessment-results/2026-q1-risk-assessment.md) | Draft | Clause 8.2 | Marked as a retrospective reconstruction |
-| 03 Risk management | [2026 Q2 risk review](03-risk-management/risk-assessment-results/2026-q2-risk-review.md) | Draft | Clause 8.2 | Its drift reading matches the workflow history |
-| 04 Controls and SoA | [IAM to ISO 27001 mapping](04-controls-and-soa/iam-iso27001-mapping.md) | Draft | A.5.15 to A.5.18, A.8.2 to A.8.5 | Has broken `Internal-IT/iam/` paths and shifted A.5 labels; fix before relying on it |
-| 04 Controls and SoA | [Control chain: S3 encryption](04-controls-and-soa/control-chain-s3-encryption.md) | Draft | A.8.24 | Risk → requirement → implementation → tests → CI evidence; owner review pending. Template for other controls |
-| 04 Controls and SoA | Statement of Applicability | Planned | Clause 6.1.3 d | Every Annex A control: applicable or not, and why; link applicable ones to `control-mapping.yaml` |
-| 04 Controls and SoA | [Control mapping to Internal-IT](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) | Covered elsewhere | Clause 6.1.3 | The real mapping: 38 controls with ISO 27001 refs, read by the evaluator |
-| 04 Controls and SoA | Control gap analysis | Planned | Clause 6.1.3 | Difference between the SoA and the controls the gate enforces |
-| 04 Controls and SoA | Access control evidence index | Planned | A.5.15 | CI run links for the IAM controls |
-| 04 Controls and SoA | Privileged access justification | Planned | A.8.2 | One line per privileged role: reason and approver |
-| 04 Controls and SoA | Justification for exclusions | Planned | Clause 6.1.3 d | Can be a column in the SoA instead of a file |
-| 05 Operational policies | Incident response policy | Planned | A.5.24 | Policy text |
-| 05 Operational policies | Access control policy | Planned | A.5.15 | Controls `IAM_WILDCARD_POLICY`, `IAM_USER_PROHIBITED` in CI runs |
-| 05 Operational policies | Password policy | Planned | A.5.17 | Entra ID settings; no passwords in code (Phase 1) |
-| 05 Operational policies | MFA policy | Planned | A.8.5 | Control `IAM_USER_MFA_MISSING`; Conditional Access module |
-| 05 Operational policies | Privileged access policy | Planned | A.8.2 | Tier 0 groups in Terraform; break-glass procedure |
-| 05 Operational policies | Logging and monitoring policy | Planned | A.8.15, A.8.16 | Controls `S3_LOGGING_DISABLED`, `VPC_FLOW_LOGS_MISSING` |
-| 05 Operational policies | Cloud security policy | Planned | A.5.23 | The compliance gate itself: CI run links |
-| 05 Operational policies | Secure development policy | Planned | A.8.25 | Pipeline stages and branch protection |
-| 05 Operational policies | Change management policy | Planned | A.8.32 | Pull requests plus the gate decision per run |
-| 05 Operational policies | Backup policy | Planned | A.8.13 | Control `S3_VERSIONING_DISABLED`; restore tests would be records |
-| 05 Operational policies | Encryption policy | Planned | A.8.24 | Controls `S3_ENCRYPTION_MISSING`, `EC2_ROOT_VOLUME_UNENCRYPTED` |
-| 05 Operational policies | Vulnerability management policy | Planned | A.8.8 | Scanner results in CI artifacts |
-| 05 Operational policies | Patch management policy | Planned | A.8.8 | Pinned tool versions and update commits |
-| 05 Operational policies | Supplier security policy | Planned | A.5.19 | Supplier list with assessments |
-| 05 Operational policies | Data protection policy | Planned | A.5.34 | GDPR records of processing (none yet) |
-| 05 Operational policies | Data retention policy | Planned | A.5.33, A.8.10 | Configured retention settings |
-| 05 Operational policies | Clean desk and clear screen policy | Planned | A.7.7 | Policy text |
-| 06 Operational procedures | User access procedure | Planned | A.5.16, A.5.18 | Link the identity provisioning workflow doc |
-| 06 Operational procedures | Access review procedure | Planned | A.5.18 | Dated review records |
-| 06 Operational procedures | Incident response procedure | Planned | A.5.26 | Exercise or incident records |
-| 06 Operational procedures | Backup and restore procedure | Planned | A.8.13 | Restore test results |
-| 06 Operational procedures | Change management procedure | Planned | A.8.32 | PR and CI run URLs |
-| 06 Operational procedures | Vulnerability scanning procedure | Planned | A.8.8 | CI scan artifacts |
-| 06 Operational procedures | Patch deployment procedure | Planned | A.8.8 | Update commits and CI runs |
-| 06 Operational procedures | Supplier onboarding procedure | Planned | A.5.19, A.5.20 | Supplier assessments |
-| 06 Operational procedures | Data breach notification procedure | Planned | A.5.26, GDPR Art. 33 | Exercise records |
-| 06 Operational procedures | Business continuity procedure | Planned | A.5.29, A.5.30 | Test records |
-| 06 Operational procedures | Disaster recovery procedure | Planned | A.5.30 | Recovery test records |
-| 06 Operational procedures | Corrective action procedure | Planned | Clause 10.2 | Corrective action log entries |
-| 07 Technical evidence | Control evidence index | Planned | Clause 7.5, 9.1 | CI run URL and artifact name per control |
-| 07 Technical evidence | Internal-IT mapping | Planned | Clause 6.1.3 | Which folder implements which control |
-| 07 Technical evidence | Terraform module mapping | Planned | Clause 6.1.3 | Which module implements which control |
-| 07 Technical evidence | Penetration test report | Planned | A.8.8 | Only from a real test; never simulated |
-| 07 Technical evidence | IAM role list, Identity Center groups, IAM plan extract | Planned | A.5.15, A.8.2 | Generated by a CI job from the plan JSON, never typed by hand |
-| 07 Technical evidence | Architecture diagrams | Planned | Clause 7.5 | Mermaid diagrams in Markdown instead of PNG files |
-| 07 Technical evidence | Logging evidence, access review logs, backup test results | Planned | A.8.15, A.5.18, A.8.13 | Real exports only |
-| 07 Technical evidence | Vulnerability scan reports | Covered elsewhere | A.8.8 | The `compliance-evidence` artifact of each CI run |
-| 08 Monitoring and measurement | KPIs and metrics | Planned | Clause 9.1 | Numbers computed from CI history |
-| 08 Monitoring and measurement | Security metrics dashboard | Planned | Clause 9.1 | Same data as KPIs |
-| 08 Monitoring and measurement | Q1 and Q2 monitoring results | Planned | Clause 9.1 | Real measurements only; don't backdate |
-| 08 Monitoring and measurement | Supplier performance review | Planned | A.5.22 | Review records |
-| 09 Internal audit | Audit programme | Planned | Clause 9.2.2 | Programme text |
-| 09 Internal audit | Audit plan 2026 | Planned | Clause 9.2 | Plan with dates |
-| 09 Internal audit | Audit findings log | Planned | Clause 9.2 | Findings from a real audit |
-| 09 Internal audit | Audit checklists and reports | Planned | Clause 9.2 | Real audit records |
-| 10 Management review | Management review agenda | Planned | Clause 9.3.2 | Agenda text |
-| 10 Management review | Management review minutes Q1 and Q2 | Planned | Clause 9.3.3 | Real meetings only; don't write minutes after the fact |
-| 10 Management review | Management review action items | Planned | Clause 9.3.3 | Actions from real meetings |
-| 11 Improvement | Nonconformity log | Planned | Clause 10.2 | Entries with dates |
-| 11 Improvement | Corrective action log | Planned | Clause 10.2 | Entries with dates |
-| 11 Improvement | Improvement register | Planned | Clause 10.1 | Entries with dates; the restore plan itself is a candidate |
-| 11 Improvement | Lessons learned log | Planned | A.5.27 | Entries with dates |
+## 1. How to use this register
 
-This index replaces 79 one-line placeholder files and `tree.md` (removed 2026-09-28). Git history keeps every removed path: `git show baseline-2026-10:<path>`.
+This is the document register for clause 7.5. Its **99 topic rows** comprise **51 Draft**, **40 Covered elsewhere** and **8 Planned**. Several topics deliberately share one file; row counts are not file counts.
+
+- **Draft**: substantive file exists; no approval is implied. A log may be empty by design and a template is not a completed record.
+- **Covered elsewhere**: the linked source owns the topic; its own status and limits apply.
+- **Planned**: no event record exists. These rows require real activity, not more prose.
+
+Owners below are accountable roles in the simulated design, not signed appointments. Unless a dated review is explicitly recorded, the review column is a proposed trigger, not an overdue claim about an approved policy. Linked documents carry document ID, version and approval conditions. The existing risk register is an exception: its scheduled review is overdue and remains visible. [Document control](00-context-and-governance/document-control-procedure.md) governs approval, revision, access, supersession and ISMS change planning.
+
+Document status is separate from control status. The [SoA](04-controls-and-soa/statement-of-applicability.md) covers all 93 Annex A controls using Implemented / Partial / Gated design / Designed / Planned, with a scope-specific evidence boundary. No amount of draft documentation establishes operating effectiveness or certification.
+
+## 2. Document register
+
+| Area | Document or record | Status | Owner role | Next review / trigger | Purpose | Evidence and remaining work |
+|---|---|---|---|---|---|---|
+| 00 Context and governance | [Scope](00-context-and-governance/scope.md) | Draft | CISO | Annual after approval; on relevant change | Clause 4.3: what the ISMS covers | Draft boundary; management approval pending. |
+| 00 Context and governance | [Information security policy](00-context-and-governance/information-security-policy.md) | Draft | CISO | Annual after approval; on relevant change | Clause 5.2, A.5.1: top-level policy | Draft direction; approval and communication records pending. |
+| 00 Context and governance | [Context of the organization](00-context-and-governance/context-of-the-organization.md) | Draft | CISO | 12 months after approval, at each management review, or on a trigger in section 6 | Clause 4.1: issues that shape the ISMS | Dated issues, climate relevance and risk links. |
+| 00 Context and governance | [Interested parties](00-context-and-governance/interested-parties.md) | Draft | CISO | 12 months after approval, or when the first customer contract is signed | Clause 4.2: who has requirements on the ISMS | Requirements and review triggers; no customer contracts implied. |
+| 00 Context and governance | [Legal and regulatory requirements](00-context-and-governance/legal-and-regulatory-register.md) | Draft | Compliance & Risk Management | 12 months after approval, or on a change in law, a new or changed contract, or a NIS2-01 trigger | Clause 4.2, A.5.31 | Proposed applicability register; legal verification remains explicit. |
+| 00 Context and governance | [ISMS objectives](00-context-and-governance/isms-objectives.md) | Draft | CISO | 12 months after approval, at each management review, or when an objective is met, missed or no longer measurable | Clause 6.2: measurable objectives | Measurable objectives, data sources and proposed resources. |
+| 00 Context and governance | Management commitment statement | Planned | Managing Director | On a real event; not scheduled | Clause 5.1 | Needs an actual dated management decision. |
+| 00 Context and governance | [Document control procedure](00-context-and-governance/document-control-procedure.md) | Draft | CISO | 12 months after approval, or when the repository host, the ruleset or the number of maintainers changes | Clause 7.5.2, 7.5.3 | Git/PR controls, approval records and ISMS change planning. |
+| 00 Context and governance | [Document register](README.md) | Covered elsewhere | CISO | Annual after approval; on relevant change | Clause 7.5 | This table; linked documents carry version and approval status. |
+| 00 Context and governance | [Record retention policy](../policies/records-and-data-retention-policy.md) | Covered elsewhere | Compliance & Risk Management | 12 months after approval, or a legal change, new record category, hold or deletion failure | A.5.33 | Proposed schedule separates configured evidence expiry from unimplemented retention. |
+| 00 Context and governance | [Communication plan](00-context-and-governance/communication-plan.md) | Draft | CISO | Annual after approval; contact or reporting change | Clause 7.4 | Audience, owner, channel and trigger; contacts require confirmation. |
+| 00 Context and governance | [ISMS change planning](00-context-and-governance/document-control-procedure.md) | Covered elsewhere | CISO | Before a material ISMS change | Clause 6.3 | Change purpose, consequences, resources and responsibility recorded before approval. |
+| 00 Context and governance | [Resources](00-context-and-governance/isms-objectives.md) | Covered elsewhere | Managing Director | At objective or scope change | Clause 7.1 | Proposed capacity and funding; no management allocation fabricated. |
+| 01 Organization | [Org chart](../../organization/org-structure.md) | Covered elsewhere | Managing Director | Annual after approval; on relevant change | Clause 5.3 | Proposed structure in organization/. |
+| 01 Organization | [Roles and responsibilities](../../organization/roles-and-responsibilities.md) | Covered elsewhere | Managing Director | Annual after approval; on relevant change | Clause 5.3, A.5.2 | Role design; no SIEM or staffed operations exists. |
+| 01 Organization | [Personnel register](../../organization/personnel-register.md) | Covered elsewhere | HR & Administration | Annual after approval; on relevant change | A.6.1, joiner and leaver tracking | Fictional people, not employment records. |
+| 01 Organization | [NDA template](01-organization/nda-template.md) | Draft | HR & Administration | 12 months after approval, or a contract, legal or information-classification change | A.6.6 | Draft template; legal review and signatures pending. |
+| 01 Organization | Signed NDA index | Planned | HR & Administration | On a real event; not scheduled | A.6.6 | Needs real signed agreements. |
+| 01 Organization | [Competence matrix](01-organization/competence-matrix.md) | Draft | HR & Administration | 12 months after approval, or a role, technology, risk or legal requirement change | Clause 7.2 | Role requirements and assessment template; nobody assessed. |
+| 01 Organization | [Training and awareness programme](../../organization/training-and-awareness.md) | Covered elsewhere | HR & Administration | Annual after approval; on relevant change | Clause 7.3, A.6.3 | Programme only; training records absent. |
+| 01 Organization | [Disciplinary process](01-organization/disciplinary-process.md) | Draft | HR & Administration | 12 months after approval, or a legal change, employee-representation change or serious case | A.6.4 | Proposed fair process; legal review and real cases absent. |
+| 01 Organization | [Onboarding and offboarding procedure](01-organization/onboarding-and-offboarding-procedure.md) | Draft | HR & Administration | 12 months after approval, or role change, personnel incident or identity change | A.5.16, A.5.18, A.6.5 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 01 Organization | Training records | Planned | HR & Administration | After real training | Clause 7.2, 7.3; A.6.3 | Attendance and competence results only after performed activities. |
+| 02 Asset management | [Asset inventory](02-asset-management/asset-inventory.md) | Draft | Cloud Platform Engineering | 12 months after approval, or regenerate from the latest `main` run after any change to the workload's Terraform | A.5.9 | 88 plan resources; generated, hashed and dated; no live inventory. |
+| 02 Asset management | [Asset classification policy](../policies/data-classification-and-confidentiality-policy.md) | Covered elsewhere | CISO | 12 months after approval | A.5.12 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 02 Asset management | [Asset ownership register](02-asset-management/asset-ownership-register.md) | Draft | Cloud Platform Engineering | 12 months after approval, or when scope, source configuration or evidence changes | A.5.9 | Proposed role ownership; Owner tag on 1/88 resources, DataClassification on 0/88. |
+| 02 Asset management | [Acceptable use policy](../policies/acceptable-use-policy.md) | Covered elsewhere | CISO | 12 months after approval, or a material misuse event or new class of company tool | A.5.10 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 02 Asset management | [Remote work policy](../policies/remote-work-policy.md) | Covered elsewhere | CISO | 12 months after approval, or a change in working locations, access methods or relevant incident | A.6.7 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 02 Asset management | [User endpoint device policy](../policies/user-endpoint-device-policy.md) | Covered elsewhere | Cloud Platform Engineering | 12 months after approval, or a supported-platform change, device loss or baseline failure | A.8.1 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 02 Asset management | [Asset return checklist](01-organization/onboarding-and-offboarding-procedure.md) | Covered elsewhere | HR & Administration | 12 months after approval, or role change, personnel incident or identity change | A.5.11 | Checklist within offboarding; no completed handovers. |
+| 03 Risk management | [Risk management methodology](03-risk-management/risk-management-methodology.md) | Draft | CISO | Annual after approval; on relevant change | Clause 6.1.2 | Assessment method and evidence-confidence rules. |
+| 03 Risk management | [Risk criteria](03-risk-management/risk-criteria.md) | Draft | CISO | Annual after approval; on relevant change | Clause 6.1.2 a | Likelihood, impact and acceptance rules. |
+| 03 Risk management | [Risk register](03-risk-management/risk-register.md) | Draft | CISO | Overdue since 2026-09-30; CISO to schedule | Clause 6.1.2, 8.2 | 13 risks; scheduled 2026-09-30 review remains overdue. |
+| 03 Risk management | [Risk treatment plan](03-risk-management/risk-treatment-plan.md) | Draft | CISO | Annual after approval; on relevant change | Clause 6.1.3, 8.3 | Due gates and evidence requirements; no treatment closure inferred. |
+| 03 Risk management | [Risk acceptance log](03-risk-management/risk-acceptance-log.md) | Draft | CISO | Annual after approval; on relevant change | Clause 6.1.3 f | No effective approvals or residual-risk acceptance. |
+| 03 Risk management | [Threat scenarios catalogue](03-risk-management/threat-scenarios-catalog.md) | Draft | CISO | Annual after approval; on relevant change | Clause 6.1.2 c | Repository-specific scenarios; not a runtime assessment. |
+| 03 Risk management | [2026 Q1 risk assessment](03-risk-management/risk-assessment-results/2026-q1-risk-assessment.md) | Draft | CISO | Annual after approval; on relevant change | Clause 8.2 | Explicit retrospective reconstruction, not a contemporaneous audit. |
+| 03 Risk management | [2026 Q2 risk review](03-risk-management/risk-assessment-results/2026-q2-risk-review.md) | Draft | CISO | Annual after approval; on relevant change | Clause 8.2 | Evidence-bounded historical review; no invented activity. |
+| 04 Controls and SoA | [IAM to ISO 27001 mapping](04-controls-and-soa/iam-iso27001-mapping.md) | Draft | Cloud Platform Engineering | 12 months after approval, or identity architecture, source or control evidence change | A.5.15 to A.5.18, A.8.2 to A.8.5 | Corrected paths and 2022 references; designed identity scope. |
+| 04 Controls and SoA | [Control chain: S3 encryption](04-controls-and-soa/control-chain-s3-encryption.md) | Draft | CISO | Annual after approval; on relevant change | A.8.24 | Dated plan checks; owner review and residual decision pending. |
+| 04 Controls and SoA | [Statement of Applicability](04-controls-and-soa/statement-of-applicability.md) | Draft | CISO | 12 months after approval, or scope, risk, supplier or architecture change | Clause 6.1.3 d | All 93 Annex A controls, inclusion reasons, status, evidence and gaps. |
+| 04 Controls and SoA | [Control mapping to Internal-IT](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) | Covered elsewhere | CISO | Annual after approval; on relevant change | Clause 6.1.3 | 38 evaluator controls; metadata is not full Annex A coverage. |
+| 04 Controls and SoA | [Control gap analysis](04-controls-and-soa/control-gap-analysis.md) | Draft | CISO | 12 months after approval, or scope, risk, supplier or architecture change | Clause 6.1.3 | Remaining treatment work, dependencies and operating proof. |
+| 04 Controls and SoA | [Access control evidence index](04-controls-and-soa/access-control-evidence-index.md) | Draft | CISO | 12 months after approval, or when scope, source configuration or evidence changes | A.5.15 | Plan checks distinguished from unperformed entitlement reviews. |
+| 04 Controls and SoA | [Privileged access justification](04-controls-and-soa/privileged-access-justification.md) | Draft | CISO | 12 months after approval, or privileged role, membership, trust or emergency access change | A.8.2 | Proposed role need, constraints and unresolved authorizations. |
+| 04 Controls and SoA | [Justification for exclusions](04-controls-and-soa/statement-of-applicability.md) | Covered elsewhere | CISO | 12 months after approval, or scope, risk, supplier or architecture change | Clause 6.1.3 d | SoA applicability and rationale columns; no blanket provider exclusions. |
+| 05 Operational policies | [Incident response policy](../policies/incident-response-plan.md) | Covered elsewhere | CISO | 12 months after approval, and after every Severity 1 incident or exercise | A.5.24 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Access control policy](../policies/access-control-policy.md) | Covered elsewhere | CISO | 12 months after approval | A.5.15 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Password policy](../policies/access-control-policy.md#42-authentication) | Covered elsewhere | CISO | 12 months after approval | A.5.17 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [MFA policy](../policies/access-control-policy.md#42-authentication) | Covered elsewhere | CISO | 12 months after approval | A.8.5 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Privileged access policy](../policies/access-control-policy.md#45-privileged-and-emergency-access) | Covered elsewhere | CISO | 12 months after approval | A.8.2 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Logging and monitoring policy](../policies/logging-and-monitoring-standard.md) | Covered elsewhere | CISO | 12 months after approval, or when a log source is added | A.8.15, A.8.16 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Cloud security policy](../policies/cloud-security-policy.md) | Covered elsewhere | CISO | 12 months after approval, or when a cloud provider, Region or AWS account is added | A.5.23 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Secure development policy](../policies/secure-development-policy.md) | Covered elsewhere | Product & Engineering | 12 months after approval, or when the required checks or the pipeline stages change | A.8.25 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Change management policy](../policies/change-management-policy.md) | Covered elsewhere | CISO | 12 months after approval | A.8.32 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Backup policy](../policies/business-continuity-and-disaster-recovery-plan.md) | Covered elsewhere | CISO | 12 months after approval, after every test and after every activation | A.8.13 | BC/DR backup requirements; RTO/RPO targets not tested. |
+| 05 Operational policies | [Encryption policy](../policies/cryptography-policy.md) | Covered elsewhere | CISO | 12 months after approval, or when an algorithm is deprecated, a data store is added or a key is compromised | A.8.24 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Vulnerability management policy](../policies/vulnerability-and-patch-management-policy.md) | Covered elsewhere | Security Operations | 12 months after approval, or a critical advisory, material incident or change to the scanner toolchain | A.8.8 | Triage, remediation targets, exceptions and verification. |
+| 05 Operational policies | [Patch management policy](../policies/vulnerability-and-patch-management-policy.md) | Covered elsewhere | Security Operations | 12 months after approval, or a critical advisory, material incident or change to the scanner toolchain | A.8.8 | Shared vulnerability/patch policy; no installed patches evidenced. |
+| 05 Operational policies | [Supplier security policy](../policies/vendor-management-policy.md) | Covered elsewhere | Compliance & Risk Management | 12 months after approval | A.5.19 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 05 Operational policies | [Data protection policy](../policies/data-protection-policy.md) | Covered elsewhere | Compliance & Risk Management | 12 months after approval, or a new processing purpose, processor, transfer or personal-data incident | A.5.34 | Links processing records and gaps; no legal-compliance conclusion. |
+| 05 Operational policies | [Data retention policy](../policies/records-and-data-retention-policy.md) | Covered elsewhere | Compliance & Risk Management | 12 months after approval, or a legal change, new record category, hold or deletion failure | A.5.33, A.8.10 | Same schedule as record retention; no unsupported disposal claims. |
+| 05 Operational policies | [Clean desk and clear screen policy](../policies/clean-desk-and-clear-screen-policy.md) | Covered elsewhere | HR & Administration | 12 months after approval, or a workplace change or information-exposure incident | A.7.7 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [User access procedure](06-operational-procedures/user-access-procedure.md) | Draft | Cloud Platform Engineering | 12 months after approval, or identity architecture or access incident | A.5.16, A.5.18 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Access review procedure](06-operational-procedures/access-review-procedure.md) | Draft | Security Operations | 12 months after approval, or identity scope change or access incident | A.5.18 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Incident response procedure](../policies/incident-response-plan.md) | Covered elsewhere | CISO | 12 months after approval, and after every Severity 1 incident or exercise | A.5.26 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Backup and restore procedure](06-operational-procedures/backup-and-restore-procedure.md) | Draft | Cloud Platform Engineering | 12 months after approval, or restore test, architecture change or recovery incident | A.8.13 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Change management procedure](06-operational-procedures/change-management-procedure.md) | Draft | Cloud Platform Engineering | 12 months after approval, or pipeline or approval model change | A.8.32 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Vulnerability scanning procedure](06-operational-procedures/vulnerability-scanning-procedure.md) | Draft | Security Operations | 12 months after approval, or scanner scope change or material vulnerability | A.8.8 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Patch deployment procedure](06-operational-procedures/patch-deployment-procedure.md) | Draft | Cloud Platform Engineering | 12 months after approval, or patch failure or material vulnerability | A.8.8 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Supplier onboarding procedure](06-operational-procedures/supplier-onboarding-procedure.md) | Draft | Compliance & Risk Management | 12 months after approval, or new critical supplier or material service change | A.5.19, A.5.20 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Data breach notification procedure](../NIS2/03-incident-reporting-procedure.md) | Covered elsewhere | Security Operations Analyst (Incident Coordinator) | Annual after approval; on relevant change | A.5.26, GDPR Art. 33 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Business continuity procedure](../policies/business-continuity-and-disaster-recovery-plan.md) | Covered elsewhere | CISO | 12 months after approval, after every test and after every activation | A.5.29, A.5.30 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Disaster recovery procedure](../policies/business-continuity-and-disaster-recovery-plan.md) | Covered elsewhere | CISO | 12 months after approval, after every test and after every activation | A.5.30 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 06 Operational procedures | [Corrective action procedure](06-operational-procedures/corrective-action-procedure.md) | Draft | CISO | 12 months after approval, or nonconformity recurrence or ineffective corrective action | Clause 10.2 | Draft requirements and evidence expectations; approval and operating records pending. |
+| 07 Technical evidence | [Control evidence index](07-technical-evidence/control-evidence-index.md) | Draft | Cloud Platform Engineering | 12 months after approval, or when scope, source configuration or evidence changes | Clause 7.5, 9.1 | Run 37498007502, two verified artifacts, all 38 mapped controls. |
+| 07 Technical evidence | [Internal-IT mapping](07-technical-evidence/implementation-mapping.md) | Draft | Cloud Platform Engineering | 12 months after approval, or when scope, source configuration or evidence changes | Clause 6.1.3 | Source paths and status boundaries, not runtime evidence. |
+| 07 Technical evidence | [Terraform module mapping](07-technical-evidence/implementation-mapping.md) | Covered elsewhere | Cloud Platform Engineering | 12 months after approval, or when scope, source configuration or evidence changes | Clause 6.1.3 | Module-level rows in the shared implementation map. |
+| 07 Technical evidence | Penetration test report | Planned | Cloud Platform Engineering | On a real event; not scheduled | A.8.8 | Needs an authorized performed test and actual report. |
+| 07 Technical evidence | [IAM plan extract (workload only)](07-technical-evidence/iam-plan-extract.md) | Draft | Cloud Platform Engineering | 12 months after approval, or regenerate from the latest `main` run after any change to the workload's Terraform | A.5.15, A.8.2 | Generated workload snapshot: five roles; platform groups outside plan remain missing. |
+| 07 Technical evidence | [Architecture diagrams](07-technical-evidence/architecture-diagrams.md) | Draft | Cloud Platform Engineering | 12 months after approval, or when scope, source configuration or evidence changes | Clause 7.5 | Mermaid views of CI, gated workload and ungated identity design. |
+| 07 Technical evidence | Logging evidence, access review logs, backup test results | Planned | Cloud Platform Engineering | On a real event; not scheduled | A.8.15, A.5.18, A.8.13 | Needs real exports, reviews and restore tests. |
+| 07 Technical evidence | [Vulnerability scan reports](07-technical-evidence/control-evidence-index.md) | Covered elsewhere | Cloud Platform Engineering | 12 months after approval, or when scope, source configuration or evidence changes | A.8.8 | Run artifacts linked through evidence index; static IaC scans, not host vulnerability tests. |
+| 08 Monitoring and measurement | [KPIs and metrics](08-monitoring-and-measurement/kpis-and-metrics.md) | Draft | Compliance & Risk Management | 12 months after approval, or objective, measurement scope or evidence-source change | Clause 9.1 | Definitions and dated evidence; unmeasured metrics stay unmeasured. |
+| 08 Monitoring and measurement | [Security metrics dashboard](08-monitoring-and-measurement/kpis-and-metrics.md) | Covered elsewhere | Compliance & Risk Management | 12 months after approval, or objective, measurement scope or evidence-source change | Clause 9.1 | Same dated measures and limits as KPI document. |
+| 08 Monitoring and measurement | Q1 and Q2 monitoring results | Planned | CISO | On a real event; not scheduled | Clause 9.1 | No contemporaneous measurements; do not backdate. |
+| 08 Monitoring and measurement | [Supplier performance review](08-monitoring-and-measurement/supplier-performance-review.md) | Draft | Compliance & Risk Management | 12 months after approval, or supplier incident, assurance gap or service change | A.5.22 | Review template/log; no supplier review performed. |
+| 09 Internal audit | [Audit programme](09-internal-audit/audit-programme.md) | Draft | CISO | 12 months after approval, or material risk change, audit result or ISMS scope change | Clause 9.2.2 | Proposed programme and independence requirements. |
+| 09 Internal audit | [Audit plan 2026](09-internal-audit/audit-plan.md) | Draft | CISO | 12 months after approval, or audit scope or assigned auditor change | Clause 9.2 | Future activity requires approved scope, auditor and schedule. |
+| 09 Internal audit | [Audit findings log](09-internal-audit/audit-findings-log.md) | Draft | Compliance & Risk Management | 12 months after approval, or new finding or corrective-action verification | Clause 9.2 | Empty-by-design log; no audit performed. |
+| 09 Internal audit | [Audit checklists](09-internal-audit/audit-checklists.md) | Draft | Compliance & Risk Management | 12 months after approval, or audit criteria or control design change | Clause 9.2 | Checklist template only; completed reports remain Planned separately. |
+| 09 Internal audit | Completed audit reports | Planned | Compliance & Risk Management | After an independent audit | Clause 9.2.2 | No audit performed; templates do not establish assurance. |
+| 10 Management review | [Management review agenda](10-management-review/management-review-agenda.md) | Draft | CISO | 12 months after approval, or material ISMS change, incident or completed audit | Clause 9.3.2 | Inputs, outputs and participants; no meeting asserted. |
+| 10 Management review | Management review minutes Q1 and Q2 | Planned | Managing Director | On a real event; not scheduled | Clause 9.3.3 | No meetings occurred; do not reconstruct minutes. |
+| 10 Management review | [Management review action items](10-management-review/management-review-action-log.md) | Draft | CISO | 12 months after approval, or management decision or action verification | Clause 9.3.3 | Empty action log; no meeting actions fabricated. |
+| 11 Improvement | [Nonconformity log](11-improvement/nonconformity-and-corrective-action-log.md) | Draft | CISO | 12 months after approval, or new nonconformity or effectiveness review | Clause 10.2 | Shared nonconformity/corrective-action log; no closure fabricated. |
+| 11 Improvement | [Corrective action log](11-improvement/nonconformity-and-corrective-action-log.md) | Covered elsewhere | CISO | 12 months after approval, or new nonconformity or effectiveness review | Clause 10.2 | Same log as nonconformities; effectiveness requires evidence. |
+| 11 Improvement | [Improvement register](11-improvement/improvement-register.md) | Draft | CISO | 12 months after approval, or new improvement proposal or effectiveness result | Clause 10.1 | Capture real improvement proposals and status without implied approval. |
+| 11 Improvement | [Lessons learned log](11-improvement/lessons-learned-log.md) | Draft | Security Operations | 12 months after approval, or incident, exercise, failed change or verified improvement | A.5.27 | Record actual events or labelled exercises; no invented incidents. |
+
+## 3. What remains before operation or assurance
+
+- Approve the scope, policies, SoA, treatment resources and objectives with actual role holders; perform the overdue risk review and record residual-risk decisions.
+- Resolve the [control gaps](04-controls-and-soa/control-gap-analysis.md), including identity behavior, state custody, Region mismatch, supplier/privacy verification, endpoints and physical arrangements.
+- Establish independent review and retained operating evidence. Complete access reviews, training, incident/recovery exercises, supplier assessments, audits and management reviews only when those activities occur.
+- Keep the [CI evidence snapshot](07-technical-evidence/control-evidence-index.md) current and retain source artifacts before expiry. It covers static plan analysis, not live cloud controls.
+
+This register replaces the historical title-only placeholders; Git history retains them. The completed documentation baseline does not close open risks or manufacture the Planned records above.

@@ -38,7 +38,7 @@ Ayka's commitments are made in the Master Subscription Agreement, the Data Proce
 | Security | Every infrastructure change is reviewed and passes automated security checks before release |
 | Security | Ayka notifies affected customers of a security incident affecting their data without undue delay, and in any case within 48 hours of confirming it, so customers can meet their own 72-hour GDPR Art. 33 deadline |
 | Availability | Monthly availability target of 99.5 % for the web application, excluding announced maintenance |
-| Availability | Recovery point objective (RPO) of 24 hours and recovery time objective (RTO) of 8 hours for the production database ([BC/DR plan](policies/business-continuity-and-disaster-recovery-plan.md)) |
+| Availability | Recovery point objective (RPO) of 24 hours and recovery time objective (RTO) of 8 hours for the production database ([BC/DR plan](../policies/business-continuity-and-disaster-recovery-plan.md)) |
 | Confidentiality | Customer data is encrypted in transit (TLS 1.2 or higher) and at rest (AWS KMS) |
 | Confidentiality | Customer data is processed and stored in the EU (AWS `eu-central-1`, Frankfurt) |
 | Confidentiality | Customer data is deleted within 30 days after contract end, and backups age out within a further 35 days |
@@ -135,14 +135,14 @@ Ayka is small, so one person can hold several roles. Where that weakens segregat
 
 | Process | Described in |
 |---|---|
-| Change management, including emergency changes | [Change Management Policy](policies/change-management-policy.md), [policy evaluation flow](../../Internal-IT/engineering/ci-cd/compliance-gates/policy-evaluation-flow.md), [enforcement levels](../../Internal-IT/engineering/ci-cd/compliance-gates/enforcement-levels.md) |
-| Access provisioning, review and removal | [Logical Access Control Policy](policies/access-control-policy.md), [identity provisioning workflow](../../Internal-IT/platform/domains/identity/docs/identity-provisioning-workflow.md) |
+| Change management, including emergency changes | [Change Management Policy](../policies/change-management-policy.md), [policy evaluation flow](../../Internal-IT/engineering/ci-cd/compliance-gates/policy-evaluation-flow.md), [enforcement levels](../../Internal-IT/engineering/ci-cd/compliance-gates/enforcement-levels.md) |
+| Access provisioning, review and removal | [Logical Access Control Policy](../policies/access-control-policy.md), [identity provisioning workflow](../../Internal-IT/platform/domains/identity/docs/identity-provisioning-workflow.md) |
 | Emergency (break-glass) access | [Break-glass procedure](../../Internal-IT/platform/domains/identity/docs/break-glass-procedure.md) |
-| Logging, monitoring and incident response | [Logging and Monitoring Standard](policies/logging-and-monitoring-standard.md), [Incident Response Plan](policies/incident-response-plan.md) |
+| Logging, monitoring and incident response | [Logging and Monitoring Standard](../policies/logging-and-monitoring-standard.md), [Incident Response Plan](../policies/incident-response-plan.md) |
 | Risk assessment | [Risk management methodology](../ISMS/03-risk-management/risk-management-methodology.md) |
-| Vendor management | [Vendor and Subservice Organization Management Policy](policies/vendor-management-policy.md) |
-| Backup, recovery and continuity | [BC/DR plan](policies/business-continuity-and-disaster-recovery-plan.md) |
-| Data handling and deletion | [Data Classification and Confidentiality Policy](policies/data-classification-and-confidentiality-policy.md) |
+| Vendor management | [Vendor and Subservice Organization Management Policy](../policies/vendor-management-policy.md) |
+| Backup, recovery and continuity | [BC/DR plan](../policies/business-continuity-and-disaster-recovery-plan.md) |
+| Data handling and deletion | [Data Classification and Confidentiality Policy](../policies/data-classification-and-confidentiality-policy.md) |
 
 ### 3.6 Data
 

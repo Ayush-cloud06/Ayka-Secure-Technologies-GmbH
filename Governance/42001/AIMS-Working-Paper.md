@@ -92,7 +92,7 @@ Note: the repo is public. Anything in it is already Public class, so feeding the
 
 ## 6. Data classes vs AI: what may go where
 
-Reusing the four levels from `Governance/SOC2/policies/data-classification-and-confidentiality-policy.md` (POL-DATA-01).
+Reusing the four levels from `Governance/policies/data-classification-and-confidentiality-policy.md` (POL-DATA-01).
 
 | Class | Examples | Approved AI tools | Unapproved AI | Notes |
 |---|---|---|---|---|

@@ -5,7 +5,7 @@
 - **Version:** 1.0
 - **Historical baseline:** 2026-04-16
 - **Register populated:** 2026-08-23
-- **Next scheduled review:** 2026-09-30
+- **Next scheduled review:** 2026-09-30 — overdue as of 2026-10-14; no completed risk review or rescheduled date is recorded
 **Status:** Working case-study record; no management approval or operating ISMS is evidenced
 
 ## How to read this register
@@ -22,7 +22,7 @@ The register is anchored to the capability table in the [repository README](../.
 | RISK-002 | Fragmented or local Terraform state may expose secrets, lose authoritative ownership, or make recovery and drift decisions unreliable | Cloud Platform owner | 4 x 5 = **20 Critical** | 4 x 5 = **20 Critical** | 2 x 5 = **10 Medium** | Mitigate | E1 design; ignored state observed but not inspected | Open |
 | RISK-003 | IAM boundaries, trust paths, and ABAC attributes may grant unintended access or block required access because effective permissions are not verified end to end | Identity owner | 4 x 5 = **20 Critical** | 3 x 5 = **15 High** | 2 x 5 = **10 Medium** | Mitigate | E2 source fixes and local validation | Treating |
 | RISK-004 | Contradictory Entra, SCIM, Identity Center, tier, and membership assumptions may leave joiner/mover/leaver access incomplete or excessive | Identity owner / IT Support | 4 x 4 = **16 Critical** | 4 x 4 = **16 Critical** | 2 x 4 = **8 Medium** | Mitigate | E1 source and conflicting documentation | Open |
-| RISK-005 | Unprotected `main` or unreviewed apply environments could allow unapproved changes to bypass intended separation of duties | Repository owner | 4 x 4 = **16 Critical** | 4 x 4 = **16 Critical** | 2 x 4 = **8 Medium** | Mitigate | E3 dated GitHub observation from 2026-08-10 | Awaiting external action |
+| RISK-005 | Unprotected `main` or unreviewed apply environments could allow unapproved changes to bypass intended separation of duties | Repository owner | 4 x 4 = **16 Critical** | 4 x 4 = **16 Critical** | 2 x 4 = **8 Medium** | Mitigate | E3 settings rechecked 2026-10-14: active protect-main ruleset and required environment reviewers; single maintainer, no independent approval | Treating; residual review pending |
 | RISK-006 | CloudTrail and workload log delivery may fail silently because source corrections have not been validated against live AWS delivery and recovery | Cloud Platform owner | 4 x 4 = **16 Critical** | 3 x 4 = **12 High** | 2 x 4 = **8 Medium** | Mitigate | E2 source/plan; runtime not evidenced | Treating |
 | RISK-007 | Same-pipeline, transient evidence could be altered, expire, or lack independent review, weakening audit traceability and control decisions | Assurance owner / CISO | 4 x 4 = **16 Critical** | 3 x 4 = **12 High** | 2 x 4 = **8 Medium** | Mitigate | E2 checksums and local verification only | Treating |
 | RISK-008 | A reviewer could mistake the mock-provider, refresh-free workload and simulated apply for a deployed platform, leading to unsafe reliance or overstated compliance claims | Repository owner / CISO | 3 x 4 = **12 High** | 2 x 4 = **8 Medium** | 2 x 4 = **8 Medium** | Accept with constraints | E2 truthful labels and tests | Monitored; acceptance pending |
@@ -37,7 +37,7 @@ The register is anchored to the capability table in the [repository README](../.
 1. **RISK-001** requires owner-led identity investigation; source cleanup alone cannot resolve it.
 2. **RISK-002** and **RISK-012** block any responsible move toward live apply or scheduled drift.
 3. **RISK-003**, **RISK-004**, and **RISK-013** should be handled as one identity trust-and-lifecycle workstream.
-4. **RISK-005** remains external to source control and must not be marked fixed from workflow YAML.
+4. **RISK-005** has configured branch and environment protections (API rechecked 2026-10-14); independent review and a residual-risk decision remain outstanding.
 5. **RISK-006**, **RISK-007**, and **RISK-009** form the evidence-and-runtime proof workstream.
 6. **RISK-010** and **RISK-011** require real activities and processing facts, not additional blank templates.
 
@@ -48,6 +48,14 @@ The register is anchored to the capability table in the [repository README](../.
 | 2026-08-23 | Initial evidence-bounded population | Thirteen risks recorded from the consolidated audit; no risk closed and no acceptance made effective |
 | 2026-09-28 | Correction | RISK-001: literals were still in source on `main` (baseline `53b0532`); replaced with `random_password` and a manually managed break-glass account. Tenant check and rotation still pending. |
 | 2026-10-05 | Evidence update | RISK-005: GitHub ruleset `protect-main` (PR + five required checks, no force-push or deletion) and a required reviewer on `manual-apply-approval` configured; status stays "Treating" until reviewed. RISK-009: S3 encryption traced end to end in [control-chain-s3-encryption.md](../04-controls-and-soa/control-chain-s3-encryption.md). |
+
+## Evidence reconciliation, 2026-10-14
+
+This is a source/settings update, not a management risk review. Existing risk scores and acceptance decisions are unchanged.
+
+- RISK-005: [protect-main ruleset](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/rules/24482491) is active, requires a pull request and five status checks, and blocks branch deletion and force updates. Both `manual-apply-approval` and `medium-risk-approval` name the repository maintainer as required reviewer; self-review is allowed. Settings were read through the GitHub API on 2026-10-14. This reconciles the table with the 2026-10-05 history entry; it does not establish independent approval.
+- RISK-009: the later [evidence snapshot](../07-technical-evidence/control-evidence-index.md) for 2026-10-06 records 6 active LOW findings and 14 excepted findings in the workload. The 2026-09-28 row remains a dated observation, not the latest count. No risk reduction follows merely from a smaller count.
+- RISK-010: the [document register](../README.md) now links draft policies, procedures and evaluation templates. Operating records, management approval and independent audit remain absent. The overdue review date stays visible until a real review occurs.
 
 ## Status rules
 

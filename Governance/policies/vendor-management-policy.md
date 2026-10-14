@@ -27,7 +27,7 @@ Every third party that stores or processes customer data, hosts or changes the s
 | ISO/IEC 27001:2022 | A.5.19, A.5.20, A.5.21, A.5.22, A.5.23 |
 | GDPR | Art. 28 (processors), Art. 44 to 46 (transfers) |
 | Controls | VM-01, VM-02 |
-| Related | [Processor and sub-processor register](../../GDPR/processor-register.md) |
+| Related | [Processor and sub-processor register](../GDPR/processor-register.md) |
 
 ## 4. Risk tiers
 
@@ -49,7 +49,7 @@ Every third party that stores or processes customer data, hosts or changes the s
 
 1. **Before contract.** No vendor gets customer or confidential data before due diligence for its tier is complete and the CISO has signed off. For processors of personal data, a DPA meeting GDPR Art. 28(3) is in place.
 2. **Location.** Customer data stays in the EU. A vendor that needs access from outside the EU is recorded with its transfer mechanism and a transfer impact assessment.
-3. **Report review.** For critical vendors, Compliance and Risk reviews the SOC 2 Type II report each year using the vendor review template in [SOC2-05](../05-audit-approach-and-evidence.md#72-vendor-review-vm-02). The review checks: the period covered and its gap to today; the opinion (a qualified opinion goes to the CISO); each testing exception and its relevance to Ayka; and each CUEC, which must map to an Ayka control.
+3. **Report review.** For critical vendors, Compliance and Risk reviews the SOC 2 Type II report each year using the vendor review template in [SOC2-05](../SOC2/05-audit-approach-and-evidence.md#72-vendor-review-vm-02). The review checks: the period covered and its gap to today; the opinion (a qualified opinion goes to the CISO); each testing exception and its relevance to Ayka; and each CUEC, which must map to an Ayka control.
 4. **Subservice organizations of vendors.** If a critical vendor's report itself carves out a subservice organization relevant to Ayka (for example a colocation provider), that is recorded too.
 5. **Changes.** Ayka subscribes to sub-processor change notices. A new sub-processor of a critical vendor is assessed within 30 days and customers are informed per the DPA.
 6. **Incidents.** A vendor's security incident affecting Ayka is handled under the [Incident Response Plan](incident-response-plan.md).
@@ -68,7 +68,7 @@ Every third party that stores or processes customer data, hosts or changes the s
 
 ## 8. Current gaps
 
-No vendor report has been retrieved or reviewed; the register in [Governance/GDPR](../../GDPR/processor-register.md) has no risk tier column; GitHub is the only vendor in real use and is used under a personal account and standard terms.
+No vendor report has been retrieved or reviewed; the register in [Governance/GDPR](../GDPR/processor-register.md) has no risk tier column; GitHub is the only vendor in real use and is used under a personal account and standard terms.
 
 ## Revision history
 
