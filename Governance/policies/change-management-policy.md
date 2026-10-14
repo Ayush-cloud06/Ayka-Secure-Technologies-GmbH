@@ -26,7 +26,7 @@ Changes to: infrastructure (Terraform under `Internal-IT/`), the pipeline (`.git
 | SOC 2 | CC8.1, CC7.1, CC5.1, CC5.2 |
 | ISO/IEC 27001:2022 | A.8.9, A.8.25, A.8.29, A.8.32, A.5.3 |
 | Controls | CM-01 to CM-06, CA-01, CA-02, MO-01, AC-09, AC-14 |
-| Technical documents | [Policy evaluation flow](../../../Internal-IT/engineering/ci-cd/compliance-gates/policy-evaluation-flow.md), [enforcement levels](../../../Internal-IT/engineering/ci-cd/compliance-gates/enforcement-levels.md), [CI/CD architecture](../../../Internal-IT/engineering/ci-cd/architecture.md) |
+| Technical documents | [Policy evaluation flow](../../Internal-IT/engineering/ci-cd/compliance-gates/policy-evaluation-flow.md), [enforcement levels](../../Internal-IT/engineering/ci-cd/compliance-gates/enforcement-levels.md), [CI/CD architecture](../../Internal-IT/engineering/ci-cd/architecture.md) |
 
 ## 4. Change types
 
@@ -43,9 +43,9 @@ A gate decision of `fail` (any HIGH finding) cannot be approved. The finding mus
 
 1. **Everything through a pull request.** Direct pushes, force-pushes and branch deletion on `main` are blocked by the ruleset `protect-main`.
 2. **Required checks.** A pull request merges only when the five required checks pass: script validation (`validate-scripts`), unit and policy tests (`unit-tests`), Terraform validate, the plan with scans and decision (the two jobs of the compliance workflow), and the control-validation regression.
-3. **Severity decides the path.** The control's severity in [`control-mapping.yaml`](../../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) applies, not the scanner's. Unmapped findings count as at least MEDIUM. Lowering a severity to get a green build is not allowed; it is an exception (section 7).
+3. **Severity decides the path.** The control's severity in [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) applies, not the scanner's. Unmapped findings count as at least MEDIUM. Lowering a severity to get a green build is not allowed; it is an exception (section 7).
 4. **Segregation of duties.** The author of a change does not approve it in the pull request or in an approval environment. `CODEOWNERS` review is required for the gate, the CI scripts and `.github/`.
-5. **Traceability.** Each pull request states what changes and why, links the risk or ticket it serves, and its evidence bundle is kept per [SOC2-05](../05-audit-approach-and-evidence.md#6-evidence-sources-and-retention).
+5. **Traceability.** Each pull request states what changes and why, links the risk or ticket it serves, and its evidence bundle is kept per [SOC2-05](../SOC2/05-audit-approach-and-evidence.md#6-evidence-sources-and-retention).
 6. **Integrity to apply.** The apply job verifies the evidence checksums and that the bundle belongs to the commit being applied. Nothing is applied from a workstation.
 7. **Testing.** Changes to the evaluator, wrappers or Rego rules come with tests. Changes that could weaken detection must keep the regression scenarios failing with the expected controls.
 8. **Rollback.** Every infrastructure change is reversible by reverting the pull request, unless the description states why not (for example, a data migration) and how recovery would work.
@@ -60,7 +60,7 @@ A gate decision of `fail` (any HIGH finding) cannot be approved. The finding mus
 
 ## 7. Exceptions
 
-A finding that will not be fixed is recorded in [`exceptions.yaml`](../../../Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml) with the exact rule, the resource, the reason, an owner and an expiry date of no more than 12 months. The entry is itself a change to the gate and follows the elevated path. Expired entries stop matching automatically.
+A finding that will not be fixed is recorded in [`exceptions.yaml`](../../Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml) with the exact rule, the resource, the reason, an owner and an expiry date of no more than 12 months. The entry is itself a change to the gate and follows the elevated path. Expired entries stop matching automatically.
 
 ## 8. Roles
 

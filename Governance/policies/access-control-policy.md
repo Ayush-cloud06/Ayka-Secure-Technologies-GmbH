@@ -13,11 +13,11 @@
 
 ## 1. Purpose
 
-Access to Ayka's systems and to customer data is granted only to people who need it for their job, only for as long as they need it, and only after their identity is proven strongly. This policy sets the rules; the [identity provisioning workflow](../../../Internal-IT/platform/domains/identity/docs/identity-provisioning-workflow.md) and the [break-glass procedure](../../../Internal-IT/platform/domains/identity/docs/break-glass-procedure.md) describe how they are carried out.
+Access to Ayka's systems and to customer data is granted only to people who need it for their job, only for as long as they need it, and only after their identity is proven strongly. This policy sets the rules; the [identity provisioning workflow](../../Internal-IT/platform/domains/identity/docs/identity-provisioning-workflow.md) and the [break-glass procedure](../../Internal-IT/platform/domains/identity/docs/break-glass-procedure.md) describe how they are carried out.
 
 ## 2. Scope
 
-All Ayka personnel and contractors, and every system in the [system description](../01-system-description.md): AWS accounts, Microsoft Entra ID, AWS IAM Identity Center, the GitHub repository and its environments, and the Ayka Portal's administrative functions. Customer users' access to their own tenant is managed by the customer (CUEC-01).
+All Ayka personnel and contractors, and every system in the [system description](../SOC2/01-system-description.md): AWS accounts, Microsoft Entra ID, AWS IAM Identity Center, the GitHub repository and its environments, and the Ayka Portal's administrative functions. Customer users' access to their own tenant is managed by the customer (CUEC-01).
 
 ## 3. References
 
@@ -26,7 +26,7 @@ All Ayka personnel and contractors, and every system in the [system description]
 | SOC 2 | CC6.1, CC6.2, CC6.3, CC5.1 |
 | ISO/IEC 27001:2022 | A.5.15, A.5.16, A.5.17, A.5.18, A.8.2, A.8.3, A.8.4, A.8.5 |
 | GDPR | Art. 25, Art. 32(1)(b) |
-| Controls | AC-01 to AC-09, AC-14 in the [control matrix](../03-control-matrix.md) |
+| Controls | AC-01 to AC-09, AC-14 in the [control matrix](../SOC2/03-control-matrix.md) |
 
 ## 4. Policy statements
 
@@ -47,7 +47,7 @@ All Ayka personnel and contractors, and every system in the [system description]
 
 ### 4.3 Authorization
 
-1. Access is role-based. The roles are the tiered groups in the [identity architecture](../../architecture/identity-architecture.md): Tier 0 security administration, Tier 1 infrastructure operators, Tier 2 developers.
+1. Access is role-based. The roles are the tiered groups in the [identity architecture](../architecture/identity-architecture.md): Tier 0 security administration, Tier 1 infrastructure operators, Tier 2 developers.
 2. Every IAM role created for people carries the permission boundary. Resource access is further limited by ABAC tags (`Department`, `Environment`).
 3. Policies shall not grant wildcard actions or use inline policies; the gate enforces this (`IAM_WILDCARD_POLICY`, `IAM_INLINE_POLICY_USAGE`).
 4. Administrative sessions last at most 1 hour for the platform administrator permission set and 8 hours for others.
@@ -73,7 +73,7 @@ All Ayka personnel and contractors, and every system in the [system description]
 
 1. Every quarter, Security Operations exports all access to AWS, Entra ID privileged roles, GitHub collaborators and GitHub environment reviewers. Line managers confirm each of their reports' access; the CISO confirms Tier 0.
 2. Access that is not confirmed is removed within 5 business days.
-3. The review is recorded on the template in [SOC2-05](../05-audit-approach-and-evidence.md#71-quarterly-access-review-ac-07).
+3. The review is recorded on the template in [SOC2-05](../SOC2/05-audit-approach-and-evidence.md#71-quarterly-access-review-ac-07).
 
 ## 5. Roles
 
@@ -89,7 +89,7 @@ R responsible, A accountable, C consulted, I informed.
 
 ## 6. Exceptions
 
-An exception to this policy is requested in writing with a reason, a compensating control and an end date of at most 6 months, and approved by the CISO. Exceptions are listed in the quarterly report to the Managing Director. Technical exceptions to gate rules use [`exceptions.yaml`](../../../Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml).
+An exception to this policy is requested in writing with a reason, a compensating control and an end date of at most 6 months, and approved by the CISO. Exceptions are listed in the quarterly report to the Managing Director. Technical exceptions to gate rules use [`exceptions.yaml`](../../Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml).
 
 ## 7. Compliance and monitoring
 

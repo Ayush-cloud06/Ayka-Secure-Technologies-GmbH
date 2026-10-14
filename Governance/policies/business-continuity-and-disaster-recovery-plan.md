@@ -13,7 +13,7 @@
 
 ## 1. Purpose
 
-Keeps the Ayka Portal available to customers within the commitments in the [system description](../01-system-description.md#21-service-commitments-to-customers), and restores it within the stated objectives when something fails.
+Keeps the Ayka Portal available to customers within the commitments in the [system description](../SOC2/01-system-description.md#21-service-commitments-to-customers), and restores it within the stated objectives when something fails.
 
 ## 2. Scope
 
@@ -42,10 +42,10 @@ The RPO of 24 hours is a deliberately conservative commitment: RDS automated bac
 
 | Measure | Protects against | Defined in | Status |
 |---|---|---|---|
-| RDS Multi-AZ with automatic failover | Loss of an instance or availability zone | [`database/main.tf`](../../../Internal-IT/workloads/ayka-portal/modules/database/main.tf) | Gated design |
+| RDS Multi-AZ with automatic failover | Loss of an instance or availability zone | [`database/main.tf`](../../Internal-IT/workloads/ayka-portal/modules/database/main.tf) | Gated design |
 | RDS automated backups, 7 days; deletion protection; final snapshot | Data corruption, accidental deletion | same | Gated design |
-| S3 versioning; noncurrent versions kept 30 days | Overwrite, deletion, ransomware encryption of objects | [`storage/main.tf`](../../../Internal-IT/workloads/ayka-portal/modules/storage/main.tf) | Gated design |
-| ALB and ECS across availability zones; CPU autoscaling | Zone loss, load peaks | [`compute/`](../../../Internal-IT/workloads/ayka-portal/modules/compute/) | Gated design |
+| S3 versioning; noncurrent versions kept 30 days | Overwrite, deletion, ransomware encryption of objects | [`storage/main.tf`](../../Internal-IT/workloads/ayka-portal/modules/storage/main.tf) | Gated design |
+| ALB and ECS across availability zones; CPU autoscaling | Zone loss, load peaks | [`compute/`](../../Internal-IT/workloads/ayka-portal/modules/compute/) | Gated design |
 | Everything in Terraform | Loss of an environment or account | `Internal-IT/` | Implemented as code; never applied |
 | Code and history on GitHub, with local clones | Loss of the repository host | Git | Implemented |
 
@@ -79,7 +79,7 @@ The RPO of 24 hours is a deliberately conservative commitment: RDS automated bac
 | Rebuild of the workload from Terraform in an empty account | Annually | Plan applies with no manual step |
 | Tabletop of the Region outage scenario | Annually | Gaps recorded and assigned |
 
-Tests are recorded on the restore test template in [SOC2-05](../05-audit-approach-and-evidence.md#73-restore-test-av-04). No test has been run.
+Tests are recorded on the restore test template in [SOC2-05](../SOC2/05-audit-approach-and-evidence.md#73-restore-test-av-04). No test has been run.
 
 ## Revision history
 
