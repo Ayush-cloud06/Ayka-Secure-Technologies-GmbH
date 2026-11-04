@@ -6,7 +6,7 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when a log source is added |
 | Status | Draft. Not approved |
@@ -45,11 +45,26 @@ Workload retention values are set in Terraform and checked by the gate through `
 
 ## 5. Requirements
 
-1. **Time.** All systems use UTC from AWS-provided time sources.
+1. **Time.** Security records use UTC. The sources and the limit on that statement are in [section 5.1](#51-time-synchronization-a817).
 2. **Integrity.** CloudTrail log file validation is on. The trail cannot be stopped, deleted or changed (SCP `deny-disable-cloudtrail`). The archive bucket uses Object Lock once it exists.
 3. **Access.** Only Security Operations and the CISO can read the log archive; nobody can delete from it. Workload engineers read their own application logs.
 4. **Content.** Application logs record who, what, when, from where and the outcome for: logins, failed logins, permission changes, data exports, and administrative actions. They never contain passwords, tokens, session cookies or the content of customer evidence files.
 5. **Personal data.** IP addresses and user identifiers are personal data. They are kept only for the retention above and used only for security and operations (RoPA activity PA-03 in [Governance/GDPR](../GDPR/record-of-processing-activities.md)).
+
+### 5.1 Time synchronization (A.8.17)
+
+An earlier draft said that all systems use UTC from AWS-provided time sources. That sentence is withdrawn. GitHub-hosted runners are not an AWS time source, and no offset is measured.
+
+| System | Clock this standard accepts | What is true on 2026-10-14 |
+|---|---|---|
+| GitHub-hosted Actions runners | The runner clock, timestamps stored in UTC | The gate uses these runners. Ayka does not configure NTP on them. Skew is not measured |
+| Future EC2 instances Ayka operates | Amazon Time Sync Service (`169.254.169.123`), UTC | No instance is deployed. The workload plan does not set a different NTP server |
+| ECS and other AWS-managed runtimes | The clock AWS provides for that service, UTC | Designed, not deployed |
+| CloudTrail, ALB, S3 and CloudWatch log records | The clock of the AWS service that wrote the event, UTC | Designed. No delivered object has been compared with another source |
+| Entra ID sign-in and audit logs | Microsoft's service time, UTC | Export is Planned in section 4. No export exists |
+| Staff endpoints | The operating system's maintained time source, with security notes written in UTC | No device is enrolled ([endpoint policy](user-endpoint-device-policy.md)) |
+
+A host Ayka operates that does not use Amazon Time Sync, or a documented equivalent, is a finding once the host exists. Incident notes state the offset when a source is not UTC. Comparing sources, and alerting when skew exceeds one second on a host Ayka operates, is required before a cross-source timeline is relied on. That comparison is not built. Provider logs stay on the provider's clock until a comparison exists. One second is a proposed threshold, not a measured result.
 
 ## 6. Alerting
 
@@ -80,3 +95,4 @@ None of these rules exists yet. Today the topic and its e-mail subscription are 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-10-14 | Name each time source. Withdraw the claim that every system uses AWS time |

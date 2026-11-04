@@ -5,7 +5,7 @@
 | Document ID | SOC2-02 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status as of | 2026-10-06 |
 | Criteria version | AICPA TSP section 100, 2017 Trust Services Criteria (with revised points of focus, 2022) |
 | Status | Draft. Not approved |
@@ -73,7 +73,7 @@ Criteria are paraphrased in a few words to keep the table readable; the authorit
 | CC6.1 | Logical access security over protected assets | AC-01 to AC-05, AC-08, AC-09, AC-13, AC-14 | A.5.15, A.8.2, A.8.3, A.8.4, A.8.5, A.8.24 | Partly ready: repository access Implemented; workforce identity and MFA Designed |
 | CC6.2 | Register and authorise users before issuing credentials; remove them | AC-01, AC-06, AC-07 | A.5.16, A.5.18 | Not ready |
 | CC6.3 | Role-based, least-privilege access with segregation of duties | AC-04, AC-06, AC-07 | A.5.15, A.5.18, A.8.2 | Not ready |
-| CC6.4 | Restrict physical access | AC-17 (carved out to AWS) | A.7.1 to A.7.4 | Ready through CSOC, subject to VM-02 |
+| CC6.4 | Restrict physical access | AC-17 (carved out to AWS) | A.7.1 to A.7.4 | Not ready: the carve-out is described; no provider report has been reviewed (VM-02) |
 | CC6.5 | Dispose of assets only once data cannot be recovered | AC-16, AC-18 | A.7.10, A.7.14, A.8.10 | Not ready for laptops; carved out for production |
 | CC6.6 | Protect against threats from outside the boundary | AC-10, AC-11, CO-02 | A.8.20, A.8.21, A.8.23 | Partly ready: gate rules Implemented, network Gated design |
 | CC6.7 | Restrict transmission and movement of information | AC-12, AC-13 | A.5.14, A.8.24 | Partly ready (Gated design) |
@@ -128,9 +128,9 @@ Criteria are paraphrased in a few words to keep the table readable; the authorit
 
 | Readiness | Criteria (of 38 in scope) |
 |---|---:|
-| Ready | 2 (CC2.1, CC5.2), plus CC6.4 through the AWS carve-out |
+| Ready | 2 (CC2.1, CC5.2) |
 | Partly ready | 17 |
-| Not ready | 18 |
+| Not ready | 19 |
 
 What this says in one line: Ayka's change management and configuration controls are close to audit grade because they run in CI on every change; everything that needs a running system or people doing recurring work (access reviews, alerting, incident handling, vendor reviews, restore tests) is not yet in place.
 
@@ -147,3 +147,4 @@ Of the 65 control rows in the matrix, all but RM-02 (insurance) map to an ISO/IE
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-10-14 | CC6.4 is Not ready until a provider report is reviewed. Ready stays 2. Not ready becomes 19 |

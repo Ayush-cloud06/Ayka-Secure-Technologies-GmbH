@@ -5,7 +5,7 @@
 | Document ID | POL-SDL-01 |
 | Owner | Product & Engineering |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when the required checks or the pipeline stages change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -126,7 +126,7 @@ Settings rechecked via the GitHub API on 2026-10-14; [ruleset 24482491](https://
 1. Test and development use synthetic data. Status: Implemented for the [configuration regression scenarios](../../Internal-IT/workloads/control-validation-scenarios/) (CO-05); this is not evidence of an operating application test-data control.
 2. Production customer data is never copied to a non-production environment ([POL-DATA-01 §5.2](data-classification-and-confidentiality-policy.md#52-protection), item 4). If a defect can only be reproduced with production data:
    - the CISO approves in writing;
-   - the data is masked or reduced first;
+   - the data is masked or reduced first, using the [data masking standard](data-masking-standard.md);
    - the test runs inside the production account;
    - the copy is deleted after the test, with a record.
 3. Test data that resembles personal data is clearly fictional. The [RoPA](../GDPR/record-of-processing-activities.md) records an open decision on the personnel data in the repository (section 4, item 1).
@@ -179,3 +179,4 @@ Exceptions to this policy are approved by the CISO in writing with a reason, com
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-10-14 | Point the production-data exception at the data masking standard |

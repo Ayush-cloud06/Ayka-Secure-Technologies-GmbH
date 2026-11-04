@@ -5,7 +5,7 @@
 | Document ID | SOC2-03 |
 | Owner | Compliance and Risk, for the CISO |
 | Approver | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status as of | 2026-10-06 |
 | Next review | Quarterly, and in the same pull request as any change to a control |
 | Status | Draft. Not approved |
@@ -29,7 +29,7 @@ Owners are roles. The role holders in the [personnel register](../../organizatio
 | CE-01 | The information security policy and the topic policies are approved by the Managing Director, published to staff and reviewed at least annually | CC1.1, CC2.2, CC5.3 | 5.2, A.5.1 | CISO | Annual | M, P | Approved policy versions in Git with approval recorded in the merge; review log | **Partial**: [policy](../ISMS/00-context-and-governance/information-security-policy.md) and SOC 2 policies exist; no approval or review record |
 | CE-02 | Personnel acknowledge the code of conduct and the acceptable use policy at hire and every year | CC1.1 | A.5.10, A.6.2 | HR | At hire, annual | M, P | Signed acknowledgements for a sample of staff | **Planned**: no code of conduct written |
 | CE-03 | The organization chart and role descriptions define reporting lines and security responsibilities; the CISO reports to the Managing Director | CC1.3 | 5.3, A.5.2 | Managing Director | Annual review | M, P | [Org structure](../../organization/org-structure.md), [roles](../../organization/roles-and-responsibilities.md) | **Partial**: documents exist; no dated review |
-| CE-04 | New hires are screened before access is granted, within German law (identity, references; certificate of good conduct only for Tier 0 roles where justified under § 26 BDSG) | CC1.4 | A.6.1 | HR | Per hire | M, P | Screening checklist for sampled joiners | **Planned** |
+| CE-04 | New hires are screened before access is granted, within German law (identity, references; certificate of good conduct only for Tier 0 roles where justified under § 26 BDSG) | CC1.4 | A.6.1 | HR | Per hire | M, P | Screening checklist for sampled joiners | **Designed**: criteria in [personnel screening](../ISMS/01-organization/personnel-screening-criteria.md); no joiner has been screened |
 | CE-05 | All personnel complete security awareness training at onboarding and annually; Tier 0 and Tier 1 staff complete role-based cloud security training | CC1.4, CC2.2 | 7.2, 7.3, A.6.3 | CISO | At hire, annual | M, P | Training completion export | **Designed**: [programme](../../organization/training-and-awareness.md) written; no completion records |
 | CE-06 | The CISO reports security posture, open risks and control deficiencies to the Managing Director each quarter; decisions are minuted | CC1.2, CC2.2, CC4.2 | 9.3 | CISO | Quarterly | M, D | Quarterly report and minutes | **Planned**: no meeting has taken place; do not backdate |
 | CE-07 | Security responsibilities are part of job descriptions and the annual performance review | CC1.5 | A.6.2 | HR | Annual | M, P | Job descriptions, review form | **Planned** |
@@ -86,7 +86,7 @@ Owners are roles. The role holders in the [personnel register](../../organizatio
 | AC-14 | The pipeline holds no cloud credentials; scanner binaries are verified by SHA-256 and GitHub Actions are pinned by commit SHA | CC6.8, CC8.1 | A.8.19, A.5.21 | Repository owner | Every run | A, P | [`.github/actions/`](../../.github/actions/); absence of `id-token` permissions; [`toolchain.versions`](../../Internal-IT/engineering/ci-cd/toolchain.versions) | **Implemented** |
 | AC-15 | Container images are pulled from an approved registry by immutable digest and scanned for vulnerabilities before deployment | CC6.8, CC7.1 | A.8.7, A.8.8 | Product and Engineering | Every build | A, P | Image scan results | **Planned**: the task definition uses the mutable tag `nginx:stable` |
 | AC-16 | Company laptops are managed: full-disk encryption, screen lock, endpoint protection and automatic updates | CC6.8, CC6.5 | A.8.1, A.8.7 | IT Support | Continuous | A, P | MDM compliance report | **Planned** |
-| AC-17 | Physical security of production facilities | CC6.4 | A.7.1 to A.7.4 | AWS (carved out) | | | AWS SOC 2 report, reviewed under VM-02 | **Carved out**: CSOC, see [system description](01-system-description.md) section 7 |
+| AC-17 | Physical security of production facilities | CC6.4 | A.7.1 to A.7.4 | AWS (carved out) | | | AWS SOC 2 report, reviewed under VM-02 | **Carved out**: the expectation is described in the [system description](01-system-description.md) and [POL-PHY-01](../policies/physical-and-environmental-security-policy.md). No report has been retrieved (VM-02) |
 | AC-18 | Storage media in production are destroyed by the cloud provider; Ayka laptops are wiped with a recorded certificate before reuse or disposal | CC6.5 | A.7.10, A.7.14 | IT Support / AWS | Per disposal | M, P | Disposal certificates | **Planned** for laptops; carved out for production media |
 
 ## 8. System operations (OP)
@@ -149,8 +149,8 @@ Owners are roles. The role holders in the [personnel register](../../organizatio
 | Implemented | 13 |
 | Partial | 11 |
 | Gated design | 6 |
-| Designed | 14 |
-| Planned | 20 |
+| Designed | 15 |
+| Planned | 19 |
 | Carved out | 1 |
 | **Total** | **65** |
 
@@ -161,3 +161,4 @@ Counts are kept in step with the tables in the same pull request. A status moves
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-10-14 | CE-04 is Designed with written screening criteria; no joiner has been screened. AC-17 states that no provider report has been retrieved |

@@ -17,8 +17,10 @@ Owners are proposed accountable roles; review periods begin after approval unles
 | POL-CRY-01 | [Cryptography Policy](cryptography-policy.md) | CISO | 12 months after approval, or when an algorithm is deprecated, a data store is added or a key is compromised |
 | POL-DATA-01 | [Data Classification and Confidentiality Policy](data-classification-and-confidentiality-policy.md) | CISO | 12 months after approval |
 | POL-PRIV-01 | [Data protection policy](data-protection-policy.md) | Compliance & Risk Management | 12 months after approval, or a new processing purpose, processor, transfer or personal-data incident |
+| STD-MSK-01 | [Data masking standard](data-masking-standard.md) | Product & Engineering | 12 months after approval, or before personal data is copied into a non-production system |
 | POL-IR-01 | [Incident Response Plan](incident-response-plan.md) | CISO | 12 months after approval, and after every Severity 1 incident or exercise |
 | STD-LOG-01 | [Logging and Monitoring Standard](logging-and-monitoring-standard.md) | CISO | 12 months after approval, or when a log source is added |
+| POL-PHY-01 | [Physical and environmental security policy](physical-and-environmental-security-policy.md) | HR & Administration | 12 months after approval, or a new work location, facility supplier or equipment-maintenance arrangement |
 | POL-RET-01 | [Records and data retention policy](records-and-data-retention-policy.md) | Compliance & Risk Management | 12 months after approval, or a legal change, new record category, hold or deletion failure |
 | POL-REM-01 | [Remote work policy](remote-work-policy.md) | CISO | 12 months after approval, or a change in working locations, access methods or relevant incident |
 | POL-SDL-01 | [Secure Development Policy](secure-development-policy.md) | Product & Engineering | 12 months after approval, or when the required checks or the pipeline stages change |
@@ -36,7 +38,11 @@ Owners are proposed accountable roles; review periods begin after approval unles
 | Vulnerability and patch management | [Combined policy](vulnerability-and-patch-management-policy.md); scanning and patch procedures in the [ISMS register](../ISMS/README.md) |
 | Record protection, data retention and disposal | [Combined retention policy](records-and-data-retention-policy.md); handles legal holds, proposed schedules and configuration gaps |
 | Asset and information classification | [Data classification and confidentiality](data-classification-and-confidentiality-policy.md) |
-| User devices, mobile devices and media | [User endpoint devices](user-endpoint-device-policy.md) |
+| User devices, mobile devices and media | [User endpoint devices](user-endpoint-device-policy.md), including [web filtering](user-endpoint-device-policy.md#5-web-access-filtering) |
+| Physical and environmental security | [Physical and environmental security](physical-and-environmental-security-policy.md). Supplier reports are not on file |
+| Data masking | [Data masking standard](data-masking-standard.md). No tool is selected |
+| Threat intelligence | [Threat intelligence procedure](../ISMS/06-operational-procedures/threat-intelligence-procedure.md). No source is subscribed |
+| Personnel screening | [Screening criteria](../ISMS/01-organization/personnel-screening-criteria.md). Nobody has been screened |
 
 ## 3. Approval and unresolved implementation
 

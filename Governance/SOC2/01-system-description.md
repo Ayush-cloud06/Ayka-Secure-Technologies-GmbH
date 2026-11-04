@@ -6,7 +6,7 @@
 | Owner | CISO |
 | Contributors | Cloud Platform Engineering, Head of Product |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Prepared as of | 2026-10-06 |
 | Next review | Before engaging a service auditor, and at every significant system change |
 | Status | Draft. Not approved. Prepared for readiness; not part of any SOC 2 report |
@@ -205,7 +205,7 @@ Ayka's controls meet the criteria only if customers also operate the following c
 
 ## 7. Subservice organizations and complementary subservice organization controls (CSOCs) [DC 7]
 
-Ayka uses the **carve-out method**: the subservice organizations' controls are excluded from this description, and Ayka monitors them under POL-VEN-01, mainly by reviewing their own SOC 2 Type II reports each year.
+Ayka uses the **carve-out method**: the subservice organizations' controls are excluded from this description. The intended check is an annual review of each provider's SOC 2 Type II report under POL-VEN-01. No report has been retrieved, so that monitoring is not operating.
 
 | Subservice organization | Service | Controls Ayka expects it to operate (CSOCs) | Related criteria |
 |---|---|---|---|
@@ -217,10 +217,10 @@ The current status of each provider's report, and its bridge letter, is tracked 
 
 ## 8. Criteria not relevant to the system [DC 8]
 
-All criteria of the Security, Availability and Confidentiality categories are relevant. Two are met largely through subservice organizations and are noted as such rather than excluded:
+All criteria of the Security, Availability and Confidentiality categories are relevant. Two are assigned largely to subservice organizations and are noted as such rather than excluded. Assignment is not evidence that the provider's controls were reviewed.
 
-- **CC6.4** (physical access): Ayka operates no data centre; physical security of production is carved out to AWS. The Stuttgart office holds no production systems or customer data.
-- **CC6.5** (disposal of physical assets): storage media are destroyed by AWS. Ayka's own part covers laptops and the logical deletion of customer data.
+- **CC6.4** (physical access): Ayka operates no data centre; physical security of production is carved out to AWS. The Stuttgart office holds no production systems or customer data. No AWS report is on file, so the criterion is not ready ([mapping](02-trust-services-criteria-mapping.md)).
+- **CC6.5** (disposal of physical assets): storage media are destroyed by AWS. Ayka's own part covers laptops and the logical deletion of customer data. The provider half is unverified; the laptop half has no disposal record.
 
 ## 9. Significant changes during the period [DC 9]
 
@@ -231,3 +231,4 @@ Not applicable: no report period has started. For a Type II report this section 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue, readiness draft |
+| 1.1 | 2026-10-14 | Say the carve-out review has not happened. CC6.4 is not treated as met |

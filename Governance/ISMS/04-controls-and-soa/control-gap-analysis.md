@@ -5,7 +5,7 @@
 | Document ID | ISMS-GAP-01 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or scope, risk, supplier or architecture change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -51,16 +51,16 @@ These are proposed workstreams, not accepted residual risks. Priority P0 blocks 
 
 | Gap | Priority / risk links | Owner | Required work | Closure evidence / dependency |
 |---|---|---|---|---|
-| G01 | P1; RISK-005, RISK-010 | CISO | Approve governance; assign real owners; define screening; conduct training, reviews and incident exercises; provide independent oversight | Approved documents and dated operating samples; independent reviewer appointed. Templates alone do not close this gap |
+| G01 | P1; RISK-005, RISK-010 | CISO | Approve governance; assign real owners; screening criteria are written and nobody has been screened; conduct training, reviews and incident exercises; provide independent oversight | Approved documents and dated operating samples; independent reviewer appointed. The [screening criteria](../01-organization/personnel-screening-criteria.md) do not close this gap |
 | G02 | P0; RISK-001, RISK-003, RISK-004, RISK-013 | Cloud Platform Engineering | Reconcile identity authority, trust, ABAC, boundaries and privileged roles; investigate exposed historical credentials with owner; validate ordinary and emergency access | Owner-led credential investigation, approved role scopes, positive and negative effective-access tests, MFA and lifecycle evidence. See [privileged access](privileged-access-justification.md) |
-| G03 | P0; RISK-002, RISK-006, RISK-008, RISK-009, RISK-012 | Cloud Platform Engineering | Establish state custody and bootstrap order; resolve findings; design runtime monitoring, trusted time, backup and resilience; validate only after authorized setup | Reviewed bootstrap/state design; scoped deployment authorization; runtime delivery, restore, connectivity and alert evidence. No source-only closure |
-| G04 | P1; RISK-010 | HR & Administration | Assess actual work locations and supplier physical controls; define maintenance, utilities and facility safeguards | Site risk assessment and proportionate checks; verified supplier assurance. No blanket cloud-provider exemption |
+| G03 | P0; RISK-002, RISK-006, RISK-008, RISK-009, RISK-012 | Cloud Platform Engineering | Establish state custody and bootstrap order; resolve findings; design runtime monitoring, backup and resilience. Time sources are named in the [logging standard](../../policies/logging-and-monitoring-standard.md#51-time-synchronization-a817); offset monitoring is not built. Validate only after authorized setup | Reviewed bootstrap/state design; scoped deployment authorization; runtime delivery, restore, connectivity, clock comparison and alert evidence. No source-only closure |
+| G04 | P1; RISK-010 | HR & Administration | [Physical and environmental policy](../../policies/physical-and-environmental-security-policy.md) states the duties. Assess actual work locations and obtain supplier physical-control assurance; keep maintenance and utility evidence once equipment exists | Site risk assessment and a reviewed supplier report. The policy does not close this gap, and there is no blanket cloud-provider exemption |
 | G05 | P1; RISK-010, RISK-011 | Compliance & Risk Management | Verify contracts, cloud shared responsibilities, suppliers, subcontractors, exit and external development conditions | Reviewed terms, assurance reports with scope/period, processing locations and dated supplier assessment; certifications and contracts remain to verify |
 | G06 | P1; RISK-005, RISK-009, RISK-010 | Product & Engineering | Apply SDLC and security requirements; broaden beyond IaC scanning; appoint independent review where required; review metadata semantics | Threat and abuse cases, dependency/licence checks, security acceptance and change records; product tests when product exists |
-| G07 | P1; RISK-010 | Cloud Platform Engineering | Inventory actual endpoints; implement remote, malware, filtering, installation and media safeguards | Configuration samples, accountable custodians, alert exercises, acknowledgements and disposal records |
+| G07 | P1; RISK-010 | Cloud Platform Engineering | Inventory actual endpoints; implement remote, malware, installation and media safeguards. Web-filtering requirements are written in the [endpoint policy](../../policies/user-endpoint-device-policy.md#5-web-access-filtering); no product is selected | Configuration samples, accountable custodians, alert exercises, acknowledgements and disposal records |
 | G08 | P1; RISK-007, RISK-010 | Compliance & Risk Management | Extend inventory beyond plan assets; protect evidence and records independently of the generating workflow | Provenance, verified checksums, approved retention and access controls, independent retrieval/review and complete asset ownership |
-| G09 | P0 before real personal data; RISK-011 | Compliance & Risk Management | Resolve target `eu-central-1` versus `ap-south-1` roots; verify actual processing and transfers; approve retention, masking and deletion needs | Owner-approved residency decision, corrected sources or justified exception, real processing facts and reviewed obligations; data handling tests before personal data use |
-| G10 | P1; RISK-009, RISK-010 | Security Operations | Define relevant intelligence sources, community contacts, assessment cadence and feedback into risk and change management | Approved intelligence process and dated assessments; subscriptions alone are insufficient |
+| G09 | P0 before real personal data; RISK-011 | Compliance & Risk Management | Resolve target `eu-central-1` versus `ap-south-1` roots; verify actual processing and transfers; approve retention and deletion. The [masking standard](../../policies/data-masking-standard.md) and the [transfer assessment](../../GDPR/data-flow-and-transfer-assessment.md) exist and do not conclude the mechanism | Owner-approved residency decision, corrected sources or justified exception, real processing facts and reviewed obligations; a tested masking transformation before personal data is copied |
+| G10 | P1; RISK-009, RISK-010 | Security Operations | The [threat intelligence procedure](../06-operational-procedures/threat-intelligence-procedure.md) names sources and where a decision is written. Subscribe those sources, appoint community contacts, and record assessments | Dated assessments and a contact that is actually used. The procedure does not close this gap, and a subscription alone would not either |
 
 ## 4. Status corrections and review
 
@@ -73,3 +73,4 @@ Review gaps when evidence changes, after incidents and at least annually after a
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-10-14 | Point G01, G04, G07, G09 and G10 at the new drafts. None of those gaps closes |

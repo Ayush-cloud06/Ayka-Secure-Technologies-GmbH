@@ -5,7 +5,7 @@
 | Document ID | POL-END-01 |
 | Owner | Cloud Platform Engineering |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or a supported-platform change, device loss or baseline failure |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -44,7 +44,22 @@ Users follow [acceptable use](acceptable-use-policy.md), [remote work](remote-wo
 
 Before reuse, repair outside company custody or disposal, Cloud Platform Engineering inventories local data, transfers required business records, selects a sanitisation method suitable for the media and encryption state, and verifies the outcome. Retain asset ID, method, performer, date, verification and destruction/service-provider reference. If reliable sanitisation cannot be verified, keep the media restricted pending destruction through an assessed supplier. Do not claim that ordinary file deletion sanitises a device.
 
-## 5. Review, exceptions and gaps
+## 5. Web access filtering
+
+User devices that handle non-public information need a filter on outbound web and DNS requests (ISO/IEC 27001:2022 A.8.23). This is not the workload WAF. The WAF in the portal design inspects inbound HTTP and is scored under A.8.20. A VPN is not a web filter. None is selected ([remote work policy](remote-work-policy.md)).
+
+| Rule | Requirement |
+|---|---|
+| When it applies | Before the device is allowed to handle Internal, Confidential or Restricted information. A device that fails the rest of section 3 does not get an exception here |
+| Coverage | The filter follows the device off any future office network. Guest Wi-Fi does not bypass it |
+| What it blocks | Categories the chosen product already maintains for malware, phishing and newly registered domains. Record the category list in the same change that selects the product |
+| Workloads | VPC egress is a network control under the [cloud security policy](cloud-security-policy.md). Do not cite this section as that control |
+| Exceptions | Named person, destination, reason, owner and an expiry of at most 90 days. The CISO approves. An open-ended "developer needs the internet" exception is not valid |
+| Product | Not selected. No agent, no DNS resolver and no exception register |
+
+Status: Designed as a requirement. G07 stays open because no device exists and no product is chosen. Selecting a vendor without a configuration sample would not close the gap.
+
+## 6. Review, exceptions and gaps
 
 Cloud Platform Engineering reviews baseline compliance monthly and after material changes; Security Operations follows missing or unhealthy devices. CISO exceptions name scope, owner, compensating protection and an expiry of at most 90 days. Lost devices, overdue patches and unsupported systems go to the [risk register](../ISMS/03-risk-management/risk-register.md).
 
@@ -55,3 +70,4 @@ Status: Designed by this policy. Device management, EDR, remote isolation/wipe, 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-10-14 | Add the web-filtering requirement. No product is selected |

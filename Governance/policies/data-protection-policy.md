@@ -5,7 +5,7 @@
 | Document ID | POL-PRIV-01 |
 | Owner | Compliance & Risk Management |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or a new processing purpose, processor, transfer or personal-data incident |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -50,7 +50,7 @@ Legal basis, DPO requirement, DPIA necessity and transfer mechanism require asse
 | Contract end or verified deletion request | Apply [retention](records-and-data-retention-policy.md); address versions, backups, logs and subprocessors; identify lawful holds | Deletion record states what was removed, exceptions and remaining backup expiry; no absolute deletion claim before verification |
 | New purpose or material design change | Repeat section 2, update notices and processing record before use | Decision and change evidence |
 
-The detailed rights-request procedure, DPIA screening, transfer assessment and DPO decision remain Planned in the [GDPR index](../GDPR/README.md). These require completion before relevant real processing begins.
+The rights-request procedure, DPIA screening, transfer assessment and DPO decision are drafted in the [GDPR index](../GDPR/README.md). None of them is a completed request, a data protection impact assessment, a selected transfer mechanism or an appointment. Repeat the screening before relevant real processing begins. Retention periods are proposed in the [retention policy](records-and-data-retention-policy.md) and are not approved.
 
 ## 5. Sources, current status and review
 
@@ -63,3 +63,4 @@ Status: Designed, evidenced by this policy, the [processing record](../GDPR/reco
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-10-14 | Point section 4 at the drafted privacy records. They are not completed activities |
