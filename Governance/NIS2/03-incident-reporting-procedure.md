@@ -20,7 +20,7 @@ Three reporting regimes can apply to the same incident. Today only two of them b
 | Regime | Applies today? | Recipient | Clock |
 |---|---|---|---|
 | Customer contracts (and GDPR Art. 33(2) as a processor) | **Yes**, once Ayka has customers | Each affected customer | Ayka's commitment: within 24 hours of awareness (section 5) |
-| GDPR Art. 33 as a controller (employee data) | **Yes** | LfDI Baden-Württemberg | 72 hours after awareness |
+| GDPR Art. 33 as a controller (employee and source-control/CI data) | **Yes** | LfDI Baden-Württemberg | Without undue delay and, where feasible, within 72 hours of awareness; give reasons for any delay |
 | NIS2 Art. 23 / §32 BSIG | **No** ([NIS2-01](01-applicability-assessment.md)). Voluntary reporting to the BSI is possible | BSI | 24 hours / 72 hours / 1 month |
 
 The BSI steps are written out in full anyway. Ayka's customers need Ayka to report fast enough for **their** 24-hour early warning, so Ayka has to run on the NIS2 clock even when the law does not require it. And if Ayka comes into scope, this procedure must work on day one.
@@ -79,7 +79,7 @@ flowchart TD
     D --> E{"Significant?<br/>section 4"}
     E -->|no| F["Handle internally;<br/>customer notice only if<br/>their data or service affected"]
     E -->|yes| G["T0 + 24 h<br/>customer notice<br/>BSI early warning*"]
-    G --> H["T0 + 72 h<br/>BSI notification*<br/>GDPR Art. 33 if personal data"]
+    G --> H["T0 + 72 h<br/>BSI notification*"]
     H --> I["+ 1 month<br/>BSI final report*<br/>customer closing report"]
     D --> P{"Personal data<br/>affected?"}
     P -->|yes| Q["Section 6:<br/>GDPR route in parallel"]
@@ -107,7 +107,8 @@ Run in parallel with section 5. The GDPR Lead takes the lead.
 
 | Ayka's role | Data | Duty | Deadline |
 |---|---|---|---|
-| Controller | Employee identity and access data | Notify the LfDI Baden-Württemberg (Art. 33(1)) unless the breach is unlikely to result in a risk to people; tell the people affected if the risk is high (Art. 34) | 72 hours from awareness |
+| Controller | Employee identity and access data; contributor names, emails, GitHub usernames, PR comments and CI logs (PA-02) | Notify the LfDI Baden-Württemberg (Art. 33(1)) unless the breach is unlikely to result in a risk to people | Without undue delay and, where feasible, within 72 hours of becoming aware; give reasons for any delay |
+| Controller | Employee identity and access data; contributor names, emails, GitHub usernames, PR comments and CI logs (PA-02) | Tell the people affected when the risk is high (Art. 34) | Without undue delay |
 | Processor | Customer data in the SaaS platform | Notify the customer as controller without undue delay (Art. 33(2)); the customer decides on its own notifications | Ayka commits to 24 hours, the same as the customer incident notice |
 
 Every personal-data breach goes into the breach log, including those not notified (Art. 33(5)). The log is template T-4 with the GDPR fields filled.

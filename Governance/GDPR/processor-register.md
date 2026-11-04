@@ -27,7 +27,7 @@ Before any provider processes real personal data:
 
 1. A DPA covering Art. 28(3) items is in place and filed.
 2. Data location is pinned to `eu-central-1` or another EU Region, and the Terraform matches.
-3. The transfer mechanism for any remaining access from outside the EU is recorded, with a transfer impact assessment (planned slice G-06).
+3. The transfer mechanism for any remaining access from outside the EU is recorded. The [transfer assessment](data-flow-and-transfer-assessment.md) maps the flows and does not select a mechanism.
 4. Sub-processor change notifications are subscribed to.
 5. The provider's security attestations (for example ISO/IEC 27001 certificate, SOC 2 report) are retrieved and dated.
 

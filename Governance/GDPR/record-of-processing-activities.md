@@ -4,7 +4,7 @@
 - **Framework:** GDPR Art. 30(1) (controller) and Art. 30(2) (processor)
 - **Owner:** GDPR Lead role (EMP-004, fictional), reporting to the CISO role
 - **Version:** 1.0
-- **Last updated:** 2026-10-05
+- **Last updated:** 2026-10-14
 - **Status:** Draft. Not approved: no approval record exists.
 
 ## 1. Reality column
@@ -31,7 +31,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Legal basis | Art. 6(1)(b) employment contract, with § 26 BDSG for employee data (to verify against the current BDSG after the 2023 CJEU ruling C‑34/21) |
 | Recipients | Microsoft (Entra ID), AWS (IAM Identity Center): both planned; GitHub (repository hosting): real |
 | Third-country transfer | GitHub: yes, United States (real). Microsoft and AWS: none intended once in `eu-central-1` |
-| Retention | Not defined. Planned: delete within a defined period after leaving; see data retention schedule (planned) |
+| Retention | Proposed only. [POL-RET-01](../policies/records-and-data-retention-policy.md) requires a purpose and an expiry before personnel records are collected, and no employment period is approved. Nothing has been deleted under that schedule |
 | TOMs | [Identity and access TOMs](technical-and-organization-measures/identity-and-access-toms.md) |
 
 ### PA-02 Source control and CI
@@ -45,7 +45,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Legal basis | Art. 6(1)(f) legitimate interest in traceable changes |
 | Recipients | GitHub (processor for private data; commit metadata in a public repository is public) |
 | Third-country transfer | United States (GitHub) |
-| Retention | Git history: kept indefinitely by design. CI artifacts: no `retention-days` is set in [`.github/`](../../.github/), so the repository default applies (inferred: 90 days) |
+| Retention | Git history: kept indefinitely by design. CI artifacts: no `retention-days` is set in [`.github/`](../../.github/), so the repository default applies. Measured on 2026-10-14 as 90 days ([ISMS objectives](../ISMS/00-context-and-governance/isms-objectives.md) OBJ-08). [POL-RET-01](../policies/records-and-data-retention-policy.md) proposes at least 18 months outside the pipeline. That copy does not exist |
 | TOMs | Repository access through GitHub accounts; [segregation of duties](technical-and-organization-measures/segregation-of-duties.md) |
 
 ### PA-03 Security logging
@@ -58,8 +58,8 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Data categories | IP address, user/role identifier, request metadata, timestamps |
 | Legal basis | Art. 6(1)(f) legitimate interest in security; Art. 32 obligation |
 | Recipients | AWS (CloudTrail, S3, CloudWatch) |
-| Third-country transfer | None intended (`eu-central-1`) |
-| Retention | Not defined |
+| Third-country transfer | None intended (`eu-central-1`). Current Terraform names `ap-south-1`, so the source would not match that intention ([DF-05](data-flow-and-transfer-assessment.md)) |
+| Retention | Not approved. [POL-RET-01](../policies/records-and-data-retention-policy.md) proposes 365 days for selected workload logs and a longer CloudTrail target. Those logs are not delivered |
 | Source | CloudTrail in the landing zone ([`landing-zone/modules/core/logging/`](../../Internal-IT/platform/foundation/landing-zone/modules/core/logging/)); ALB and S3 access logs in [`ayka-portal`](../../Internal-IT/workloads/ayka-portal/). Delivery never tested (RISK-006) |
 
 ### PA-04 Personnel administration and training records
@@ -72,7 +72,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Data categories | Name, role, manager, start date, training completion |
 | Legal basis | Art. 6(1)(b); § 26 BDSG (to verify) |
 | Recipients | None outside Ayka |
-| Retention | Not defined |
+| Retention | Not approved. [POL-RET-01](../policies/records-and-data-retention-policy.md) refuses a blanket employment period until purpose and expiry are set. No real training record exists |
 
 ## 3. Processor activities (Art. 30(2))
 
@@ -91,8 +91,8 @@ Real processing is small but not zero: see PA-01 and PA-02.
 ## 4. Gaps
 
 1. The real public disclosure in PA-01 should be minimized: replace `personnel.json` entries with clearly fictional data, or accept it as the owner's own choice, and record the decision.
-2. No retention period is defined for any activity (planned slice G-10).
-3. Legal bases are proposed, not reviewed (planned slice G-11).
+2. [POL-RET-01](../policies/records-and-data-retention-policy.md) now proposes periods. They are not approved. The only configured retention this record relies on is GitHub's 90-day artifact setting. No activity has an implemented deletion job.
+3. Legal bases are proposed in the [legal-basis register](dpo-and-legal-basis.md) and are not reviewed.
 4. Region mismatch for PA-03 and PP-01 until the Terraform moves to `eu-central-1`.
 
 ## 5. Review

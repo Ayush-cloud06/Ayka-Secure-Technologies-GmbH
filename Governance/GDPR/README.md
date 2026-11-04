@@ -24,16 +24,16 @@ Status: `Draft` = written, not approved (no real approver exists) · `Planned` =
 | [Processor and sub-processor register](processor-register.md) | Art. 28 | Draft |
 | [TOMs: identity and access](technical-and-organization-measures/identity-and-access-toms.md) | Art. 25, 32 | Draft |
 | [TOMs: segregation of duties](technical-and-organization-measures/segregation-of-duties.md) | Art. 32 | Draft |
-| Data-flow map and international transfer assessment | Art. 44–49 | Planned |
-| DPIA screening | Art. 35 | Planned |
-| Data subject rights procedure | Art. 12–22 | Planned |
-| Personal data breach procedure | Art. 33, 34 | Planned |
-| Data retention schedule | Art. 5(1)(e) | Planned |
-| DPO decision and legal-basis register | Art. 6, 37 | Planned |
-| TOMs: encryption, logging, backup | Art. 32 | Planned |
+| [Data-flow map and international transfer assessment](data-flow-and-transfer-assessment.md) | Art. 44–49 | Draft. The map is written. No Chapter V mechanism is selected |
+| [DPIA screening](dpia-screening.md) | Art. 35 | Draft. Screening only. No impact assessment is written |
+| [Data subject rights procedure](data-subject-rights-procedure.md) | Art. 12–22 | Draft. No request has been received |
+| [Personal data breach procedure](../NIS2/03-incident-reporting-procedure.md) | Art. 33, 34 | Draft, in NIS2-03 including template T-4. The log has no entries |
+| [Data retention schedule](../policies/records-and-data-retention-policy.md) | Art. 5(1)(e) | Draft proposal in POL-RET-01. Configured CI retention is 90 days. The 18-month copy is not built |
+| [DPO decision and legal-basis register](dpo-and-legal-basis.md) | Art. 6, 37 | Draft. The officer is not appointed. Bases are not reviewed |
+| [TOMs: encryption, logging, backup](technical-and-organization-measures/encryption-logging-backup-toms.md) | Art. 32 | Draft. Plan checks are labelled separately from measures that are only written |
 
 ## Rules for these documents
 
-- Every measure carries the weakest true label from the [README yardstick](../../README.md#2-yardstick-capability-status): Implemented, Simulated, Planned (design-only), or Not designed.
+- Every measure carries the weakest true label from the [README yardstick](../../README.md#4-capability-status): Implemented, Simulated, Planned (design-only), or Not designed.
 - No invented records: no signed DPAs, DPIA approvals, breach notifications or data subject requests.
 - Facts about real providers' contracts are marked **to verify** until checked against the provider's current terms.

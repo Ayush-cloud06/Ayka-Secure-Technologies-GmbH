@@ -4,12 +4,12 @@
 - **Framework:** GDPR Art. 25 (data protection by design), Art. 32 (security of processing)
 - **System scope:** Microsoft Entra ID, AWS IAM Identity Center, AWS IAM
 - **Version:** 2.0 (replaces the 2026-03-15 version, which described design as if it were deployed)
-- **Last updated:** 2026-10-05
+- **Last updated:** 2026-10-14
 - **Status:** Draft. Not approved: no approval record exists.
 
 ## 1. How to read this document
 
-Each measure carries the weakest true label, using the yardstick in the [repository README](../../../README.md#2-yardstick-capability-status):
+Each measure carries the weakest true label, using the yardstick in the [repository README](../../../README.md#4-capability-status):
 
 - **Implemented**: runs in CI, and a run or test shows it working.
 - **Simulated**: runs, but its effect is faked on purpose and labelled.
@@ -36,7 +36,7 @@ None of the identity Terraform under `Internal-IT/platform/domains/identity/` ha
 | Resource creation denied without `Department`, `Environment`, `Owner` tags | Planned (design-only) | `ABACMandatoryTags` in the same file | Not deployed |
 | Permissions boundary for workload roles | Planned (design-only) | [`permissions-boundaries.tf`](../../../Internal-IT/platform/domains/identity/aws-iam-core/permissions-boundaries.tf) | Not deployed; not tested |
 | No wildcard or inline IAM policies in scanned workloads | Implemented (mapped, not exercised) | Controls `IAM_WILDCARD_POLICY`, `IAM_INLINE_POLICY_USAGE` in [`control-mapping.yaml`](../../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) | Gated workloads only; no negative scenario triggers them. The ABAC policy itself uses service wildcards (`ec2:*`, `s3:*`) and is not scanned |
-| Access changes go through version-controlled Terraform | Implemented for the repository | Git history; CODEOWNERS on [`.github/CODEOWNERS`](../../../.github/CODEOWNERS) | Branch protection is not configured (README D7, RISK-005), so review is not enforced |
+| Access changes go through version-controlled Terraform | Implemented for the repository | Git history; CODEOWNERS on [`.github/CODEOWNERS`](../../../.github/CODEOWNERS); ruleset fact in the [control gap analysis](../../ISMS/04-controls-and-soa/control-gap-analysis.md) section 4 | Ruleset `protect-main` requires a pull request and five checks, and zero approving reviews (2026-10-14). A second person does not have to approve. RISK-005 |
 
 ## 4. Identity lifecycle (joiner, mover, leaver)
 
