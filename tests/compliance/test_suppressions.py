@@ -33,8 +33,20 @@ class SuppressionTests(unittest.TestCase):
         self.assertEqual(hits, [], "move these to exceptions.yaml with a reason, owner and expiry")
 
     def test_each_exception_is_unique(self):
-        keys = Counter((e["policy_id"], e["resource"]) for e in self.exceptions)
+        keys = Counter((e["policy_id"], e["resource"], e.get("workload")) for e in self.exceptions)
         self.assertEqual([k for k, n in keys.items() if n > 1], [])
+
+    def test_every_exception_is_scoped_to_an_existing_workload(self):
+        """The same address can exist in several roots; an unscoped entry would apply to all."""
+        bad = [(e["policy_id"], e["resource"], e.get("workload")) for e in self.exceptions
+               if not e.get("workload") or not (REPO_ROOT / e["workload"]).is_dir()]
+        self.assertEqual(bad, [])
+
+    def test_expiry_dates_are_staggered(self):
+        """SOC 2 readiness observation: one shared expiry would return every finding on one day."""
+        dates = Counter(str(e["expires"]) for e in self.exceptions)
+        self.assertGreaterEqual(len(dates), 6)
+        self.assertLessEqual(max(dates.values()), len(self.exceptions) // 4)
 
     def test_exceptions_expire_within_a_review_cycle(self):
         limit = date.today() + MAX_LIFETIME

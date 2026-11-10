@@ -18,6 +18,16 @@ on:
         required: false
         type: string
         default: 'compliance-evidence'
+      scan_mode:
+        description: 'plan (default), or source for roots that cannot be planned offline: no plan, OPA does not run, and the summary records it'
+        required: false
+        type: string
+        default: 'plan'
+      simulate_apply:
+        description: 'Run the simulated apply job on main after a passing decision'
+        required: false
+        type: boolean
+        default: true
 
     outputs:
       schema_version:
@@ -62,6 +72,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Terraform Plan
+        if: ${{ inputs.scan_mode == 'plan' }}
         uses: ./.github/actions/plan
         with:
           workload_dir: ${{ inputs.workload_dir }}
@@ -75,13 +86,19 @@ jobs:
         uses: ./.github/actions/check
         with:
           workload_dir: ${{ inputs.workload_dir }}
+          scan_mode: ${{ inputs.scan_mode }}
 
       - name: Policy Check
         uses: ./.github/actions/policy
+        with:
+          scan_mode: ${{ inputs.scan_mode }}
 
       - name: Compliance Decision
         id: decision
         uses: ./.github/actions/decision
+        with:
+          workload_dir: ${{ inputs.workload_dir }}
+          scan_mode: ${{ inputs.scan_mode }}
 
       - name: Compliance Evidence
         uses: ./.github/actions/evidence
@@ -89,6 +106,7 @@ jobs:
         with:
           artifact_name: ${{ inputs.artifact_name }}
           workload_dir: ${{ inputs.workload_dir }}
+          scan_mode: ${{ inputs.scan_mode }}
 
   medium-risk-approval:
     needs: compliance
@@ -107,7 +125,7 @@ jobs:
   apply:
     needs: [compliance, medium-risk-approval]
     if: |
-      always() &&
+      always() && inputs.simulate_apply &&
       (needs.compliance.outputs.decision == 'pass' || needs.medium-risk-approval.result == 'success') &&
       github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest

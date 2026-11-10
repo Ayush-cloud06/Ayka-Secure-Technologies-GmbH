@@ -10,6 +10,10 @@ inputs:
     description: 'Terraform workload directory, recorded in the run manifest'
     required: false
     default: ''
+  scan_mode:
+    description: 'plan or source, recorded in the run manifest'
+    required: false
+    default: 'plan'
 
 runs:
   using: 'composite'
@@ -29,6 +33,7 @@ runs:
       shell: bash
       env:
         WORKLOAD_DIR: ${{ inputs.workload_dir }}
+        COMPLIANCE_SCAN_MODE: ${{ inputs.scan_mode }}
       run: python3 Internal-IT/engineering/ci-cd/scripts/write-manifest.py
 
     - name: Checksum Artifacts

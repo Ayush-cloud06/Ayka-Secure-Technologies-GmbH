@@ -43,6 +43,18 @@ module "database" {
   kms_key_arn            = aws_kms_key.workload.arn
 }
 
+# Daily AWS Backup of the database and the data bucket, 35-day retention, locked vault.
+module "backup" {
+  source = "./modules/backup"
+
+  name_prefix = var.name_prefix
+  kms_key_arn = aws_kms_key.workload.arn
+  protected_resource_arns = [
+    module.database.db_instance_arn,
+    module.storage.bucket_arn,
+  ]
+}
+
 module "compute" {
   source = "./modules/compute"
 

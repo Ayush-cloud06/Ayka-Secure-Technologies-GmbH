@@ -4,8 +4,8 @@ module "scp" {
 }
 
 module "ou-structure" {
-  source  = "./modules/ou-structure"
-  root_id = data.aws_organizations_organization.current.roots[0].id
+  source = "./modules/ou-structure"
+  # Read from the organization this root creates, not from a data source: the
+  # data source needs an AWS call, so the root could not be planned offline.
+  root_id = aws_organizations_organization.ayka.roots[0].id
 }
-
-data "aws_organizations_organization" "current" {}

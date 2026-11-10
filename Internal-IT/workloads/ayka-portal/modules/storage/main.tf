@@ -150,6 +150,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "access_logs" {
     expiration {
       days = 365
     }
+
+    # The bucket is versioned: without this, every expired or overwritten log object
+    # would stay as a noncurrent version forever (SOC 2 G13; 365-day retention in OP-04).
+    noncurrent_version_expiration {
+      noncurrent_days = 1
+    }
   }
 }
 

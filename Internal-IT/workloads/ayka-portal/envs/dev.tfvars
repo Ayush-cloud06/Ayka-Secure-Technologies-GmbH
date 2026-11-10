@@ -1,8 +1,8 @@
-aws_region           = "ap-south-1"
+aws_region           = "eu-central-1"
 environment          = "dev"
 name_prefix          = "ayka-portal-dev"
 vpc_cidr             = "10.42.0.0/16"
-availability_zones   = ["ap-south-1a", "ap-south-1b"]
+availability_zones   = ["eu-central-1a", "eu-central-1b"]
 public_subnet_cidrs  = ["10.42.0.0/24", "10.42.1.0/24"]
 private_subnet_cidrs = ["10.42.10.0/24", "10.42.11.0/24"]
 db_subnet_cidrs      = ["10.42.20.0/24", "10.42.21.0/24"]

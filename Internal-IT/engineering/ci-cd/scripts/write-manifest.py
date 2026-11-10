@@ -83,6 +83,8 @@ def main(output_dir="output", evidence_dir="evidence"):
             "local": os.environ.get("GITHUB_ACTIONS") != "true",
         },
         "decision": summary.get("decision"),
+        # "source" means no plan existed and OPA did not run (see tools_not_run in the summary).
+        "scan_mode": summary.get("scan_mode") or os.environ.get("COMPLIANCE_SCAN_MODE", "plan"),
         "summary_schema_version": summary.get("schema_version"),
         "tools": tools,
         "policy_inputs_sha256": inputs,

@@ -2,65 +2,77 @@
 # The evaluator reports matches under "excepted_findings"; they never count toward the decision.
 # An entry past its expiry date stops matching, and the finding counts again.
 # Never lower a control's severity to get green: record the decision here instead.
+# `workload` scopes an entry to one root (WORKLOAD_DIR): the same resource address can exist
+# in several roots, and an entry must not hide a finding somewhere it was never reviewed.
+# Expiry dates are staggered so findings do not all return on the same day.
 exceptions:
   - policy_id: AVD-AWS-0053
     resource: module.compute
+    workload: Internal-IT/workloads/ayka-portal
     reason: >-
       The portal ALB is internet-facing by design (modules/compute/alb.tf:33). It sits behind
       WAF (aws_wafv2_web_acl_association.alb; CKV2_AWS_28 passes) and a TLS 1.2+ listener
       policy (alb.tf:71).
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-02-12
   - policy_id: AVD-AWS-0057
     resource: module.networking
+    workload: Internal-IT/workloads/ayka-portal
     reason: >-
       The only wildcard is the log-stream suffix ":*" on one named log group
       (modules/networking/main.tf:169-172), which the VPC flow-log service needs.
       tfsec cannot resolve the ARN at scan time and reports a placeholder.
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-01-22
   - policy_id: AVD-AWS-0089
     resource: module.storage
+    workload: Internal-IT/workloads/ayka-portal
     reason: >-
       access_logs is the target bucket for server access logs (modules/storage/main.tf:22).
       Logging it into itself creates a log loop; the real fix is a separate log-archive
       bucket, which is out of scope for this workload.
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-03-12
   # Moved from inline checkov:skip comments (#18). Checkov scans the plan JSON, where
   # inline skips are ignored, so these findings were counted while the source said skipped.
   - policy_id: CKV2_AWS_5
     resource: module.security.aws_security_group.alb
+    workload: Internal-IT/workloads/ayka-portal
     reason: &cross_module_sg >-
       False positive. The group is attached in another module (compute/alb.tf,
       compute/ecs.tf, compute/ec2.tf, database/main.tf); CKV2_AWS_5 only checks
       attachments inside the module that declares the group.
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-02-19
   - policy_id: CKV2_AWS_5
     resource: module.security.aws_security_group.ecs
+    workload: Internal-IT/workloads/ayka-portal
     reason: *cross_module_sg
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-02-19
   - policy_id: CKV2_AWS_5
     resource: module.security.aws_security_group.ec2
+    workload: Internal-IT/workloads/ayka-portal
     reason: *cross_module_sg
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-02-19
   - policy_id: CKV2_AWS_5
     resource: module.security.aws_security_group.rds
+    workload: Internal-IT/workloads/ayka-portal
     reason: *cross_module_sg
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-02-19
   - policy_id: CKV2_AWS_57
     resource: module.database.aws_secretsmanager_secret.db
+    workload: Internal-IT/workloads/ayka-portal
     reason: >-
       Rotation needs a rotation Lambda, which this plan-only dev workload does not
       deploy. Accepted for dev only; see the SECRETS_MANAGER_ROTATION_DISABLED rationale.
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-01-08
   - policy_id: CKV_AWS_144
     resource: module.storage.aws_s3_bucket.this
+    workload: Internal-IT/workloads/ayka-portal
     reason: &no_replication >-
       Cross-region replication is out of scope for a single-region dev workload;
       versioning covers recovery (see the S3_REPLICATION_DISABLED rationale).
@@ -68,20 +80,23 @@ exceptions:
     expires: 2027-03-31
   - policy_id: CKV_AWS_144
     resource: module.storage.aws_s3_bucket.access_logs
+    workload: Internal-IT/workloads/ayka-portal
     reason: *no_replication
     owner: Ayush-cloud06
     expires: 2027-03-31
   - policy_id: CKV2_AWS_76
     resource: module.compute.aws_lb.app
+    workload: Internal-IT/workloads/ayka-portal
     reason: >-
       The ALB's web ACL attaches AWSManagedRulesKnownBadInputsRuleSet, which carries the
       Log4j rules (compute/alb.tf); Checkov does not follow the separate
       aws_wafv2_web_acl_association to the ACL.
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-02-05
   # The log bucket must use SSE-S3 (#19).
   - policy_id: CKV_AWS_145
     resource: module.storage.aws_s3_bucket.access_logs
+    workload: Internal-IT/workloads/ayka-portal
     reason: &log_bucket_sse_s3 >-
       ALB access logs and S3 server access logs can only be delivered to a bucket
       encrypted with SSE-S3 (AES256), not SSE-KMS:
@@ -89,12 +104,834 @@ exceptions:
       https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
       The data bucket (aws_s3_bucket.this) still uses the workload KMS key.
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-03-19
   - policy_id: AVD-AWS-0132
     resource: module.storage
+    workload: Internal-IT/workloads/ayka-portal
     reason: >-
       Same SSE-S3 requirement for aws_s3_bucket.access_logs. tfsec names only the module,
       so this entry would also hide a customer-key gap on aws_s3_bucket.this; Checkov
       CKV_AWS_145 still checks that bucket by resource address.
     owner: Ayush-cloud06
-    expires: 2027-03-31
+    expires: 2027-03-19
+
+  # --- Internal-IT/platform/foundation/landing-zone (platform gate, 2026-11-10) ---
+  - policy_id: AVD-AWS-0057
+    resource: module.dev_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      tfsec names only the account module. The wildcards are the automation permission
+      boundary (a cap that grants nothing by itself) and the AWS Config delivery path
+      config/AWSLogs/<account>/* on the log bucket. Because the entry covers the whole
+      module, review it whenever IAM changes inside the landing zone.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: AVD-AWS-0057
+    resource: module.prod_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      tfsec names only the account module. The wildcards are the automation permission
+      boundary (a cap that grants nothing by itself) and the AWS Config delivery path
+      config/AWSLogs/<account>/* on the log bucket. Because the entry covers the whole
+      module, review it whenever IAM changes inside the landing zone.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: AVD-AWS-0057
+    resource: module.security_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      tfsec names only the account module. The wildcards are the automation permission
+      boundary (a cap that grants nothing by itself) and the AWS Config delivery path
+      config/AWSLogs/<account>/* on the log bucket. Because the entry covers the whole
+      module, review it whenever IAM changes inside the landing zone.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: AVD-AWS-0089
+    resource: module.dev_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The log bucket would need its own access-log bucket in a separate log-archive
+      account, which is not designed yet. Logging the bucket into itself creates a log
+      loop.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: AVD-AWS-0089
+    resource: module.prod_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The log bucket would need its own access-log bucket in a separate log-archive
+      account, which is not designed yet. Logging the bucket into itself creates a log
+      loop.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: AVD-AWS-0089
+    resource: module.security_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The log bucket would need its own access-log bucket in a separate log-archive
+      account, which is not designed yet. Logging the bucket into itself creates a log
+      loop.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: AVD-AWS-0162
+    resource: module.dev_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Alerting runs through EventBridge rules (modules/detection/eventbridge.tf), which
+      need no CloudWatch Logs delivery. A CloudWatch log group would duplicate the
+      18-month S3 retention at extra cost.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: AVD-AWS-0162
+    resource: module.prod_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Alerting runs through EventBridge rules (modules/detection/eventbridge.tf), which
+      need no CloudWatch Logs delivery. A CloudWatch log group would duplicate the
+      18-month S3 retention at extra cost.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: AVD-AWS-0162
+    resource: module.security_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Alerting runs through EventBridge rules (modules/detection/eventbridge.tf), which
+      need no CloudWatch Logs delivery. A CloudWatch log group would duplicate the
+      18-month S3 retention at extra cost.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: AVD-AWS-0163
+    resource: module.dev_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0089: the trail bucket's access logging needs a log-archive
+      account, which is not designed yet.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: AVD-AWS-0163
+    resource: module.prod_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0089: the trail bucket's access logging needs a log-archive
+      account, which is not designed yet.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: AVD-AWS-0163
+    resource: module.security_landing_zone
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0089: the trail bucket's access logging needs a log-archive
+      account, which is not designed yet.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: CKV2_AWS_10
+    resource: module.dev_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0162: alerting uses EventBridge, not CloudWatch Logs metric
+      filters.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: CKV2_AWS_10
+    resource: module.prod_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0162: alerting uses EventBridge, not CloudWatch Logs metric
+      filters.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: CKV2_AWS_10
+    resource: module.security_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0162: alerting uses EventBridge, not CloudWatch Logs metric
+      filters.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: CKV2_AWS_3
+    resource: module.dev_landing_zone.module.detection.aws_guardduty_detector.this
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      GuardDuty is enabled per account and Region (modules/detection/guardduty.tf).
+      Organization-wide delegated administration is not claimed (README, Not claimed).
+    owner: Ayush-cloud06
+    expires: 2027-05-28
+  - policy_id: CKV2_AWS_3
+    resource: module.prod_landing_zone.module.detection.aws_guardduty_detector.this
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      GuardDuty is enabled per account and Region (modules/detection/guardduty.tf).
+      Organization-wide delegated administration is not claimed (README, Not claimed).
+    owner: Ayush-cloud06
+    expires: 2027-05-28
+  - policy_id: CKV2_AWS_3
+    resource: module.security_landing_zone.module.detection.aws_guardduty_detector.this
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      GuardDuty is enabled per account and Region (modules/detection/guardduty.tf).
+      Organization-wide delegated administration is not claimed (README, Not claimed).
+    owner: Ayush-cloud06
+    expires: 2027-05-28
+  - policy_id: CKV_AWS_18
+    resource: module.dev_landing_zone.module.core.module.logging.aws_s3_bucket.cloudtrail_bucket
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0089: the trail bucket's access logging needs a log-archive
+      account, which is not designed yet.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: CKV_AWS_18
+    resource: module.prod_landing_zone.module.core.module.logging.aws_s3_bucket.cloudtrail_bucket
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0089: the trail bucket's access logging needs a log-archive
+      account, which is not designed yet.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: CKV_AWS_18
+    resource: module.security_landing_zone.module.core.module.logging.aws_s3_bucket.cloudtrail_bucket
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same as AVD-AWS-0089: the trail bucket's access logging needs a log-archive
+      account, which is not designed yet.
+    owner: Ayush-cloud06
+    expires: 2027-04-30
+  - policy_id: CKV_AWS_252
+    resource: module.dev_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      CloudTrail's own SNS notification fires on every log-file delivery, not on a
+      security event. Security alerts come from the EventBridge rules in
+      modules/detection.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: CKV_AWS_252
+    resource: module.prod_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      CloudTrail's own SNS notification fires on every log-file delivery, not on a
+      security event. Security alerts come from the EventBridge rules in
+      modules/detection.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: CKV_AWS_252
+    resource: module.security_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      CloudTrail's own SNS notification fires on every log-file delivery, not on a
+      security event. Security alerts come from the EventBridge rules in
+      modules/detection.
+    owner: Ayush-cloud06
+    expires: 2027-06-25
+  - policy_id: CKV_AWS_274
+    resource: "module.dev_landing_zone.module.break_glass[0].aws_iam_role_policy_attachment.break_glass_admin"
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      By design: the break-glass role and the human admin role carry
+      AdministratorAccess. Break-glass needs MFA, and every assumption would alert through the break-glass-assumed EventBridge rule (designed, never tested).
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_274
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_role_policy_attachment.admin_attach
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      By design: the break-glass role and the human admin role carry
+      AdministratorAccess. Break-glass needs MFA, and every assumption would alert through the break-glass-assumed EventBridge rule (designed, never tested).
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_274
+    resource: "module.prod_landing_zone.module.break_glass[0].aws_iam_role_policy_attachment.break_glass_admin"
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      By design: the break-glass role and the human admin role carry
+      AdministratorAccess. Break-glass needs MFA, and every assumption would alert through the break-glass-assumed EventBridge rule (designed, never tested).
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_274
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_role_policy_attachment.admin_attach
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      By design: the break-glass role and the human admin role carry
+      AdministratorAccess. Break-glass needs MFA, and every assumption would alert through the break-glass-assumed EventBridge rule (designed, never tested).
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_274
+    resource: "module.security_landing_zone.module.break_glass[0].aws_iam_role_policy_attachment.break_glass_admin"
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      By design: the break-glass role and the human admin role carry
+      AdministratorAccess. Break-glass needs MFA, and every assumption would alert through the break-glass-assumed EventBridge rule (designed, never tested).
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_274
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_role_policy_attachment.admin_attach
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      By design: the break-glass role and the human admin role carry
+      AdministratorAccess. Break-glass needs MFA, and every assumption would alert through the break-glass-assumed EventBridge rule (designed, never tested).
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_287
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_287
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_287
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_288
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_288
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_288
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_289
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_289
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_289
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_290
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_290
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_290
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_35
+    resource: module.dev_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      False positive in plan scans. The trail sets kms_key_id to the landing-zone key
+      (modules/core/logging/cloudtrail.tf), but the key ARN is unknown until apply, so
+      Checkov sees no key.
+    owner: Ayush-cloud06
+    expires: 2027-02-26
+  - policy_id: CKV_AWS_35
+    resource: module.prod_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      False positive in plan scans. The trail sets kms_key_id to the landing-zone key
+      (modules/core/logging/cloudtrail.tf), but the key ARN is unknown until apply, so
+      Checkov sees no key.
+    owner: Ayush-cloud06
+    expires: 2027-02-26
+  - policy_id: CKV_AWS_35
+    resource: module.security_landing_zone.module.core.module.logging.aws_cloudtrail.main
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      False positive in plan scans. The trail sets kms_key_id to the landing-zone key
+      (modules/core/logging/cloudtrail.tf), but the key ARN is unknown until apply, so
+      Checkov sees no key.
+    owner: Ayush-cloud06
+    expires: 2027-02-26
+  - policy_id: CKV_AWS_355
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_355
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_355
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      Same permission boundary: a cap, not a grant.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: CKV_AWS_61
+    resource: "module.dev_landing_zone.module.break_glass[0].aws_iam_role.break_glass"
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_role.admin_role
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_role.security_role
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: "module.prod_landing_zone.module.break_glass[0].aws_iam_role.break_glass"
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_role.admin_role
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_role.security_role
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: "module.security_landing_zone.module.break_glass[0].aws_iam_role.break_glass"
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_role.admin_role
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_role.security_role
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The trust principal is a named account root (this account, or the security account
+      for break-glass), not '*'. Checkov treats any :root principal as the whole
+      account. Narrowing it to named roles depends on Identity Center, which is not
+      applied.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: policies.terraform.aws_iam
+    resource: module.dev_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The automation permission boundary is a cap: it lists the services automation may
+      ever use, with explicit denies for IAM, Organizations and logging changes. A
+      boundary grants nothing by itself.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: policies.terraform.aws_iam
+    resource: module.prod_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The automation permission boundary is a cap: it lists the services automation may
+      ever use, with explicit denies for IAM, Organizations and logging changes. A
+      boundary grants nothing by itself.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+  - policy_id: policies.terraform.aws_iam
+    resource: module.security_landing_zone.module.core.module.iam.aws_iam_policy.permission_boundary
+    workload: Internal-IT/platform/foundation/landing-zone
+    reason: >-
+      The automation permission boundary is a cap: it lists the services automation may
+      ever use, with explicit denies for IAM, Organizations and logging changes. A
+      boundary grants nothing by itself.
+    owner: Ayush-cloud06
+    expires: 2027-01-29
+
+  # --- Internal-IT/platform/domains/identity/aws-iam-core (platform gate, 2026-11-10) ---
+  - policy_id: AVD-AWS-0057
+    resource: aws_iam_policy.abac_cross_department_readonly
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC policies are scoped by Condition on aws:ResourceTag = aws:PrincipalTag (tfsec
+      ignores conditions). The platform-engineer and workload-operator policies are real
+      broad grants: narrowing them is open work, so this entry has the shortest expiry.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: AVD-AWS-0057
+    resource: aws_iam_policy.abac_department_isolation
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC policies are scoped by Condition on aws:ResourceTag = aws:PrincipalTag (tfsec
+      ignores conditions). The platform-engineer and workload-operator policies are real
+      broad grants: narrowing them is open work, so this entry has the shortest expiry.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: AVD-AWS-0057
+    resource: aws_iam_policy.abac_environment_control
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC policies are scoped by Condition on aws:ResourceTag = aws:PrincipalTag (tfsec
+      ignores conditions). The platform-engineer and workload-operator policies are real
+      broad grants: narrowing them is open work, so this entry has the shortest expiry.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: AVD-AWS-0057
+    resource: data.aws_iam_policy_document.platform_engineer_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC policies are scoped by Condition on aws:ResourceTag = aws:PrincipalTag (tfsec
+      ignores conditions). The platform-engineer and workload-operator policies are real
+      broad grants: narrowing them is open work, so this entry has the shortest expiry.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: AVD-AWS-0057
+    resource: data.aws_iam_policy_document.workload_operator_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC policies are scoped by Condition on aws:ResourceTag = aws:PrincipalTag (tfsec
+      ignores conditions). The platform-engineer and workload-operator policies are real
+      broad grants: narrowing them is open work, so this entry has the shortest expiry.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_274
+    resource: aws_iam_role_policy_attachment.break_glass_admin
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      By design: BreakGlassRole carries AdministratorAccess, is assumable only from the
+      management account with MFA, and every assumption alerts through the break-glass-
+      assumed EventBridge rule (landing-zone).
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_287
+    resource: aws_iam_policy.platform_engineer_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Platform-engineer policy is a broad Tier-1 grant capped by
+      WorkloadPermissionBoundary. Narrowing it to named services and resources is open
+      work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_288
+    resource: aws_iam_policy.platform_engineer_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Platform-engineer and workload-operator policies are broad grants (s3:GetObject on
+      '*'). Scoping them to tagged or named buckets is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_288
+    resource: aws_iam_policy.workload_operator_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Platform-engineer and workload-operator policies are broad grants (s3:GetObject on
+      '*'). Scoping them to tagged or named buckets is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_289
+    resource: aws_iam_policy.platform_engineer_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Platform-engineer policy is a broad Tier-1 grant capped by
+      WorkloadPermissionBoundary. Narrowing it is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_290
+    resource: aws_iam_policy.platform_engineer_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Platform-engineer and workload-operator policies write without resource
+      constraints. Scoping is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_290
+    resource: aws_iam_policy.workload_operator_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Platform-engineer and workload-operator policies write without resource
+      constraints. Scoping is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_355
+    resource: aws_iam_policy.abac_cross_department_readonly
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Describe/List actions need Resource '*'. The write actions in the same documents
+      are the open work noted under CKV_AWS_290.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_355
+    resource: aws_iam_policy.platform_engineer_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Describe/List actions need Resource '*'. The write actions in the same documents
+      are the open work noted under CKV_AWS_290.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_355
+    resource: aws_iam_policy.workload_operator_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      Describe/List actions need Resource '*'. The write actions in the same documents
+      are the open work noted under CKV_AWS_290.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: CKV_AWS_61
+    resource: aws_iam_role.break_glass
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      The trust principal is a named account root (management or security account), with
+      MFA for break-glass. Checkov treats any :root principal as the whole account.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: CKV_AWS_61
+    resource: aws_iam_role.security_audit_role
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      The trust principal is a named account root (management or security account), with
+      MFA for break-glass. Checkov treats any :root principal as the whole account.
+    owner: Ayush-cloud06
+    expires: 2027-03-26
+  - policy_id: policies.terraform.aws_iam
+    resource: aws_iam_policy.abac_department_isolation
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC isolation policies grant service wildcards only where the resource tag equals
+      the principal tag; OPA does not read conditions. The platform-engineer policy is a
+      real broad grant, capped by WorkloadPermissionBoundary; narrowing it is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: policies.terraform.aws_iam
+    resource: aws_iam_policy.abac_environment_control
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC isolation policies grant service wildcards only where the resource tag equals
+      the principal tag; OPA does not read conditions. The platform-engineer policy is a
+      real broad grant, capped by WorkloadPermissionBoundary; narrowing it is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+  - policy_id: policies.terraform.aws_iam
+    resource: aws_iam_policy.platform_engineer_policy
+    workload: Internal-IT/platform/domains/identity/aws-iam-core
+    reason: >-
+      ABAC isolation policies grant service wildcards only where the resource tag equals
+      the principal tag; OPA does not read conditions. The platform-engineer policy is a
+      real broad grant, capped by WorkloadPermissionBoundary; narrowing it is open work.
+    owner: Ayush-cloud06
+    expires: 2027-01-15
+
+  # --- Internal-IT/platform/foundation/evidence-archive (platform gate, 2026-11-10) ---
+  - policy_id: AVD-AWS-0057
+    resource: data.aws_iam_policy_document.writer
+    workload: Internal-IT/platform/foundation/evidence-archive
+    reason: >-
+      The only wildcard is the object key suffix runs/* on the archive bucket. The
+      writer may put objects there and nothing else.
+    owner: Ayush-cloud06
+    expires: 2027-07-30
+  - policy_id: AVD-AWS-0089
+    resource: aws_s3_bucket.evidence
+    workload: Internal-IT/platform/foundation/evidence-archive
+    reason: >-
+      Access logging for the archive needs a separate log bucket in a log-archive
+      account, which is not designed yet. Object Lock already prevents deletion and
+      overwrite.
+    owner: Ayush-cloud06
+    expires: 2027-08-27
+  - policy_id: CKV_AWS_18
+    resource: aws_s3_bucket.evidence
+    workload: Internal-IT/platform/foundation/evidence-archive
+    reason: >-
+      Same as AVD-AWS-0089 for the evidence archive.
+    owner: Ayush-cloud06
+    expires: 2027-08-27
+
+  # --- Internal-IT/platform/foundation/remote-state (platform gate, 2026-11-10) ---
+  - policy_id: AVD-AWS-0025
+    resource: aws_dynamodb_table.terraform_locks
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      The lock table holds only lock IDs and digests. AWS-owned-key encryption is on; a
+      customer-managed key would add a key that must exist before the state backend.
+    owner: Ayush-cloud06
+    expires: 2027-09-24
+  - policy_id: AVD-AWS-0089
+    resource: aws_s3_bucket.terraform_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      State-bucket access logging needs a log-archive bucket, which does not exist
+      before bootstrap. Versioning keeps every state version.
+    owner: Ayush-cloud06
+    expires: 2027-10-29
+  - policy_id: AVD-AWS-0132
+    resource: aws_s3_bucket_server_side_encryption_configuration.encryption
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      The state bucket uses SSE-S3. A customer-managed key is planned once the bootstrap
+      order creates a KMS key first. The bucket already exists with SSE-S3 (applied once
+      from a laptop).
+    owner: Ayush-cloud06
+    expires: 2027-09-24
+  - policy_id: CKV2_AZURE_1
+    resource: azurerm_storage_account.tf_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      The Entra ID state account uses Microsoft-managed keys. A customer-managed key
+      needs a Key Vault that is not designed.
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV2_AZURE_21
+    resource: azurerm_storage_container.entra_id
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      Blob read logging needs a Log Analytics workspace that is not designed.
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV2_AZURE_33
+    resource: azurerm_storage_account.tf_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      A private endpoint needs a virtual network, which this design does not have. The
+      state is read from a laptop and CI.
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV2_AZURE_40
+    resource: azurerm_storage_account.tf_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      The azurerm backend authenticates with the account key today. Switching to Entra
+      ID auth (use_azuread_auth) and then disabling shared keys is open work.
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV2_AZURE_41
+    resource: azurerm_storage_account.tf_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      No SAS tokens are issued; the backend uses the account key (see CKV2_AZURE_40).
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV_AWS_119
+    resource: aws_dynamodb_table.terraform_locks
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      Same as AVD-AWS-0025: the lock table holds only lock IDs and digests.
+    owner: Ayush-cloud06
+    expires: 2027-09-24
+  - policy_id: CKV_AWS_145
+    resource: aws_s3_bucket.terraform_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      Same as AVD-AWS-0132 for the state bucket.
+    owner: Ayush-cloud06
+    expires: 2027-09-24
+  - policy_id: CKV_AWS_18
+    resource: aws_s3_bucket.terraform_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      Same as AVD-AWS-0089 for the state bucket.
+    owner: Ayush-cloud06
+    expires: 2027-10-29
+  - policy_id: CKV_AZURE_206
+    resource: azurerm_storage_account.tf_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      LRS is accepted for a state container that is versioned with 30-day soft delete.
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV_AZURE_33
+    resource: azurerm_storage_account.tf_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      Queue logging: the account uses no queues.
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV_AZURE_59
+    resource: azurerm_storage_account.tf_state
+    workload: Internal-IT/platform/foundation/remote-state
+    reason: >-
+      Public network access stays on because the state is used from a laptop and CI
+      without a virtual network. Blob anonymous access is off
+      (allow_nested_items_to_be_public = false).
+    owner: Ayush-cloud06
+    expires: 2027-11-26
+  - policy_id: CKV_AWS_166
+    resource: module.backup.aws_backup_vault.this
+    workload: Internal-IT/workloads/ayka-portal
+    reason: >-
+      False positive in plan scans. The vault sets kms_key_arn to the workload key
+      (modules/backup/main.tf), but the key ARN is unknown until apply, so Checkov sees no key.
+    owner: Ayush-cloud06
+    expires: 2027-04-16

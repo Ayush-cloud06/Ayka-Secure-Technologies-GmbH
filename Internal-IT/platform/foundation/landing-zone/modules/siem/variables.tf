@@ -3,8 +3,7 @@ variable "target_bucket_arn" {
   type        = string
 }
 
-variable "log_retention_days" {
-  description = "How long to keep logs in SIEM buffers"
-  type        = number
-  default     = 60
+variable "kms_key_arn" {
+  description = "Customer-managed key for the stream and its S3 objects"
+  type        = string
 }

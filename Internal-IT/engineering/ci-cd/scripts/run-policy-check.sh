@@ -5,6 +5,13 @@ echo "🧠 Running OPA policies via conftest..."
 
 cd "$(git rev-parse --show-toplevel)"
 
+# Source mode has no plan. Do not write a result file: the evaluator records
+# that OPA did not run, and a fake "clean" result would hide that.
+if [ "${COMPLIANCE_SCAN_MODE:-plan}" = "source" ]; then
+  echo "OPA skipped: source scan, no Terraform plan to evaluate"
+  exit 0
+fi
+
 OUTPUT_DIR="$(git rev-parse --show-toplevel)/output"
 mkdir -p "$OUTPUT_DIR"
 
