@@ -86,7 +86,7 @@ A change goes into this register first, then into the [risk register](../03-risk
 | ID | Item | Owner role |
 |---|---|---|
 | LO-1 | Verify every "to verify" entry above against the primary source (law text, current provider terms) | Compliance & Risk Management |
-| LO-2 | Conclude whether a DPO is required (BDSG §38, GDPR Art. 37). The [draft decision](../../GDPR/dpo-and-legal-basis.md) does not conclude it | Managing Director |
+| LO-2 | Conclude whether a DPO is required (BDSG §38, GDPR Art. 37). The [draft decision](../../GDPR/dpo-and-legal-basis.md) (v1.1, 2026-11-10) concludes that an external DPO should be designated; nobody is appointed and counsel has not confirmed the headcount reading | Managing Director |
 | LO-3 | Identify the GitHub, AWS and Microsoft agreements actually accepted, and record version and date | Cloud Platform Engineering |
 | LO-4 | Validate HGB/AO category mapping and transitions before real retention starts; reconcile SOC2-05 and POL-DATA-01 with the retention policy | Managing Director |
 | LO-5 | Build a licence inventory for pipeline tools and dependencies | Product & Engineering |
@@ -97,3 +97,4 @@ A change goes into this register first, then into the [risk register](../03-risk
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-10-14 | LR-01 and LR-02 point at the drafted privacy records. The legal conclusions stay open |
+| 1.2 | 2026-11-10 | LO-2: DPO draft now reaches a conclusion; appointment still open |

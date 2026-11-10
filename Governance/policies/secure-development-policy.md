@@ -90,8 +90,8 @@ Every change follows these stages. A stage that fails stops the change.
    Status: Implemented (AC-14; [`toolchain.versions`](../../Internal-IT/engineering/ci-cd/toolchain.versions)).
 3. Code uses maintained libraries and supported language versions. Deprecated tools are replaced on a plan ([POL-VUL-01](vulnerability-and-patch-management-policy.md)).
 4. Application code follows the OWASP ASVS level 2 requirements relevant to each feature (version to verify at first use). Status: Planned.
-5. Static analysis (SAST) and dependency scanning (SCA) run on every pull request once application code exists. Status: Planned.
-6. Automated secret scanning runs on every push. Status: Planned.
+5. Static analysis (SAST) and dependency scanning (SCA) run on every pull request. Status: Partial. Since 2026-11-10 [`security-checks.yml`](../../.github/workflows/security-checks.yml) runs Bandit, pip-audit and a CycloneDX SBOM over the repository's Python; first local run in [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md). The workflow has not yet run on GitHub and is not a required check. No application code exists.
+6. Automated secret scanning runs on every push. Status: Partial. gitleaks runs over full history in `security-checks.yml` (same limits as item 5); its default rules did not flag the RISK-001 passwords, so a clean result is not proof.
    - GitHub secret scanning and push protection are disabled (verified via GitHub API on 2026-10-14).
    - The [CI/CD architecture](../../Internal-IT/engineering/ci-cd/architecture.md) lists secrets scanning as not built.
 
@@ -180,3 +180,4 @@ Exceptions to this policy are approved by the CISO in writing with a reason, com
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-10-14 | Point the production-data exception at the data masking standard |
+| 1.2 | 2026-11-10 | Section 4.4: SAST, SCA, SBOM and gitleaks added in CI; GitHub-native secret scanning still off |

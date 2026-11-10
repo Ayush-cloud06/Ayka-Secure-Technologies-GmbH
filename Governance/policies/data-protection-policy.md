@@ -50,7 +50,7 @@ Legal basis, DPO requirement, DPIA necessity and transfer mechanism require asse
 | Contract end or verified deletion request | Apply [retention](records-and-data-retention-policy.md); address versions, backups, logs and subprocessors; identify lawful holds | Deletion record states what was removed, exceptions and remaining backup expiry; no absolute deletion claim before verification |
 | New purpose or material design change | Repeat section 2, update notices and processing record before use | Decision and change evidence |
 
-The rights-request procedure, DPIA screening, transfer assessment and DPO decision are drafted in the [GDPR index](../GDPR/README.md). None of them is a completed request, a data protection impact assessment, a selected transfer mechanism or an appointment. Repeat the screening before relevant real processing begins. Retention periods are proposed in the [retention policy](records-and-data-retention-policy.md) and are not approved.
+The rights-request procedure, DPIA screening, transfer assessment and DPO decision are drafted in the [GDPR index](../GDPR/README.md). Since 2026-11-10 the index also holds a transfer position, a legitimate-interests assessment, a compact DPIA for security logging and a reasoned DPO decision (designate an external officer; none is appointed). Worked examples are simulated records under [records/simulated/privacy](../records/simulated/privacy/SIM-DSR-001-access-and-erasure-request.md) ([ADR-0006](../ADR/0006-simulated-operating-records.md)). No real request, approval or appointment exists, and no lawyer has reviewed the conclusions. Repeat the screening before relevant real processing begins. Retention periods are proposed in the [retention policy](records-and-data-retention-policy.md) and are not approved.
 
 ## 5. Sources, current status and review
 
@@ -64,3 +64,4 @@ Status: Designed, evidenced by this policy, the [processing record](../GDPR/reco
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-10-14 | Point section 4 at the drafted privacy records. They are not completed activities |
+| 1.2 | 2026-11-10 | Section 4: point at the completed drafts and the simulated records |
