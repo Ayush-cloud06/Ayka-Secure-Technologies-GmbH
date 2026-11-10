@@ -5,7 +5,7 @@
 | Document ID | POL-CLD-01 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when a cloud provider, Region or AWS account is added |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -69,12 +69,9 @@ The split of duties follows each provider's published shared responsibility mode
 2. A second EU Region for backup copies and recovery will be chosen when cross-Region backup is designed ([POL-BCDR-01 §5](business-continuity-and-disaster-recovery-plan.md#5-resilience-in-the-design)).
 3. Global-service use needs assessment of data flow, service availability and the exact SCP exemptions; an exemption does not prove EU-only processing.
 4. Any other Region needs a risk assessment, a transfer assessment if personal data leaves the EU, and CISO approval.
-5. **Today the Terraform does not match the target.**
-   - Terraform uses `ap-south-1` (Mumbai) in about ten roots, for example the `ayka-portal` default `aws_region = "ap-south-1"` in [`variables.tf`](../../Internal-IT/workloads/ayka-portal/variables.tf).
-   - The region SCP [`restrict-region.json`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json) allows only `ap-south-1`, so it would block the target Region.
-   - The KMS key policy names `logs.ap-south-1.amazonaws.com` ([`kms.tf`](../../Internal-IT/workloads/ayka-portal/kms.tf)).
-
-   Until these are migrated, Ayka makes no "data stays in the EU" claim (RISK-011, TRT-011 in the [risk register](../ISMS/03-risk-management/risk-register.md)).
+5. **Since 2026-11-10 the Terraform source matches the target** ([REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md)): every root, variable file and the region SCP [`restrict-region.json`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json) name `eu-central-1`; the `ayka-portal` variable `aws_region` is validated to that value ([`variables.tf`](../../Internal-IT/workloads/ayka-portal/variables.tf)); the KMS key policy derives the logs principal from it ([`kms.tf`](../../Internal-IT/workloads/ayka-portal/kms.tf)).
+   - The Identity Center instance created earlier through the console sits in `ap-south-1`, if it still exists, and must be re-created in `eu-central-1`.
+   - Source says where data would be; nothing is deployed. Ayka still makes no "data stays in the EU" claim until actual hosting, support access and transfers are assessed and the owner records a residency decision (RISK-011, TRT-011 in the [risk register](../ISMS/03-risk-management/risk-register.md)).
 
 ### 4.4 Account structure
 
@@ -181,11 +178,11 @@ Policy exceptions are requested in writing with a reason, compensating control a
 
 | Gap | Status | Evidence | Tracked in |
 |---|---|---|---|
-| Terraform and the region SCP use `ap-south-1`, not `eu-central-1` | Open | [`restrict-region.json`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json), [`variables.tf`](../../Internal-IT/workloads/ayka-portal/variables.tf) | RISK-011 |
-| Organization, OUs and SCPs are not gated and not deployed; SCPs attach to the Workloads OU only; no member accounts defined | Designed | [`aws-organization/`](../../Internal-IT/platform/foundation/aws-organization/) | RISK-012 |
+| Source now names `eu-central-1` only; residency decision and Identity Center re-creation open | Open | [REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md) | RISK-011 |
+| Organization, OUs and SCPs are scanned in plan mode (local run, [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md)) but not deployed and not merge-blocking; no member accounts defined | Gated design | [`aws-organization/`](../../Internal-IT/platform/foundation/aws-organization/) | RISK-012 |
 | No remote state backend; drift detection cannot run | Planned | [README §6](../../README.md#6-known-limitations) | RISK-002 |
-| Platform roots are not scanned by the gate | Planned | OP-01 status in the [control matrix](../SOC2/03-control-matrix.md) | |
-| No running-state posture monitoring (Config, Security Hub, GuardDuty) | Planned | [STD-LOG-01 §6](logging-and-monitoring-standard.md#6-alerting) | |
+| Platform roots: CI jobs defined (plan mode for four roots, source mode for two, Entra ID validate-only), run locally only, not required checks | Gated design | [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md); OP-01 in the [control matrix](../SOC2/03-control-matrix.md) | Owner action O-03 in [REAL-ISMS-001](../records/real/isms/REAL-ISMS-001-owner-actions-open.md) |
+| Config, Security Hub, GuardDuty and EventBridge alert rules exist in the landing zone and are scanned; none is deployed, so no running-state posture monitoring exists | Gated design | [STD-LOG-01 §6](logging-and-monitoring-standard.md#6-alerting) | |
 | No provider attestation retrieved; no exit plan | Planned | [POL-VEN-01 §8](vendor-management-policy.md#8-current-gaps) | |
 | Only a `dev` environment exists (`envs/dev.tfvars`) | Planned | [`envs/`](../../Internal-IT/workloads/ayka-portal/envs/) | |
 
@@ -194,3 +191,4 @@ Policy exceptions are requested in writing with a reason, compensating control a
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Section 7 and 8: Region migrated in source (REAL-INFRA-003); platform roots and detection scanned locally (REAL-INFRA-001). No gap closes |

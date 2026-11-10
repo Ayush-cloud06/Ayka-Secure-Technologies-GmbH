@@ -5,7 +5,7 @@
 | Document ID | ISMS-AUD-01 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or material risk change, audit result or ISMS scope change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -14,7 +14,7 @@ Ayka Secure Technologies GmbH is a simulated company; this document does not est
 
 ## 1. Purpose and status
 
-Plan risk-based internal audits under ISO/IEC 27001:2022 clause 9.2. The programme is **Designed**, as documented here; no audit has been commissioned, scheduled with a real auditor or completed. An independent auditor and management authorization are prerequisites. Document reviews and CI checks are evidence sources, not an internal audit by themselves.
+Plan risk-based internal audits under ISO/IEC 27001:2022 clause 9.2. The programme is **Designed**, as documented here; no audit has been commissioned, scheduled with a real auditor or completed. A tabletop walk-through of one cycle exists (SIM-AUD-001 to SIM-AUD-003 in the [simulated records index](../../records/simulated/INDEX.md)); it is not an audit. An independent auditor and management authorization are prerequisites. Document reviews and CI checks are evidence sources, not an internal audit by themselves.
 
 Audit criteria are the [ISMS scope](../00-context-and-governance/scope.md), approved policies/procedures, the [SoA](../04-controls-and-soa/statement-of-applicability.md), risk decisions and applicable requirements in the [legal register](../00-context-and-governance/legal-and-regulatory-register.md). Until documents are approved, assess design and readiness separately from conformity to an effective company requirement. Verify normative wording against an authorized standards copy; this programme is not a substitute for it.
 
@@ -35,7 +35,7 @@ Prior findings, high current risks, incidents and material changes may increase 
 
 ## 3. Independence, competence and resources
 
-Managing Director appoints a competent auditor who did not design, implement or operate the audited work. Record relevant audit/security competence, confidentiality commitment, conflicts, scope and access authorization. With one maintainer, another role label does not create independence; obtain an external qualified reviewer or an independent person before claiming an internal audit. Do not audit unapproved third-party systems or expose secrets through evidence exports.
+Managing Director appoints a competent auditor who did not design, implement or operate the audited work. The auditor reports audit results directly to the Managing Director, not through the line management of the audited function. Known role conflicts: the Compliance Officer holds the BSI reporting role in [NIS2-03](../../NIS2/03-incident-reporting-procedure.md) section 2, so incident reporting is audited by someone else; the Compliance Analyst is GDPR Lead and the Compliance Officer's line manager, so privacy and compliance processes are audited by someone else. Record any further conflict in the audit plan before fieldwork. Record relevant audit/security competence, confidentiality commitment, conflicts, scope and access authorization. With one maintainer, another role label does not create independence; obtain an external qualified reviewer or an independent person before claiming an internal audit. Do not audit unapproved third-party systems or expose secrets through evidence exports.
 
 CISO proposes time, access and budget; Managing Director approves resources and resolves conflicts. If independent competence cannot be provided, report the programme as not started and record the gap for management review. Technical contributors may explain evidence but do not approve their own findings or closure.
 
@@ -43,10 +43,15 @@ CISO proposes time, access and budget; Managing Director approves resources and 
 
 For each engagement use the [audit plan](audit-plan.md) and [checklists](audit-checklists.md). Retain population definitions, selection rationale, evidence references, interviews actually held, findings and limitations. Record findings in the [findings log](audit-findings-log.md); confirmed nonconformities follow [corrective action](../06-operational-procedures/corrective-action-procedure.md).
 
-Issue an audit report only after an actual audit. It must state criteria, scope/period, auditors/independence, sampled populations, objective evidence, findings, unresolved objections and conclusions limited to tested scope. Deliver results to relevant management and [management review](../10-management-review/management-review-agenda.md). Follow up prior findings in the next audit or sooner according to risk. Retain records under the [retention policy](../../policies/records-and-data-retention-policy.md).
+**Grading a nonconformity.** *Major*: a required control or ISMS process did not operate at all over the audited period, or a requirement fails systemically across the sample, or a nonconformity puts the ISMS's ability to achieve its intended results in doubt. *Minor*: any other nonconformity (an isolated or partial failure). The lead auditor grades; a disputed grade is recorded with both positions in the report, and the Managing Director decides.
+
+**Deadlines.** The audited owner gives a written response to each finding within 10 business days of the closing meeting. The audit report is issued within 10 business days of the closing meeting. Business day as defined in the [access review procedure](../06-operational-procedures/access-review-procedure.md).
+
+Issue an audit report only after an actual audit. It must state criteria, scope/period, auditors/independence, sampled populations, objective evidence, findings with grade, unresolved objections, the status of prior findings and of open nonconformities from operations (incidents, access reviews, other corrective actions), and conclusions limited to tested scope. Deliver results to relevant management and [management review](../10-management-review/management-review-agenda.md). Follow up prior findings in the next audit or sooner according to risk. Retain records under the [retention policy](../../policies/records-and-data-retention-policy.md).
 
 ## Revision history
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Findings of the simulated audit cycle: major/minor grading rule (SIM-AUD-003 finding 1); report due 10 business days after the closing meeting (SIM-AUD-003 finding 2); report covers prior findings and operational nonconformities (SIM-AUD-003 finding 3); owner response due 10 business days (SIM-AUD-002 finding 3); known role conflicts listed (SIM-AUD-001 finding 1); auditor reports to the Managing Director (SIM-AUD-001 finding 4) |

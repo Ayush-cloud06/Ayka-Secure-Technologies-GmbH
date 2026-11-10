@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SOC2-01 |
 | Owner | CISO |
-| Contributors | Cloud Platform Engineering, Head of Product |
+| Contributors | Cloud Platform Engineering, Product Manager |
 | Approver | Managing Director |
 | Version | 1.2 |
 | Prepared as of | 2026-10-06; infrastructure statements revised 2026-11-10 |

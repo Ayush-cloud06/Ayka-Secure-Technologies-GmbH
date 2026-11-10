@@ -78,6 +78,17 @@ def test_gate_mapping_is_bidirectionally_traceable():
         assert set(re.findall(r"`([A-Z][A-Z0-9_]+)`", row[1])) == mapped[row[0]]
 
 
+def test_simulated_operation_rows_link_an_existing_record():
+    # ADR-0006: the row must name the walk-through itself, not the folder.
+    for row in control_rows():
+        if row[3] != "Simulated operation":
+            continue
+        targets = re.findall(r"\]\(([^)]*records/simulated/[^)]*SIM-[^)]+\.md)\)", row[4])
+        assert targets, f"{row[0]}: link the SIM-*.md record in the evidence column"
+        for target in targets:
+            assert (SOA.parent / target).is_file(), f"{row[0]}: {target} does not exist"
+
+
 def test_status_summary_matches_selection_rows():
     actual = Counter(row[3] for row in control_rows())
     text = SOA.read_text(encoding="utf-8")

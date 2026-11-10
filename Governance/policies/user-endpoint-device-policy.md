@@ -5,7 +5,7 @@
 | Document ID | POL-END-01 |
 | Owner | Cloud Platform Engineering |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval, or a supported-platform change, device loss or baseline failure |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -63,7 +63,7 @@ Status: Designed as a requirement. G07 stays open because no device exists and n
 
 Cloud Platform Engineering reviews baseline compliance monthly and after material changes; Security Operations follows missing or unhealthy devices. CISO exceptions name scope, owner, compensating protection and an expiry of at most 90 days. Lost devices, overdue patches and unsupported systems go to the [risk register](../ISMS/03-risk-management/risk-register.md).
 
-Status: Designed by this policy. Device management, EDR, remote isolation/wipe, recovery-key storage, baseline checks, media-disposal records and device inventory are Planned (AC-16 and AC-18 in the [control matrix](../SOC2/03-control-matrix.md)). No device test or disposal has occurred.
+Status: Designed by this policy. Device management, EDR, remote isolation/wipe, recovery-key storage, baseline checks, media-disposal records and device inventory do not operate. The SOC 2 [control matrix](../SOC2/03-control-matrix.md) rates AC-16 (managed laptops) and AC-18 (wipe certificate before reuse or disposal) as Designed: a baseline, product criteria and a wipe-certificate template exist, but no device is managed and no wipe has been recorded. No device test or disposal has occurred.
 
 ## Revision history
 
@@ -71,3 +71,4 @@ Status: Designed by this policy. Device management, EDR, remote isolation/wipe, 
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-10-14 | Add the web-filtering requirement. No product is selected |
+| 1.2 | 2026-11-10 | Section 7 status: AC-16 and AC-18 are Designed in the SOC 2 matrix (were described as Planned) |

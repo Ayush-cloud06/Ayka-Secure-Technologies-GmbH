@@ -5,7 +5,7 @@
 | Document ID | POL-SDL-01 |
 | Owner | Product & Engineering |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when the required checks or the pipeline stages change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |

@@ -5,7 +5,7 @@
 | Document ID | POL-PHY-01 |
 | Owner | HR & Administration |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or a new work location, facility supplier or equipment-maintenance arrangement |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -50,7 +50,7 @@ Before production use, the review records:
 2. Exceptions that affect physical or environmental controls, and whether Ayka accepts them.
 3. The gap if the report does not cover the service in the [processor register](../GDPR/processor-register.md).
 
-The target Region is `eu-central-1`. Source still names `ap-south-1` (RISK-011). A report for the wrong Region does not close the review.
+The target Region is `eu-central-1`, and since 2026-11-10 the Terraform source names only that Region ([REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md)). Nothing is deployed, so no Region is in actual use yet (RISK-011). A report for the wrong Region does not close the review.
 
 ## 5. Utilities, cabling and maintenance
 
@@ -69,3 +69,4 @@ Designed by this policy. G04 stays open: no work location has been assessed, and
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Region statement updated after REAL-INFRA-003 |

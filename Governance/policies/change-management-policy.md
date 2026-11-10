@@ -6,7 +6,7 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval |
 | Status | Draft. Not approved |
@@ -78,7 +78,7 @@ Each quarter, Compliance and Risk compares the list of merged pull requests with
 
 ## 10. Current gaps
 
-The repository has one maintainer, so the ruleset requires 0 approvals and the approval environments allow self-review (CM-05 Planned). Until a second maintainer exists, the compensating control is a monthly review of all merged changes by the Managing Director, recorded on the change sample template in SOC2-05.
+The repository has one maintainer, so the ruleset requires 0 approvals and the approval environments allow self-review (CM-05 Designed in the [SOC 2 matrix](../SOC2/03-control-matrix.md)). Until a second maintainer exists, the compensating control is a monthly retrospective review of all merged changes by the Managing Director role, designed in [SOC2-08 section 3](../SOC2/08-control-designs.md). It ran once, for October 2026, as [REAL-SOC2-001](../records/real/soc2/REAL-SOC2-001-change-review-2026-10.md): the repository owner was both author and reviewer, so it detects but provides no separation of duties. It found 0 approvals on 17 merged pull requests. The reviewer needs read access to GitHub and the list of merged changes; in the simulated company the Managing Director has neither (SIM-GOV-001 finding 5).
 
 ## Revision history
 
@@ -86,3 +86,4 @@ The repository has one maintainer, so the ruleset requires 0 approvals and the a
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
 | 1.1 | 2026-10-14 | Clarify plan-only scope and independent-review limitation |
+| 1.2 | 2026-11-10 | Section 10: CM-05 status is Designed; the monthly review ran once (REAL-SOC2-001) with reviewer equal to author; reviewer access gap from SIM-GOV-001 finding 5 |

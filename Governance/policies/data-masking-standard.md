@@ -5,7 +5,7 @@
 | Document ID | STD-MSK-01 |
 | Owner | Product & Engineering |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or before personal data is copied into a non-production system |
 | Status | Draft. Not approved: no approval record exists (simulated company) |

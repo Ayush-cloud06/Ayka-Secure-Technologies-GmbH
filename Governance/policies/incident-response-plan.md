@@ -6,10 +6,10 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, and after every Severity 1 incident or exercise |
-| Status | Draft. Not approved. Never exercised |
+| Status | Draft. Not approved. Never exercised for real; walked as a tabletop in SIM-INC-001 (simulated) |
 
 ## 1. Purpose
 
@@ -50,8 +50,8 @@ When in doubt, classify higher and lower it later.
 | Role | Who | Duties |
 |---|---|---|
 | Incident Commander (IC) | CISO; deputy: Security Operations Analyst | Declares and classifies, runs the response, decides on containment, owns the incident record |
-| Technical Lead | Cloud Platform Engineer on call | Investigation, containment and recovery in AWS, Entra ID and GitHub |
-| Communications Lead | Managing Director; deputy: Head of Sales and Customer Success | Customer, authority and public communication; approves all external statements |
+| Technical Lead | Cloud Platform Engineer; deputy: DevOps Engineer. No on-call rota exists yet (section 12) | Investigation, containment and recovery in AWS, Entra ID and GitHub |
+| Communications Lead | Managing Director; deputy: Sales Manager | Customer, authority and public communication; approves all external statements. Customer notices are sent by the Customer Success Manager ([NIS2-03 section 2](../NIS2/03-incident-reporting-procedure.md)) |
 | Privacy Lead | GDPR Lead | Decides whether a personal data breach occurred; drafts authority and data subject notifications |
 | Scribe | Anyone assigned by the IC | Keeps the timeline in the incident record |
 
@@ -61,6 +61,7 @@ When in doubt, classify higher and lower it later.
 
 - Sources: alerts on the `security-alerts` topic (OP-05, planned), GuardDuty, the gate (a HIGH finding that reached `main`), staff reports, customer reports to the security mailbox, provider notices from AWS, Microsoft or GitHub.
 - Every member of staff reports suspected incidents immediately to the security mailbox or the on-call number. Reporting a mistake you made yourself is never a disciplinary matter.
+- Staff who are not on the response team do not delete, move or "clean up" anything connected with the suspected incident (files, messages, branches, logs, CI runs). They leave it as it is and tell the IC. Section 7.5 then governs collection.
 
 ### 7.2 Triage (target: within 30 minutes for SEV 1 and 2)
 
@@ -94,8 +95,8 @@ Preserve CloudTrail, VPC flow, WAF and application logs and snapshots before cle
 
 | Who | When | Who decides | How |
 |---|---|---|---|
-| Managing Director | SEV 1 and 2: immediately | IC | Phone |
-| Affected customers (Ayka as processor) | Without undue delay, at the latest 48 hours after confirming a breach of their data, so they can meet their own 72-hour deadline | Communications Lead with Privacy Lead | E-mail to the customer's registered security contact, then call |
+| Managing Director | SEV 1 and 2: without delay after classification, at the latest 4 hours after awareness (same limit as [NIS2-03 section 2](../NIS2/03-incident-reporting-procedure.md)) | IC | Phone |
+| Affected customers (Ayka as processor or service provider) | Customer incident notice without undue delay, at the latest **24 hours after awareness** (T0); customer update at the latest 72 hours after awareness, with the Art. 33(3) content the customer needs for its own notification. Timings, content and templates are those of [NIS2-03 section 5](../NIS2/03-incident-reporting-procedure.md) | Communications Lead with Privacy Lead | E-mail to the customer's registered security contact, then call |
 | Supervisory authority (Ayka as controller, e.g. employee data) | Within 72 hours of awareness, unless the breach is unlikely to result in a risk to people | Privacy Lead, approved by Managing Director | The Baden-Württemberg data protection authority's online form |
 | Data subjects (Ayka as controller) | Without undue delay when there is a high risk to them | Privacy Lead, approved by Managing Director | Direct message |
 | National CSIRT under NIS2 | Where Ayka itself is in scope of the German NIS2 implementation: early warning within 24 hours of a significant incident, notification within 72 hours, final report within one month | IC with Managing Director | BSI reporting portal |
@@ -106,7 +107,7 @@ The reasoning for every decision not to notify is recorded in the incident recor
 
 ## 9. Post-incident review
 
-For every SEV 1 and SEV 2 incident, and for every exercise, the IC holds a blameless review within 10 business days. It records the timeline, root cause, what worked, what did not, and actions with owners and due dates. Actions enter the risk treatment plan. The review also checks whether a gate rule could have prevented the incident; if yes, adding that rule is one of the actions.
+For every SEV 1 and SEV 2 incident, and for every exercise, the IC holds a blameless review within 10 business days. It records the timeline, root cause, what worked, what did not, and actions with owners and due dates. An action that corrects a nonconformity enters the [nonconformity and corrective action log](../ISMS/11-improvement/nonconformity-and-corrective-action-log.md) under the [corrective action procedure](../ISMS/06-operational-procedures/corrective-action-procedure.md); an action that changes how a risk is treated enters the [risk treatment plan](../ISMS/03-risk-management/risk-treatment-plan.md). The review also checks whether a gate rule could have prevented the incident; if yes, adding that rule is one of the actions.
 
 ## 10. Incident record template
 
@@ -124,7 +125,7 @@ For every SEV 1 and SEV 2 incident, and for every exercise, the IC holds a blame
 | Actions | Owner and due date each |
 | Review | Date and attendees |
 
-No incident records exist yet.
+No real incident records exist. A worked example is the simulated [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md); it is a tabletop, not an incident.
 
 ## 11. Exercises
 
@@ -132,10 +133,11 @@ A tabletop exercise is held at least once a year, rotating through these scenari
 
 ## 12. Current gaps
 
-No alerting exists to feed this plan (OP-05). The security mailbox, the on-call rota and the customer contact list do not exist yet. The plan has not been exercised.
+No alerting is deployed to feed this plan (OP-05: detection rules exist only as scanned Terraform). The security mailbox, the on-call rota and the customer contact list do not exist yet. The plan has not been exercised for real. Still open from SIM-INC-001: no reporting channel, no rota for 4-hourly SEV 2 updates, and no path for Ayka acting outside a controller's instructions (GDPR Art. 28(10)). SOC 2 OP-06 states the same 24-hour customer early warning.
 
 ## Revision history
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-11-10 | Findings of the simulated walk-throughs SIM-INC-001 and SIM-PPL-006: customer notice aligned to 24 h from awareness and 72 h update as in NIS2-03 (was 48 h after confirmation); Managing Director informed within 4 hours (was "immediately"); Communications Lead deputy and Technical Lead mapped to posts in the personnel register (no "Head of Sales and Customer Success" exists); staff told not to delete and to tell the IC (section 7.1). SIM-IMP-001 finding 2: post-incident actions go to the corrective action log or the risk treatment plan by type |

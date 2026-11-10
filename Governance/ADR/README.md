@@ -17,10 +17,11 @@ A later change adds a new record. It does not rewrite a Recorded file.
 |---|---|---|---|
 | [0001](0001-evidence-labels.md) | Weakest true label on every claim | Recorded | Capability claims use the README yardstick. Control claims use the ISMS and SOC 2 vocabulary. A draft is not Implemented |
 | [0002](0002-policy-location.md) | One policy set under Governance/policies | Recorded | Frameworks link to that directory. The ISMS register does not keep a second copy |
-| [0003](0003-target-region.md) | Target Region is eu-central-1 | Recorded | The target is documented. Source that still names ap-south-1 is an open gap, not an exception |
+| [0003](0003-target-region.md) | Target Region is eu-central-1 | Recorded | The target is documented. When recorded, source still named ap-south-1; since 2026-11-10 it does not (see 0007). The residency decision stays open |
 | [0004](0004-docs-gate.md) | Governance docs fail CI when links break or files are empty | Recorded | `tests/governance/` is part of the pytest gate |
 | [0005](0005-gdpr-roles.md) | Working GDPR roles, not a legal conclusion | Recorded | Controller for repository and designed employment data. Processor for designed customer evidence. Both remain to be confirmed |
 | [0006](0006-simulated-operating-records.md) | Simulated operating records | Recorded | Real and simulated records live in separate bannered stores. "Simulated operation" sits below Partial and never becomes Implemented |
+| [0007](0007-region-migrated-platform-gated.md) | Region migrated in source; platform roots gated | Recorded | Terraform names only eu-central-1; platform roots are scanned (local run so far, not required checks) and count as Gated design with that limit stated |
 
 ## Revision history
 
@@ -28,3 +29,4 @@ A later change adds a new record. It does not rewrite a Recorded file.
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-11-10 | Add ADR-0006 |
+| 1.2 | 2026-11-10 | Add ADR-0007; update the 0003 summary |

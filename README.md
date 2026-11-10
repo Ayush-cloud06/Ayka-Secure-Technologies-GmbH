@@ -6,11 +6,11 @@ Every pull request's Terraform plan is scanned by **Checkov, tfsec and custom OP
 
 ## 1. What it shows
 
-One pipeline run on `main` ([run 37265256207](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/37265256207), commit `26d08f1`) checks two workloads:
+The gate checks two workloads. The figures below are from a local run of the same chain at commit `bc11890` on 2026-11-10 ([REAL-INFRA-001](Governance/records/real/infra/REAL-INFRA-001-gate-run-all-roots.md), re-run for `ayka-portal` the same day). The last cited CI run on `main`, [run 37265256207](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/37265256207) (commit `26d08f1`, 88 portal resources, 14 excepted), passed all five gate jobs, but the run as a whole **failed**: its `apply` job was rejected at the approval environment, as in 14 of 20 push runs on `main` in October ([REAL-SOC2-001](Governance/records/real/soc2/REAL-SOC2-001-change-review-2026-10.md) F4; cause not yet investigated).
 
 | Workload | What it is | Decision | Detail |
 |---|---|---|---|
-| [`ayka-portal`](Internal-IT/workloads/ayka-portal/) | Reference workload, ~88 resources: VPC, ALB + WAF, ECS Fargate, Multi-AZ RDS, S3, KMS | **pass** | 6 LOW; 14 findings set aside in [`exceptions.yaml`](Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml), each with a reason, owner and expiry |
+| [`ayka-portal`](Internal-IT/workloads/ayka-portal/) | Reference workload, 97 planned resources: VPC, ALB + WAF, ECS Fargate, Multi-AZ RDS, S3, KMS, AWS Backup with Vault Lock | **pass** | 6 LOW; 15 findings set aside by 14 entries in [`exceptions.yaml`](Internal-IT/engineering/policy-as-code/metadata/exceptions.yaml), each with a reason, owner and expiry |
 | [`control-validation-scenarios`](Internal-IT/workloads/control-validation-scenarios/) | Deliberately insecure: public S3, open SSH, IMDSv1, no encryption, open NACL, VPC without flow logs | **fail** (required) | 20 HIGH / 34 MEDIUM / 10 LOW raw, 7 / 25 / 9 as distinct issues; every control in [`expected-controls.txt`](Internal-IT/workloads/control-validation-scenarios/expected-controls.txt) must be reported by its named tools, or the build fails |
 
 The second row is the point: a gate that has never been shown to fail proves nothing. Any MEDIUM finding stops the run at a GitHub environment that needs a human reviewer; the evaluator tests cover that path.
@@ -57,7 +57,9 @@ flowchart LR
 
 - **Implemented** = runs in CI, and a run or a test shows it doing the real thing.
 - **Simulated** = runs, but its effect is faked on purpose, and it says so.
-- **Planned** = designed or written down only, including Terraform the gate never scans.
+- **Planned** = designed or written down only, including Terraform that is scanned but has never run through CI on GitHub or been deployed. The qualifier after the label says which.
+
+The ISMS and SOC 2 documents use a finer control vocabulary (Designed, Gated design, Simulated operation, Partial, Implemented); see [ADR-0001](Governance/ADR/0001-evidence-labels.md) and [ADR-0006](Governance/ADR/0006-simulated-operating-records.md).
 
 | Capability | Status | Evidence |
 |---|---|---|
@@ -79,12 +81,20 @@ flowchart LR
 | Cost estimation | 🎭 Simulated: infracost isn't installed; the step says so and gates nothing | `run-cost-check.sh` |
 | Workload infrastructure | 🎭 Simulated: mock credentials, plan-only, never deployed (by design, see "Scope") | `ayka-portal/provider.tf` |
 | The company, ISMS, personnel, risk register | 🎭 Simulated case study; placeholders replaced by one [ISMS index](Governance/ISMS/README.md) | `Governance/`, `organization/` |
-| AWS Organizations, SCPs, landing zone, IAM core, Identity Center, Entra ID | 📐 Planned: design-only (validates locally, not gated) | `Internal-IT/platform/` |
+| Operating records (approvals, access review, incident, restore tabletop, audit, management review) | 🎭 Simulated: bannered tabletop walk-throughs with fictional staff; none of it happened. Real records are kept apart | [`records/simulated/`](Governance/records/simulated/INDEX.md), [`records/real/`](Governance/records/real/README.md) |
+| Platform roots: AWS Organizations and SCPs, landing zone, evidence archive, IAM core (plan mode); remote state, Identity Center (source mode, no OPA) | 📐 Planned: gated design. CI jobs `Platform Gate` defined and run locally (all pass); not yet run on GitHub, not required checks, never deployed | [REAL-INFRA-001](Governance/records/real/infra/REAL-INFRA-001-gate-run-all-roots.md), `test.yml` |
+| Entra ID | 📐 Planned: validate-only in CI (`Platform Validate`); no scanner has rules for the `azuread` provider | `Internal-IT/platform/domains/identity/entra-id/` |
+| Region `eu-central-1` in all Terraform and the region SCP | 📐 Planned: source migrated and verified by grep and plan; nothing is deployed and no residency decision is recorded | [REAL-INFRA-003](Governance/records/real/infra/REAL-INFRA-003-region-migration-verification.md) |
+| Detection (GuardDuty, Security Hub, Config, EventBridge to `security-alerts`), AWS Backup with Vault Lock, evidence archive with Object Lock | 📐 Planned: gated design (scanned, never deployed); the archive has no upload step | landing zone `modules/detection/`, `ayka-portal/modules/backup/`, `platform/foundation/evidence-archive/` |
+| Security checks: gitleaks, actionlint, shellcheck, Bandit, pip-audit, CycloneDX SBOM | 📐 Planned: workflow defined, run locally only; not yet run on GitHub, not a required check | `security-checks.yml`, [REAL-SDLC-001](Governance/records/real/sdlc/REAL-SDLC-001-first-local-scan.md) |
+| DSR tool (find, export, erase) and masking library | 📐 Planned: fixture-tested only (SQLite, synthetic data); no deployed data store | `Internal-IT/engineering/privacy/`, [REAL-PRIV-001](Governance/records/real/privacy/REAL-PRIV-001-dsr-tool-test-run.md) |
+| Restore test | 📐 Planned: `restore-test.sh local` verified a dump and restore on a local PostgreSQL container; the AWS mode has never run | [REAL-INFRA-002](Governance/records/real/infra/REAL-INFRA-002-restore-test-local-postgres.md) |
+| SOC 2 criteria per finding (control mapping and report) | 📐 Planned: in `control-mapping.yaml` and the report on this branch; not yet in a CI run on GitHub | `control-mapping.yaml`, `generate-report.py` |
 | Drift detection | 📐 Planned: a manual workflow exists and refuses to run without a remote backend | `drift-detection.yml` |
-| Governance ↔ evidence links (SoA) | 📐 Draft documentation: applicability, gaps and dated plan evidence | [SoA](Governance/ISMS/04-controls-and-soa/statement-of-applicability.md), [evidence index](Governance/ISMS/07-technical-evidence/control-evidence-index.md) |
+| Governance ↔ evidence links (SoA) | 📐 Draft documentation: 93 Annex A rows, 0 Implemented, 7 Partial, 30 Simulated operation, 11 Gated design, 45 Designed | [SoA](Governance/ISMS/04-controls-and-soa/statement-of-applicability.md), [evidence index](Governance/ISMS/07-technical-evidence/control-evidence-index.md) |
 | Remote state and real sandbox apply | 📐 Planned | — |
 
-**Not claimed:** Terragrunt, SIEM integration, SOC 2 / NIST CSF / CIS mappings, zero-trust, continuous monitoring, automated remediation, delegated administration, incident-response workflows, audit-readiness, certification.
+**Not claimed:** Terragrunt, SIEM integration, a SOC 2 report or attestation, NIST CSF / CIS mappings, zero-trust, continuous monitoring, automated remediation, delegated administration, incident-response workflows, audit-readiness, certification.
 
 ---
 
@@ -103,13 +113,14 @@ bash Internal-IT/engineering/ci-cd/scripts/run-local-chain.sh Internal-IT/worklo
 
 The local runner checks the tool versions first and stops if they differ from CI (`ALLOW_TOOL_DRIFT=1` turns that into a warning).
 
-Expected: `ayka-portal` → `pass` (LOW 6, 14 excepted); scenarios → `fail` (HIGH 20, MEDIUM 34, LOW 10). Results land in `output/` (summary, raw scanner JSON, `compliance-report.md`) and `evidence/` (raw copy plus `artifacts.sha256`), as in CI. The exit code follows the decision: `0` pass, `1` fail, `2` approval required, `3` tool or input error. Each run first deletes the previous `output/` and `evidence/`.
+Expected: `ayka-portal` → `pass` (LOW 6, 15 excepted); scenarios → `fail` (HIGH 20, MEDIUM 34, LOW 10). Results land in `output/` (summary, raw scanner JSON, `compliance-report.md`) and `evidence/` (raw copy plus `artifacts.sha256`), as in CI. The exit code follows the decision: `0` pass, `1` fail, `2` approval required, `3` tool or input error. Each run first deletes the previous `output/` and `evidence/`.
 
 ---
 
 ## 6. Known limitations
 
 - Nothing is deployed; the apply is simulated. Drift detection needs remote state, which doesn't exist yet.
+- The platform and security-check jobs are not required checks in `protect-main`, so a red one does not block a merge. Adding them is an owner action ([REAL-ISMS-001](Governance/records/real/isms/REAL-ISMS-001-owner-actions-open.md)).
 - OPA cannot judge an IAM policy whose JSON is unknown at plan time (it references a resource created in the same apply). Checkov is mapped to the same control.
 - The decision counts raw findings, so one problem reported by three tools counts three times there; the summary and report also give `distinct_findings` (one issue on one resource). tfsec only names a module, so its findings are matched to resources inside that module.
 - The checksum proves integrity between jobs, not authenticity.
@@ -125,8 +136,9 @@ Expected: `ayka-portal` → `pass` (LOW 6, 14 excepted); scenarios → `fail` (H
 | [`Internal-IT/engineering/policy-as-code/`](Internal-IT/engineering/policy-as-code/) | Rego rules and tests, `control-mapping.yaml`, `exceptions.yaml` |
 | [`Internal-IT/workloads/`](Internal-IT/workloads/) | `ayka-portal` (should pass) and the insecure scenarios (must fail) |
 | [`tests/`](tests/) | Evaluator, wrapper and mapping tests |
-| [`Internal-IT/platform/`](Internal-IT/platform/) | Design-only context: organization, landing zone, identity (not gated) |
-| [`Governance/`](Governance/), [`organization/`](organization/) | The simulated ISMS case study; [`Governance/ISMS/README.md`](Governance/ISMS/README.md) lists every document as Draft, Covered elsewhere or Planned |
+| [`Internal-IT/platform/`](Internal-IT/platform/) | Organization, landing zone (incl. detection), evidence archive, remote state, identity: scanned by the platform CI jobs (local run so far), never deployed |
+| [`Governance/`](Governance/), [`organization/`](organization/) | The simulated ISMS case study; [`Governance/ISMS/README.md`](Governance/ISMS/README.md) lists every document as Draft, Covered elsewhere, Simulated operation or Planned |
+| [`Governance/records/`](Governance/records/) | `real/`: things actually done (tool runs, tests, readings, open owner actions). `simulated/`: tabletop walk-throughs, bannered ([ADR-0006](Governance/ADR/0006-simulated-operating-records.md)) |
 | [`docs/restoration-history.md`](docs/restoration-history.md) | How the repository was restored in 2026: phases, Definition of Done, audit remediation |
 
 How the repository was restored in 2026, including the Definition of Done, is in [docs/restoration-history.md](docs/restoration-history.md).

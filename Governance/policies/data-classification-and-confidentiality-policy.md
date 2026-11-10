@@ -6,7 +6,7 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval |
 | Status | Draft. Not approved |
@@ -43,7 +43,7 @@ Customer data is Confidential by default. Information without a label is treated
 
 ### 5.1 Labelling and inventory
 
-1. Every AWS resource that stores data carries a `DataClassification` tag with one of the four levels. A gate rule enforcing the tag is to be added next to `EC2_MISSING_TAGS`.
+1. Every AWS resource that stores data carries a `DataClassification` tag with one of the four levels. Since 2026-11-10 every AWS provider block sets it through `default_tags` (in `ayka-portal` from the validated variable `data_classification`, default `Confidential`). A gate rule enforcing the tag is still to be added next to `EC2_MISSING_TAGS`.
 2. The system description's data table (section 3.6) is the inventory of confidential data stores and is reviewed with it.
 
 ### 5.2 Protection
@@ -79,7 +79,7 @@ On contract end, Ayka deletes the customer's data, confirms deletion in writing 
 | Information owner | Classifies information and approves access and sharing |
 | CISO | Maintains this policy and the classification scheme; approves Restricted access |
 | Cloud Platform Engineering | Implements tagging, encryption, retention and deletion in Terraform |
-| Head of Product | Runs customer offboarding and deletion confirmation |
+| Product Manager | Runs customer offboarding and deletion confirmation (the org chart's "Head of Product" is not a post in the personnel register) |
 | All staff | Handle information according to its class; report mishandling as an incident |
 
 ## 7. Exceptions
@@ -88,7 +88,7 @@ Exceptions are approved by the CISO in writing with an end date, and listed in t
 
 ## 8. Current gaps
 
-No Terraform sets a `DataClassification` tag. No confidentiality agreements, deletion tickets or disposal certificates exist, because the company and its customers are simulated.
+The `DataClassification` tag is one workload-wide default value, not a classification of each data set by its owner: a local plan of `ayka-portal` at commit `bc11890` (2026-11-10) shows the tag on 59 of 97 planned resources (the others cannot carry tags), all with the same value. No gate rule enforces it, and the [generated asset inventory](../ISMS/02-asset-management/asset-inventory.md) still reflects an older run with the tag on 0 of 88. No confidentiality agreements, deletion tickets or disposal certificates exist, because the company and its customers are simulated.
 
 ## Revision history
 
@@ -96,3 +96,4 @@ No Terraform sets a `DataClassification` tag. No confidentiality agreements, del
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
 | 1.1 | 2026-10-14 | Clarify proposed backup deletion period and link the retention schedule |
+| 1.2 | 2026-11-10 | DataClassification is now set through `default_tags`; gap restated. "Head of Product" mapped to the Product Manager post (SIM-PPL-006 finding 2) |

@@ -5,7 +5,7 @@
 | Document ID | ISMS-00-05 |
 | Owner | Compliance & Risk Management |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval, or on a change in law, a new or changed contract, or a [NIS2-01 trigger](../../NIS2/01-applicability-assessment.md#7-when-this-assessment-must-be-repeated) |
 | Status | Draft. Not approved: no approval record exists (simulated company) |

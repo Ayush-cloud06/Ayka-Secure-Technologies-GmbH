@@ -5,7 +5,7 @@
 | Document ID | ISMS-MON-01 |
 | Owner | Compliance & Risk Management |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or objective, measurement scope or evidence-source change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -16,7 +16,7 @@ Ayka Secure Technologies GmbH is a simulated company; this document does not est
 
 Measure the [ISMS objectives](../00-context-and-governance/isms-objectives.md) using reproducible evidence under ISO/IEC 27001:2022 clause 9.1. This is the metrics dashboard and measurement specification. It contains a bounded repository/CI observation, not quarterly results or a claim of operating ISMS effectiveness.
 
-Compliance & Risk Management collects monthly, validates denominators and presents results quarterly to CISO and at [management review](../10-management-review/management-review-agenda.md). Operational owners investigate missed thresholds. Record period, cutoff/timezone, source revision/run, collector, inclusion/exclusion rules, numerator, denominator, target, result, limitations and action. Preserve raw restricted evidence under the [retention policy](../../policies/records-and-data-retention-policy.md). Missing evidence is **Not measured**, never zero or green. Use **Not applicable** only with a reason and owner review; a zero denominator yields no percentage.
+Compliance & Risk Management collects monthly, validates denominators and presents results quarterly to CISO, at the latest 15 business days after quarter end, and at [management review](../10-management-review/management-review-agenda.md). The owner role named for each metric in section 2 is also its action owner: it investigates a missed threshold and proposes the action. Where the owner only collects (for example M-03), the CISO names the action owner when the miss is reported. A metric counts from the start of the reporting period, not from approval of the ISMS; state the first period measured. Record period, cutoff/timezone, source revision/run, collector, inclusion/exclusion rules, numerator, denominator, target, result, limitations and action. Preserve raw restricted evidence under the [retention policy](../../policies/records-and-data-retention-policy.md). Missing evidence is **Not measured**, never zero or green. Use **Not applicable** only with a reason and owner review; a zero denominator yields no percentage.
 
 ## 2. Metric specification
 
@@ -48,10 +48,11 @@ Reproduce the CI observation with `gh run view 37498007502 --repo Ayush-cloud06/
 
 ## 4. Evaluation and follow-up
 
-CISO challenges missing scope and changed definitions before interpreting trends. Keep prior snapshots and explain population changes. Open corrective action only for an evidenced failure against a requirement, and improvement proposals for desirable changes; use the [corrective-action procedure](../06-operational-procedures/corrective-action-procedure.md). Management review determines resource or objective changes. The [control evidence index](../07-technical-evidence/control-evidence-index.md) supplies technical provenance; it does not turn these samples into a continuous monitoring record.
+CISO challenges missing scope and changed definitions before interpreting trends. Keep prior snapshots and explain population changes. Open corrective action for an evidenced failure against a requirement, and improvement proposals for desirable changes. A target missed in two consecutive periods opens a corrective action with an owner and a due date, even where each single miss was explained; use the [corrective-action procedure](../06-operational-procedures/corrective-action-procedure.md). Management review determines resource or objective changes. The [control evidence index](../07-technical-evidence/control-evidence-index.md) supplies technical provenance; it does not turn these samples into a continuous monitoring record.
 
 ## Revision history
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Findings of the simulated KPI walk-throughs: quarterly results due 15 business days after quarter end (SIM-MON-001 finding 2); metric owner is the action owner, CISO names one where the owner only collects (SIM-MON-001 finding 1); start of counting (SIM-MON-001 finding 3); two consecutive misses open a corrective action (SIM-MON-002 finding 1) |

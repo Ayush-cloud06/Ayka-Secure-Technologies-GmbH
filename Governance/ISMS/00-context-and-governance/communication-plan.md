@@ -5,7 +5,7 @@
 | Document ID | ISMS-00-08 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when a channel is set up or removed, or the first customer contract is signed |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -74,8 +74,8 @@ Until the security mailbox exists, internal and external security reports cannot
 
 | Gap | Reference |
 |---|---|
-| No security mailbox, `SECURITY.md` or on-call number | SOC 2 IC-03 |
-| Customer notice deadline differs: [POL-IR-01 §8](../../policies/incident-response-plan.md#8-notification) says at the latest 48 hours after confirming a breach of customer data; [NIS2-03 §6](../../NIS2/03-incident-reporting-procedure.md#6-personal-data-breaches-gdpr) and NIS2-05 A.2 commit to 24 hours | Owner of POL-IR-01 to align |
+| No monitored security mailbox and no on-call number. [`SECURITY.md`](../../../SECURITY.md) and `security.txt` exist with a placeholder address ([POL-VDP-01](../../policies/vulnerability-disclosure-policy.md)); GitHub private vulnerability reporting is not enabled (owner action, [REAL-ISMS-001](../../records/real/isms/REAL-ISMS-001-owner-actions-open.md)) | SOC 2 IC-03 |
+| Customer notice deadline: [POL-IR-01 §8](../../policies/incident-response-plan.md#8-notification) version 1.1 now matches [NIS2-03](../../NIS2/03-incident-reporting-procedure.md) and NIS2-05 A.2 (24 hours from awareness, update at 72 hours); SOC 2 OP-06 states the same 24 hours. Closed in documents; never exercised for real | [POL-IR-01](../../policies/incident-response-plan.md) 1.1 |
 | No provider status or advisory subscriptions | NIS2-05 B.3 |
 | No staff acknowledgement, customer notice or incident communication record exists; GitHub change discussion is limited to the repository | RISK-010 |
 
@@ -84,3 +84,4 @@ Until the security mailbox exists, internal and external security reports cannot
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Section 6: customer-notice conflict resolved in POL-IR-01 1.1 (SIM-INC-001 finding 1), consistent with SOC 2 OP-06; disclosure files exist with a placeholder address |

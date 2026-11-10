@@ -2,7 +2,7 @@
 
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Owner:** CISO role
-- **Version:** 1.0
+- **Version:** 1.1
 - **Historical baseline:** 2026-04-16
 - **Document completed:** 2026-08-23
 **Applies to:** All records in `03-risk-management`
@@ -64,12 +64,14 @@ Use the highest credible impact across confidentiality, integrity, availability,
 
 | Residual level | May it be accepted? | Minimum authority | Conditions |
 |---|---|---|---|
-| Low | Yes | CISO | Rationale, evidence, and next review recorded |
-| Medium | Yes, time-limited | CISO and risk owner | Compensating safeguards, expiry, trigger, and target treatment recorded |
+| Low | Yes | CISO | Rationale, evidence, and next review recorded. Maximum term 12 months |
+| Medium | Yes, time-limited | CISO and risk owner | Compensating safeguards, expiry, trigger, and target treatment recorded. Maximum term 12 months; a renewal is a new decision |
 | High | Exception only | Managing Director, CISO, and risk owner | Written business rationale, maximum 90-day review, treatment plan, and explicit consequence acknowledgment |
 | Critical | No for normal operation | Managing Director receives escalation | Avoid the activity or reduce the risk before proceeding |
 
-Approval is valid only when the log identifies the approver, decision date, scope, expiry or review date, conditions, and evidence. A role label without a named decision does not constitute approval in this repository.
+Approval is valid only when the log identifies the approver, decision date, scope, expiry or review date, conditions, and evidence. A role label without a named decision does not constitute approval in this repository. Where the CISO is also the risk owner, the second authority is the Managing Director; the CISO cannot fill both seats.
+
+**Expiry tracking.** The CISO keeps the [risk acceptance log](risk-acceptance-log.md) and checks it monthly. At least 30 days before an acceptance expires, the CISO tells the risk owner and the approvers. On the day an acceptance expires without a new decision, the CISO records in the log and the risk register that the risk has returned to treatment (status "Acceptance expired; back in treatment"), and the risk is an input to the next management review.
 
 ## 7. Due expectations
 
@@ -92,3 +94,10 @@ Approval is valid only when the log identifies the approver, decision date, scop
 ## 9. Review triggers
 
 Reassess when a live apply, backend migration, identity integration, new data flow, external rule change, incident, audit finding, major scanner change, or acceptance expiry affects the scenario.
+
+## Revision history
+
+| Version | Date | Change |
+|---|---|---|
+| 1.0 | 2026-08-23 | Document completed |
+| 1.1 | 2026-11-10 | Findings of the simulated risk review SIM-RISK-001 and SIM-CAPA-007: maximum 12-month term for Low and Medium acceptances (SIM-RISK-001 finding 3); the CISO tracks expiry, warns 30 days ahead and records the return to treatment (SIM-RISK-001 finding 4, SIM-CAPA-007 finding 2); the CISO cannot be both authorities for a risk the CISO owns (SIM-RISK-001 finding 2) |

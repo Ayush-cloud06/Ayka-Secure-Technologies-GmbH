@@ -57,6 +57,19 @@ This is a source/settings update, not a management risk review. Existing risk sc
 - RISK-009: the later [evidence snapshot](../07-technical-evidence/control-evidence-index.md) for 2026-10-06 records 6 active LOW findings and 14 excepted findings in the workload. The 2026-09-28 row remains a dated observation, not the latest count. No risk reduction follows merely from a smaller count.
 - RISK-010: the [document register](../README.md) now links draft policies, procedures and evaluation templates. Operating records, management approval and independent audit remain absent. The overdue review date stays visible until a real review occurs.
 
+## Evidence notes, 2026-11-10
+
+A source and records update, not a management risk review. No score, response or status changes, no risk closes, and the overdue 2026-09-30 review stays overdue: the simulated review [SIM-RISK-001](../../records/simulated/risk/SIM-RISK-001-risk-review-and-acceptance-minutes.md) is a tabletop and clears nothing. The owner actions are listed in [REAL-ISMS-001](../../records/real/isms/REAL-ISMS-001-owner-actions-open.md).
+
+- RISK-001: unchanged. No tenant check or rotation recorded (REAL-ISMS-001 O-04). The local gitleaks run did not flag the bootstrap passwords in history ([REAL-SDLC-001](../../records/real/sdlc/REAL-SDLC-001-first-local-scan.md)), so a clean scan is not evidence of a clean history.
+- RISK-002: `remote-state` is now scanned in source mode, and the state bucket gained lifecycle, TLS-only policy, encryption and point-in-time recovery for the lock table in source ([REAL-INFRA-001](../../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md)). No remote backend is in use. A local untracked state file holds plaintext Azure storage keys (REAL-ISMS-001 O-05). Still Open.
+- RISK-005: [REAL-SOC2-001](../../records/real/soc2/REAL-SOC2-001-change-review-2026-10.md) confirms for October 2026: 0 of 17 merged pull requests approved, author equal to merger in all 17. The new platform and security CI jobs are not required checks. Still Treating.
+- RISK-006: CloudTrail, GuardDuty, Security Hub, Config and EventBridge alert rules are designed in the landing zone and scanned in plan mode (REAL-INFRA-001). Nothing delivers logs; runtime not evidenced. Still Treating.
+- RISK-008: the new record stores separate real from simulated evidence ([ADR-0006](../../ADR/0006-simulated-operating-records.md)). A reader could now also mistake a walk-through for operation; the SoA prints Simulated operation in its own row. Still Monitored; acceptance pending.
+- RISK-009: platform roots scanned for the first time; 97 exception entries were added for them, several of which are real open work (broad IAM grants in `aws-iam-core`, missing access logging, shared-key auth on the Azure state account). The workload now has 15 excepted findings from 14 entries (local run at `bc11890`). AWS Backup with Vault Lock is designed and scanned; a restore was tested on a local container only ([REAL-INFRA-002](../../records/real/infra/REAL-INFRA-002-restore-test-local-postgres.md)). Still Open.
+- RISK-011: Terraform source and the region SCP now name only `eu-central-1` ([REAL-INFRA-003](../../records/real/infra/REAL-INFRA-003-region-migration-verification.md)). Open: the owner-approved residency decision, real processing facts, and re-creation of the console-created Identity Center instance in `ap-south-1` if it exists. Still Open.
+- RISK-012: the platform roots plan offline for the first time; the bootstrap order is still undocumented and nothing is applied. Still Open.
+
 ## Status rules
 
 - **Open:** response is agreed in principle but treatment has not started or is not evidenced.

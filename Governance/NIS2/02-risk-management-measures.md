@@ -28,7 +28,7 @@ The labels follow the repository's capability yardstick ([README, section 4](../
 - **Partial**: some of the measure is implemented; the gap is named.
 - **Simulated operation**: a design exists and a bannered tabletop record walks it end to end ([ADR-0006](../ADR/0006-simulated-operating-records.md)). It is not operating evidence. A row with this label links a record under `records/simulated/`. Where the record belongs to another document set, the row says "+ simulated record SIM-xxx" next to a weaker label instead.
 - **Gated design**: Terraform exists, the CI gate checks its plan, and it has never been applied.
-- **Designed**: a document or ungated Terraform exists but has never been applied or exercised.
+- **Designed**: a document, or Terraform the gate does not fully scan, exists but has never been applied or exercised. Since 2026-11-10 most platform roots are scanned ([ADR-0007](../ADR/0007-region-migrated-platform-gated.md)); those count as Gated design.
 - **Planned**: only written down as an intention, or not at all.
 
 Order of strength: Planned < Designed < Gated design < Simulated operation < Partial < Implemented.
