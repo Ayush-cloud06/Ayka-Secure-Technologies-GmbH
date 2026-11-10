@@ -3,8 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study), Stuttgart, Germany
 - **Framework:** GDPR Art. 30(1) (controller) and Art. 30(2) (processor)
 - **Owner:** GDPR Lead role (EMP-004, fictional), reporting to the CISO role
-- **Version:** 1.0
-- **Last updated:** 2026-10-14
+- **Version:** 1.1
+- **Last updated:** 2026-11-10
 - **Status:** Draft. Not approved: no approval record exists.
 
 ## 1. Reality column
@@ -23,7 +23,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 
 | Field | Entry |
 |---|---|
-| Reality | **Simulated, with one real record.** 47 entries in [`personnel.json`](../../Internal-IT/platform/domains/identity/entra-id/modules/core/personnel.json); EMP-001 is the real repository owner. The file is public on GitHub, so it is really disclosed |
+| Reality | **Simulated, with one real record.** 24 entries in [`personnel.json`](../../Internal-IT/platform/domains/identity/entra-id/modules/core/personnel.json); EMP-001 is the real repository owner. The file is public on GitHub, so it is really disclosed |
 | Purpose | Create staff accounts, department and tier groups, and AWS access from one personnel source |
 | Data subjects | Employees |
 | Data categories | First and last name, display name, role, secondary role, department, employment type, line manager, security role, privilege tier, privileged flag, start date |
@@ -42,7 +42,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Purpose | Version control, code review and the compliance gate |
 | Data subjects | Repository contributors |
 | Data categories | Git author name and e-mail address, GitHub username, pull-request comments, CI workflow logs |
-| Legal basis | Art. 6(1)(f) legitimate interest in traceable changes |
+| Legal basis | Art. 6(1)(f) legitimate interest in traceable changes ([assessment](legitimate-interests-assessment.md)) |
 | Recipients | GitHub (processor for private data; commit metadata in a public repository is public) |
 | Third-country transfer | United States (GitHub) |
 | Retention | Git history: kept indefinitely by design. CI artifacts: no `retention-days` is set in [`.github/`](../../.github/), so the repository default applies. Measured on 2026-10-14 as 90 days ([ISMS objectives](../ISMS/00-context-and-governance/isms-objectives.md) OBJ-08). [POL-RET-01](../policies/records-and-data-retention-policy.md) proposes at least 18 months outside the pipeline. That copy does not exist |
@@ -56,9 +56,9 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Purpose | Detect and investigate security events |
 | Data subjects | Staff and customer users whose actions or requests are logged |
 | Data categories | IP address, user/role identifier, request metadata, timestamps |
-| Legal basis | Art. 6(1)(f) legitimate interest in security; Art. 32 obligation |
+| Legal basis | Art. 6(1)(f) legitimate interest in security ([assessment](legitimate-interests-assessment.md)); Art. 32 supports necessity. DPIA: [dpia-ayka-portal.md](dpia-ayka-portal.md) |
 | Recipients | AWS (CloudTrail, S3, CloudWatch) |
-| Third-country transfer | None intended (`eu-central-1`). Current Terraform names `ap-south-1`, so the source would not match that intention ([DF-05](data-flow-and-transfer-assessment.md)) |
+| Third-country transfer | None intended (`eu-central-1`); remote support access from outside the EEA would be a transfer ([DF-05](data-flow-and-transfer-assessment.md)). Region of the Terraform source: see the [GDPR index](README.md#region) |
 | Retention | Not approved. [POL-RET-01](../policies/records-and-data-retention-policy.md) proposes 365 days for selected workload logs and a longer CloudTrail target. Those logs are not delivered |
 | Source | CloudTrail in the landing zone ([`landing-zone/modules/core/logging/`](../../Internal-IT/platform/foundation/landing-zone/modules/core/logging/)); ALB and S3 access logs in [`ayka-portal`](../../Internal-IT/workloads/ayka-portal/). Delivery never tested (RISK-006) |
 
@@ -74,6 +74,34 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Recipients | None outside Ayka |
 | Retention | Not approved. [POL-RET-01](../policies/records-and-data-retention-policy.md) refuses a blanket employment period until purpose and expiry are set. No real training record exists |
 
+### PA-05 Website and contact enquiries
+
+| Field | Entry |
+|---|---|
+| Reality | **Planned**: no website is published from this repository |
+| Purpose | Present the company, answer enquiries, secure the site |
+| Data subjects | Website visitors, people who write to Ayka |
+| Data categories | IP address and request data in server logs; name, e-mail address and message of an enquiry; cookie or consent choice if a banner is built |
+| Legal basis | Art. 6(1)(f); Art. 6(1)(a) and § 25 TDDDG for non-essential cookies or a newsletter (**to verify**) |
+| Recipients | Hosting provider (not selected), mail provider (not selected) |
+| Third-country transfer | None intended; depends on the providers chosen |
+| Retention | Not approved. [Website notice](privacy-notice-website.md) states a working figure for logs |
+| TOMs | None specific |
+
+### PA-06 Customer contacts and billing
+
+| Field | Entry |
+|---|---|
+| Reality | **Planned**: no customer exists |
+| Purpose | Contract administration, onboarding, support contact, invoices |
+| Data subjects | Contact persons at customers and prospects |
+| Data categories | Name, business e-mail, telephone, role, contract and invoice data |
+| Legal basis | Art. 6(1)(b); Art. 6(1)(c) for commercial-law bookkeeping |
+| Recipients | Accounting and CRM providers (not selected) |
+| Third-country transfer | None intended |
+| Retention | Not approved; HGB § 257 and AO § 147 periods are the starting point in [POL-RET-01](../policies/records-and-data-retention-policy.md) |
+| TOMs | None specific |
+
 ## 3. Processor activities (Art. 30(2))
 
 ### PP-01 Customer compliance data in the SaaS platform
@@ -85,15 +113,16 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Processing | Store and display customer users' accounts and the compliance evidence they upload |
 | Data categories | Customer user name, e-mail, role; any personal data inside uploaded evidence |
 | Sub-processors | AWS; see [processor register](processor-register.md) |
-| Third-country transfer | None intended (`eu-central-1`); current Terraform uses `ap-south-1` ([`dev.tfvars`](../../Internal-IT/workloads/ayka-portal/envs/dev.tfvars)), which would be a transfer to India |
+| Third-country transfer | None intended (`eu-central-1`); an applied root naming `ap-south-1` would be a transfer to India ([`dev.tfvars`](../../Internal-IT/workloads/ayka-portal/envs/dev.tfvars); Region of the source: see the [GDPR index](README.md#region)) |
 | TOMs | Storage, network and encryption controls that the gate checks on the Terraform plan (Implemented at plan time; nothing deployed), in [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) |
 
 ## 4. Gaps
 
 1. The real public disclosure in PA-01 should be minimized: replace `personnel.json` entries with clearly fictional data, or accept it as the owner's own choice, and record the decision.
 2. [POL-RET-01](../policies/records-and-data-retention-policy.md) now proposes periods. They are not approved. The only configured retention this record relies on is GitHub's 90-day artifact setting. No activity has an implemented deletion job.
-3. Legal bases are proposed in the [legal-basis register](dpo-and-legal-basis.md) and are not reviewed.
-4. Region mismatch for PA-03 and PP-01 until the Terraform moves to `eu-central-1`.
+3. Legal bases are reviewed in the [legal-basis register](dpo-and-legal-basis.md) by the repository owner with AI assistance. No counsel has reviewed them.
+4. PA-03 and PP-01 make no EU-location claim while nothing is applied; see the [GDPR index](README.md#region).
+5. PA-05 and PA-06 were missing in version 1.0 and were found by the walk-through in SIM-GDPR-002. Recruitment applicants (HR support role in the personnel register) are still not covered.
 
 ## 5. Review
 

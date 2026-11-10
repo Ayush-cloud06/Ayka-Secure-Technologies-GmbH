@@ -12,28 +12,34 @@
 
 ## Region
 
-Target Region for all personal data: **`eu-central-1` (Frankfurt)**. The Terraform does not match this yet: most roots, and the region-restriction SCP ([`restrict-region.json`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json)), name `ap-south-1` (Mumbai). Until that is migrated no "data stays in the EU" claim is supported (RISK-011, TRT-011 in the [risk register](../ISMS/03-risk-management/risk-register.md)).
+Target Region for all personal data: **`eu-central-1` (Frankfurt)** ([ADR-0003](../ADR/0003-target-region.md)). The Terraform roots and the region-restriction SCP ([`restrict-region.json`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json)) name `eu-central-1`. Nothing is applied and no account holds data, so no "data stays in the EU" claim is supported by an operating system (RISK-011, TRT-011 in the [risk register](../ISMS/03-risk-management/risk-register.md)). The other GDPR documents point here for the state of the source.
 
 ## Documents
 
-Status: `Draft` = written, not approved (no real approver exists) · `Planned` = not written yet.
+Status: `Draft` = written, not approved (no real approver exists) · `Template` = text to be filled per customer · `Planned` = not written yet. "Simulated" means a bannered tabletop record exists (see [ADR-0006](../ADR/0006-simulated-operating-records.md)).
 
 | Document | GDPR article | Status |
 |---|---|---|
-| [Record of Processing Activities](record-of-processing-activities.md) | Art. 30 | Draft |
-| [Processor and sub-processor register](processor-register.md) | Art. 28 | Draft |
+| [Record of Processing Activities](record-of-processing-activities.md) | Art. 30 | Draft v1.1. PA-05, PA-06 added. Retention not approved. Simulated review: [SIM-GDPR-002](../records/simulated/privacy/SIM-GDPR-002-ropa-annual-review.md) |
+| [Processor and sub-processor register](processor-register.md) | Art. 28 | Draft. No DPA or attestation retrieved |
 | [TOMs: identity and access](technical-and-organization-measures/identity-and-access-toms.md) | Art. 25, 32 | Draft |
 | [TOMs: segregation of duties](technical-and-organization-measures/segregation-of-duties.md) | Art. 32 | Draft |
-| [Data-flow map and international transfer assessment](data-flow-and-transfer-assessment.md) | Art. 44–49 | Draft. The map is written. No Chapter V mechanism is selected |
-| [DPIA screening](dpia-screening.md) | Art. 35 | Draft. Screening only. No impact assessment is written |
-| [Data subject rights procedure](data-subject-rights-procedure.md) | Art. 12–22 | Draft. No request has been received |
-| [Personal data breach procedure](../NIS2/03-incident-reporting-procedure.md) | Art. 33, 34 | Draft, in NIS2-03 including template T-4. The log has no entries |
+| [TOMs: encryption, logging, backup, rights tooling](technical-and-organization-measures/encryption-logging-backup-toms.md) | Art. 32 | Draft. Plan checks and fixture tests are labelled separately |
+| [Data-flow map and international transfer assessment](data-flow-and-transfer-assessment.md) | Art. 44 to 49 | Draft v1.1. Chapter V position selected per supplier (DPF where certified, SCCs as fallback). Certification to verify |
+| [Legitimate interests assessment](legitimate-interests-assessment.md) | Art. 6(1)(f) | Draft. PA-02 and PA-03 |
+| [DPO decision and legal-basis register](dpo-and-legal-basis.md) | Art. 6, 37 | Draft v1.1. DPO designation recommended (external); not appointed. Bases reviewed by the owner with AI help, not counsel. Simulated: [SIM-GDPR-001](../records/simulated/privacy/SIM-GDPR-001-dpo-decision-minutes.md) |
+| [DPIA screening](dpia-screening.md) | Art. 35 | Draft. Screening |
+| [DPIA: security logging and portal design](dpia-ayka-portal.md) | Art. 35 | Draft. PA-03 assessed on the design; DPO advice outstanding. Simulated: [SIM-GDPR-003](../records/simulated/privacy/SIM-GDPR-003-dpia-sign-off.md) |
+| [Data subject rights procedure](data-subject-rights-procedure.md) | Art. 12 to 22 | Draft v1.1. No real request. Simulated: [SIM-DSR-001](../records/simulated/privacy/SIM-DSR-001-access-and-erasure-request.md). Tool tested on fixture data: [REAL-PRIV-001](../records/real/privacy/REAL-PRIV-001-dsr-tool-test-run.md) |
+| [Privacy notice: employees](privacy-notice-employees.md) | Art. 13, 14, 21 | Draft. Not issued. Fictional controller details; DPO contact and retention open |
+| [Privacy notice: website](privacy-notice-website.md) | Art. 13, 14, 21 | Draft. Not published. No website exists |
+| [Customer DPA template](data-processing-agreement-template.md) | Art. 28(3) | Template. No signed instance |
+| [Personal data breach procedure](../NIS2/03-incident-reporting-procedure.md) | Art. 33, 34 | Draft, in NIS2-03 including template T-4 |
 | [Data retention schedule](../policies/records-and-data-retention-policy.md) | Art. 5(1)(e) | Draft proposal in POL-RET-01. Configured CI retention is 90 days. The 18-month copy is not built |
-| [DPO decision and legal-basis register](dpo-and-legal-basis.md) | Art. 6, 37 | Draft. The officer is not appointed. Bases are not reviewed |
-| [TOMs: encryption, logging, backup](technical-and-organization-measures/encryption-logging-backup-toms.md) | Art. 32 | Draft. Plan checks are labelled separately from measures that are only written |
 
 ## Rules for these documents
 
-- Every measure carries the weakest true label from the [README yardstick](../../README.md#4-capability-status): Implemented, Simulated, Planned (design-only), or Not designed.
-- No invented records: no signed DPAs, DPIA approvals, breach notifications or data subject requests.
-- Facts about real providers' contracts are marked **to verify** until checked against the provider's current terms.
+- Every measure carries the weakest true label from the [README yardstick](../../README.md#4-capability-status): Implemented, Simulated, Planned (design-only), or Not designed. "Simulated operation" is used only with a linked record under `records/simulated/`.
+- Simulated records exist, in their own bannered store, and are never evidence of operation: see [ADR-0006](../ADR/0006-simulated-operating-records.md). No signed DPAs, DPIA approvals, breach notifications or data subject requests are claimed as real. The `Template` DPA is unsigned by design.
+- Real events (tool runs, an official text read) go in `records/real/privacy/`: [REAL-PRIV-001](../records/real/privacy/REAL-PRIV-001-dsr-tool-test-run.md), [REAL-PRIV-002](../records/real/privacy/REAL-PRIV-002-bdsg-38-reading.md).
+- Facts about real providers' contracts are marked **to verify** unless a REAL record names the URL and retrieval date.

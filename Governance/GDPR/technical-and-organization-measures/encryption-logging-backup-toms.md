@@ -48,7 +48,16 @@ Personal data in future logs is PA-03. It is not occurring.
 | Restore procedure | Planned (design-only) | [Backup and restore procedure](../../ISMS/06-operational-procedures/backup-and-restore-procedure.md) | The procedure forbids treating an untested objective as a result |
 | Independent retention of CI evidence | Not met | GitHub artifact retention is 90 days ([ISMS objectives](../../ISMS/00-context-and-governance/isms-objectives.md) OBJ-08) | The 18-month copy is not built (RISK-007) |
 
-## 5. What can be shown today
+## 5. Rights handling and privacy tooling
+
+| Measure | Status | Evidence | Gap |
+|---|---|---|---|
+| Access and erasure request handled end to end, processor path | Simulated operation | [SIM-DSR-001](../../records/simulated/privacy/SIM-DSR-001-access-and-erasure-request.md) | Tabletop. No request, no customer, no deployed portal. Six procedure defects were found; one is still open (no private request register) |
+| DPIA for security logging decided before collection | Simulated operation | [SIM-GDPR-003](../../records/simulated/privacy/SIM-GDPR-003-dpia-sign-off.md) | Tabletop. DPO advice outstanding; no log is delivered |
+| Find and erase one person's records, with legal hold and audit log | Simulated (fixture test only) | [REAL-PRIV-001](../../records/real/privacy/REAL-PRIV-001-dsr-tool-test-run.md) | Synthetic SQLite fixture. Not run on any deployed store. Backups and Git history are not searched |
+| Masking by removal, synthetic values or tokens, with a label and a leak test | Simulated (fixture test only) | [REAL-PRIV-001](../../records/real/privacy/REAL-PRIV-001-dsr-tool-test-run.md) | Function library, no approved product, not used on any real data set |
+
+## 6. What can be shown today
 
 The compliance-gate artifacts for the Implemented rows, as indexed in the [control evidence index](../../ISMS/07-technical-evidence/control-evidence-index.md). The policies above for the design-only rows.
 
@@ -59,3 +68,4 @@ Not available: a key-usage log, a delivered CloudTrail object, an alert acknowle
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Section 5 added: rights handling and privacy tooling, linked to simulated and real records |
