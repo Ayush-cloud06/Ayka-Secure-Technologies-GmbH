@@ -28,6 +28,8 @@ Owners are proposed accountable roles; review periods begin after approval unles
 | POL-VEN-01 | [Vendor and Subservice Organization Management Policy](vendor-management-policy.md) | Compliance & Risk Management | 12 months after approval |
 | POL-VUL-01 | [Vulnerability and patch management policy](vulnerability-and-patch-management-policy.md) | Security Operations | 12 months after approval, or a critical advisory, material incident or change to the scanner toolchain |
 | POL-VDP-01 | [Vulnerability disclosure policy](vulnerability-disclosure-policy.md) | Security Operations | 12 months after approval, or when the reporting channel changes or a report reveals a gap |
+| POL-COC-01 | [Code of conduct](code-of-conduct.md) | HR & Administration | 12 months after approval, or a serious conduct case, legal change or change in reporting channels |
+| RA-FRD-01 | [Fraud and insider-risk assessment](fraud-and-insider-risk-assessment.md) | CISO | Annually, and after a fraud or insider incident, a change of approval model or a new privileged path |
 
 ## 2. Shared coverage
 

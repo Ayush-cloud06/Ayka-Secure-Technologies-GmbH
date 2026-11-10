@@ -5,14 +5,14 @@
 | Document ID | SOC2-05 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.0 |
-| Effective | 2026-10-06 |
+| Version | 1.1 |
+| Effective | 2026-11-10 |
 | Next review | Before the auditor is engaged |
 | Status | Draft. Not approved |
 
 ## 1. Purpose
 
-How Ayka will run a SOC 2 examination when the [readiness assessment](04-readiness-assessment.md) allows it: choosing the auditor, setting the period, collecting evidence, and keeping records. Section 7 holds the record templates. **No record entries exist**; each template is filled only when the activity happens.
+How Ayka will run a SOC 2 examination when the [readiness assessment](04-readiness-assessment.md) allows it: choosing the auditor, setting the period, collecting evidence, and keeping records. Section 7 holds the record templates. Each template is filled only when the activity happens. Real records live in [`records/real/`](../records/real/README.md) and tabletop walk-throughs in [`records/simulated/`](../records/simulated/README.md), as set by [ADR-0006](../ADR/0006-simulated-operating-records.md); a tabletop is never operating evidence. The Type I walk-through for every control is in the [readiness pack](06-type1-readiness-pack.md), and the running log of automated-control evidence is in the [observation period log](07-observation-period-log.md).
 
 ## 2. Choosing the service auditor
 
@@ -57,12 +57,13 @@ Automated controls (for example CA-02 fail-closed evaluation, CM-03 severity rou
 
 | Evidence | System of record | Retention needed | Today |
 |---|---|---|---|
-| CI evidence bundles (`compliance-evidence`) | GitHub Actions artifacts | Period + 12 months (18 months minimum) | 90 days: gap G7. Plan: copy to an S3 bucket with Object Lock in compliance mode |
+| CI evidence bundles (`compliance-evidence`) | GitHub Actions artifacts | Period + 12 months (18 months minimum) | 90 days: gap G7. The artifacts of the runs of 2026-10-05 expire on 2027-01-03 (read from the GitHub API on 2026-11-10). Plan: copy to an S3 bucket with Object Lock in compliance mode; the Terraform design is plan-only |
 | Pull requests, reviews, approvals | GitHub | Life of the repository | Kept |
 | Environment approval history | GitHub deployments | Period + 12 months | Kept by GitHub; export each quarter |
 | Ruleset configuration | GitHub | Change history over the period | Export at start, end and on every change |
 | CloudTrail logs | S3 trail bucket | 1 year online, 6 years archive (HGB/AO for business records where relevant) | Designed only |
-| Access reviews, vendor reviews, restore tests, incident records | Evidence tracker | Period + 12 months, then per the retention policy | None yet |
+| Access reviews, vendor reviews, restore tests, incident records | Evidence tracker | Period + 12 months, then per the retention policy | No real record. Tabletop walk-throughs only, which do not count |
+| Monthly change review | `Governance/records/real/soc2/` | Period + 12 months | One record: REAL-SOC2-001 (October 2026), reviewer equals author |
 
 ## 7. Record templates
 
@@ -121,7 +122,7 @@ Entries: none yet.
 | Evidence bundle | Run ID and `artifacts.sha256` digest |
 | Emergency change | Yes or no; if yes, retrospective review reference |
 
-Entries: none yet. When sampled, every field is filled from GitHub, not from memory.
+Entries: none yet. When sampled, every field is filled from GitHub, not from memory. The monthly retrospective review (section 7.7) lists the same fields for every change.
 
 ### 7.5 Management security report (CE-06)
 
@@ -134,6 +135,45 @@ Entries: none yet. When sampled, every field is filled from GitHub, not from mem
 
 Entries: none yet. Never written after the fact for a meeting that did not happen.
 
+### 7.6 Self-assessment workpaper (MO-02)
+
+One workpaper per control in the [control matrix](03-control-matrix.md), kept with a cover sheet for the year.
+
+| Field | Content |
+|---|---|
+| Control ID and title | From the matrix |
+| Assessment period and date | |
+| Assessor, and relationship to the control owner | Name, role; "independent" or "not independent" with the reason |
+| Test procedure | Inquiry, inspection, observation or re-performance, copied from the [readiness pack](06-type1-readiness-pack.md) |
+| Population and how it was listed | Query or export, time, row count |
+| Sample | Items chosen and the method (random or judgmental) |
+| Result per item | Pass or fail, with the evidence location |
+| Conclusion | Effective, deficient or not testable, with the reason |
+| Deficiency | Log reference (MO-03), owner and due date, if any |
+| Reviewed by | Role and date |
+
+Entries: none yet.
+
+### 7.7 Monthly change review (CM-05, compensating)
+
+Fields: review month; population query and counts; reconciliation of commits to pull requests; per pull request the required checks, enforcement at merge, author, merger and approvals; sensitive-path pull requests with the result of the diff read; ruleset and environment export compared with the previous month; list of push runs and their conclusions; emergency changes and their retrospective reviews; findings with owner and due date; the statement whether the reviewer is also an author. Procedure: [SOC2-08, section 3](08-control-designs.md#3-compensating-monthly-change-review-cm-05-g3).
+
+Entries: [REAL-SOC2-001](../records/real/soc2/REAL-SOC2-001-change-review-2026-10.md), October 2026.
+
+### 7.8 Device wipe certificate (AC-18)
+
+| Field | Content |
+|---|---|
+| Asset ID and serial | From the device inventory |
+| Reason | Reuse, repair outside custody or disposal |
+| Method | Cryptographic erase or vendor secure erase, with tool and version |
+| Performed by, date | |
+| Verification | How the disk was shown to be unreadable |
+| Destination | New user, repair provider or disposal provider, with reference |
+| Reviewed by | Role and date |
+
+Entries: none yet.
+
 ## 8. Management representation letter
 
 At the end of fieldwork the Managing Director signs a representation letter for the auditor, confirming among other things that the description is fair, that all known incidents and deviations were disclosed, and that subsequent events were reported. Ayka signs it only after the CISO confirms each statement against the incident log, deficiency log and change history.
@@ -143,3 +183,4 @@ At the end of fieldwork the Managing Director signs a representation letter for 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-11-10 | Add templates 7.6 (self-assessment workpaper), 7.7 (monthly change review) and 7.8 (device wipe certificate). State the ADR-0006 record stores. Record the real artifact expiry (2027-01-03) for gap G7 |
