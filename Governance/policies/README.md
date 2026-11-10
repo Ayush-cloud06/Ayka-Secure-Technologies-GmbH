@@ -27,6 +27,7 @@ Owners are proposed accountable roles; review periods begin after approval unles
 | POL-END-01 | [User endpoint device policy](user-endpoint-device-policy.md) | Cloud Platform Engineering | 12 months after approval, or a supported-platform change, device loss or baseline failure |
 | POL-VEN-01 | [Vendor and Subservice Organization Management Policy](vendor-management-policy.md) | Compliance & Risk Management | 12 months after approval |
 | POL-VUL-01 | [Vulnerability and patch management policy](vulnerability-and-patch-management-policy.md) | Security Operations | 12 months after approval, or a critical advisory, material incident or change to the scanner toolchain |
+| POL-VDP-01 | [Vulnerability disclosure policy](vulnerability-disclosure-policy.md) | Security Operations | 12 months after approval, or when the reporting channel changes or a report reveals a gap |
 
 ## 2. Shared coverage
 

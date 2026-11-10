@@ -1,0 +1,8 @@
+# Security contact for the Ayka Secure Technologies GmbH case study (RFC 9116).
+# Ayka is a simulated company: the mailbox below is a placeholder and is not monitored.
+# For the real repository, use GitHub private vulnerability reporting.
+Contact: mailto:security@ayka.example
+Contact: https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/security/advisories/new
+Expires: 2027-05-10T00:00:00.000Z
+Preferred-Languages: en, de
+Policy: https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/blob/main/SECURITY.md

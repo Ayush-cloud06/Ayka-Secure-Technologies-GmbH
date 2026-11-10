@@ -1,0 +1,119 @@
+name: Security Checks
+
+# Software supply-chain and SDLC checks (POL-SDL-01 4.4, POL-VUL-01 2).
+# Convention as in test.yml: third-party actions pinned by commit SHA, downloaded
+# binaries pinned by version and SHA-256, pip tools pinned by exact version.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code (full history)
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install gitleaks 8.30.1
+        run: |
+          wget -q https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks_8.30.1_linux_x64.tar.gz" | sha256sum -c -
+          tar -xzf gitleaks_8.30.1_linux_x64.tar.gz gitleaks
+
+      - name: Scan full git history
+        run: ./gitleaks detect --source . --config tests/sdlc/gitleaks.toml --redact --no-banner --verbose
+
+  workflow-and-script-lint:
+    name: actionlint and shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+
+      - name: Install actionlint 1.7.12
+        run: |
+          wget -q https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  actionlint_1.7.12_linux_amd64.tar.gz" | sha256sum -c -
+          tar -xzf actionlint_1.7.12_linux_amd64.tar.gz actionlint
+
+      - name: Install shellcheck 0.11.0
+        run: |
+          # The shellcheck release publishes no checksum file; this digest was computed
+          # from the v0.11.0 asset on 2026-11-10 (trust on first use).
+          wget -q https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz
+          echo "8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198  shellcheck-v0.11.0.linux.x86_64.tar.xz" | sha256sum -c -
+          tar -xJf shellcheck-v0.11.0.linux.x86_64.tar.xz
+          echo "$PWD/shellcheck-v0.11.0" >> "$GITHUB_PATH"
+
+      - name: actionlint (workflows and composite actions)
+        run: ./actionlint -color
+
+      - name: shellcheck (CI scripts)
+        run: shellcheck --severity=warning Internal-IT/engineering/ci-cd/scripts/*.sh
+
+  python-security:
+    name: Bandit and pip-audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Install scanners (pinned)
+        run: pip install bandit==1.8.6 pip-audit==2.9.0
+
+      - name: Bandit (fails on medium or higher severity)
+        run: |
+          bandit -r Internal-IT tests -ll -x '*/.terraform/*'
+          # Informational only: low-severity findings (subprocess use, assert in tests)
+          bandit -r Internal-IT tests -x '*/.terraform/*' --exit-zero -q | tail -n 15
+
+      - name: pip-audit (tests/requirements.txt incl. transitive dependencies)
+        run: pip-audit -r tests/requirements.txt
+
+  sbom:
+    name: SBOM (CycloneDX)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Generate CycloneDX SBOM of the test environment
+        run: |
+          pip install cyclonedx-bom==7.1.0
+          python -m venv "$RUNNER_TEMP/sbom-env"
+          "$RUNNER_TEMP/sbom-env/bin/pip" install -q -r tests/requirements.txt
+          cyclonedx-py environment "$RUNNER_TEMP/sbom-env" --sv 1.6 --of JSON -o sbom.cdx.json
+          python -c "import json; d = json.load(open('sbom.cdx.json')); assert d['components'], 'empty SBOM'; print(len(d['components']), 'components')"
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: sbom.cdx.json
+          if-no-files-found: error
