@@ -5,12 +5,28 @@
 | Document ID | SOC2-00 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | 2026-11-10 |
 | Next review | 2027-04-06, or when the SOC 2 scope changes |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
 
 > Ayka Secure Technologies GmbH is a simulated company and `ayka-portal` has never been deployed. Nothing here is a SOC 2 report or a claim that a service auditor has examined anything. These documents are what Ayka would hold **before** engaging a CPA firm: the system description, the control set and an honest readiness position.
+
+## Completion position
+
+Counted from the 65 rows of the [control matrix](03-control-matrix.md) 1.4 (status on 2026-11-10); the matrix summary and `test_soc2_matrix.py` keep the numbers in step.
+
+| Position | Matrix status | Controls |
+|---|---|---:|
+| Real evidence | Implemented (13) and Partial (10) | 23 |
+| Simulated walk-through | Simulated operation | 14 |
+| Gated design | Gated design | 11 |
+| Design only | Designed | 16 |
+| Open | Planned | 0 |
+| Carved out to AWS | Carved out | 1 |
+| **Total** | | **65** |
+
+Simulated walk-throughs are not operating evidence. Real evidence here means a CI run, a test or a configured setting; for a Type I the readiness pack still expects only 13 of the 65 controls to pass, because nothing is deployed.
 
 ## 1. What SOC 2 is, and why Ayka would do it
 
@@ -69,8 +85,8 @@ Every control carries the weakest status that is true today. The same words are 
 |---|---|
 | **Implemented** | Operates today, and a CI run, a test or a configured setting shows it |
 | **Partial** | Part of the control operates; the rest is a named gap |
-| **Gated design** | Terraform for `ayka-portal` that the compliance gate scans on every change, but that has never been deployed |
-| **Designed** | Written down or written as Terraform under `Internal-IT/platform/`, not gated and not deployed |
+| **Gated design** | Terraform in a root the compliance gate plans and scans with all three tools (`ayka-portal` on every change; the platform roots `aws-organization`, `landing-zone`, `evidence-archive` and `aws-iam-core` through the `Platform Gate` job, which has not run on GitHub and is not a required check; local run [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md)), but that has never been deployed |
+| **Designed** | Written down, or written as Terraform that is not planned and scanned by all three tools (`aws-identity-center` and `remote-state` are scanned in source mode without OPA, `entra-id` by no scanner), and not deployed |
 | **Simulated operation** | A design exists and a bannered tabletop record under `records/simulated/` walks it end to end. Not operating evidence ([ADR-0006](../ADR/0006-simulated-operating-records.md)). Order of strength: Planned, Designed, Gated design, Simulated operation, Partial, Implemented. The row must link the record. An Implemented row never cites one, and counts of Implemented and Partial exclude it |
 | **Planned** | Not designed yet. No control is Planned since 2026-11-10 |
 
@@ -78,7 +94,7 @@ A SOC 2 auditor would accept only **Implemented** as "in place" for a Type I (th
 
 ## 5. Relationship to the compliance gate
 
-The gate's [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) maps scanner rules to ISO/IEC 27001 Annex A only. On 2026-10-06 it carried no SOC 2 criteria, and the repository README lists "SOC 2 mappings" as not claimed for the gate; a change adding SOC 2 criteria was in progress on 2026-11-10, so check the file before relying on either statement. The SOC 2 view lives in these documents: the [control matrix](03-control-matrix.md) names which gate controls support which criteria. Adding a `soc2` key next to `iso27001` in the mapping would be a code change to the gate and needs the owner's review under `CODEOWNERS`.
+The gate's [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) maps each of its 38 scanner rules to ISO/IEC 27001 Annex A and, since 2026-11-10, to SOC 2 criteria (a `soc2` list next to `iso27001`; the compliance report prints the criteria a run touches). On 2026-10-06 it carried no SOC 2 criteria. A criterion in the mapping is supported by a plan check, not met by it: SOC 2 criteria are met by operating controls. The [control matrix](03-control-matrix.md) names which gate controls support which control. The repository README still lists "SOC 2 mappings" as not claimed for the gate (README.md, outside this folder); that line is stale.
 
 ## 6. Rules for these documents
 
@@ -92,3 +108,4 @@ The gate's [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
 | 1.1 | 2026-11-10 | Add Simulated operation to the status vocabulary. Add SOC2-06 to 08, the code of conduct and the fraud assessment. Rewrite sections 5 and 6 |
+| 1.2 | 2026-11-10 | Add the completion position. Gated design now includes platform roots planned and scanned in plan mode; Designed excludes them. Section 5 states that the mapping carries SOC 2 criteria |

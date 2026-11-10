@@ -7,7 +7,7 @@
 | Owner | CISO |
 | Prepared by | Compliance Officer (Regulatory Reporting) role; text drafted by an AI assistant |
 | Decision by | Managing Director (no decision record exists) |
-| Version | 1.0 |
+| Version | 1.1 |
 | Assessment date | 2026-11-10 |
 | Previous assessment | [NIS2-01](01-applicability-assessment.md), 2026-10-06 |
 | Next scheduled review | 2027-05-10, or earlier on any trigger in NIS2-01 section 7 |
@@ -61,12 +61,12 @@ Two points read from the statute that NIS2-01 does not make:
 
 ## 5. Corrections to NIS2-01 found while reading the statute
 
-NIS2-01 stays as issued on 2026-10-06 (this reassessment does not rewrite it). Fix these when NIS2-01 is next revised.
+NIS2-01 version 1.0 (2026-10-06) carried these statements. They were applied in NIS2-01 version 1.1 on 2026-11-10, where the legal text recorded here supports them, and marked "to verify" where it does not. The table is kept as the record of what was found.
 
 | NIS2-01 | Statement | Finding |
 |---|---|---|
 | 2.1 | §28 BSIG was read from a secondary publication | It has now also been read on the federal publisher's site (gesetze-im-internet.de, `bsig_2025`). The text of §28(1) no. 4, (2) no. 3, (3) and (4) matches NIS2-01. That is still not the BGBl. gazette |
-| 8, item 2 | Data to register "plus the additional data that §34 requires from cloud providers" | §33(1) lists five items (section 6 of [NIS2-09](09-bsi-registration-dry-run.md)). §34 applies to the entity types in §60(1) Satz 1 BSIG, and that list **does** include "Anbieter von Cloud-Computing-Diensten", so the point stands. But §34 asks for different items (main EU establishment, public IP ranges, Member States), and §33 as read does **not** name an "incident contact reachable around the clock" or "EU establishments". Those two items in NIS2-01 are not in the text read |
+| 8, item 2 | Data to register "plus the additional data that §34 requires from cloud providers" | §33(1) lists five items (section 1 of [NIS2-09](09-bsi-registration-dry-run.md)). §34 applies to the entity types in §60(1) Satz 1 BSIG, and that list **does** include "Anbieter von Cloud-Computing-Diensten", so the point stands. But §34 asks for different items (main EU establishment, public IP ranges, Member States), and §33 as read does **not** name an "incident contact reachable around the clock" or "EU establishments". Those two items in NIS2-01 are not in the text read |
 | 8, item 2 | Registration "within three months" | Confirmed: §33(1) and §34(1) both say no later than three months after the entity qualifies. Changes: §33(5) two weeks from knowledge; §34(2) three months from the change |
 | 8, item 2 | Sign-in with a *Mein Unternehmenskonto* (ELSTER) certificate | §33(1) says only that submission goes through a registration facility run jointly by the BSI and the BBK. The ELSTER detail was **not verified** |
 
@@ -101,3 +101,4 @@ NIS2-01 stays as issued on 2026-10-06 (this reassessment does not rewrite it). F
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 1.0 | 2026-11-10 | Compliance Officer role (AI-drafted) | First six-monthly reassessment under NIS2-01 section 7 |
+| 1.1 | 2026-11-10 | Compliance Officer role (AI-drafted) | Section 5 lead-in states that the corrections are applied in NIS2-01 1.1; cross-reference to NIS2-09 corrected (section 1, not 6) |

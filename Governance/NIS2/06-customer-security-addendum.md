@@ -6,7 +6,7 @@
 | Organization | Ayka Secure Technologies GmbH (simulated case study) |
 | Owner | CISO |
 | Contributors | Compliance Officer, Sales Manager, Customer Success Manager |
-| Version | 1.0 |
+| Version | 1.1 |
 | Date | 2026-11-10 |
 | Status | Draft. Not approved. Not reviewed by counsel. Not offered to any customer (there are none) |
 | Classification | Internal; the clause text in section 3 is meant to be shared under NDA |
@@ -27,7 +27,7 @@ Status words follow the [README yardstick](../../README.md) and [ADR-0006](../AD
 | C-2 to C-4 (24 h, 72 h, one month) | **Only with the carve-out in C-2.3** | Detection is Gated design (Terraform plan only, never applied). Awareness today depends on luck |
 | C-8 (audit) | Yes in the limited form drafted | Ayka offers evidence on request and a remote audit, not on-site audits |
 | C-10 (data location) | **No** until the workload Terraform and the Region-restriction policy are applied in `eu-central-1` | Region moved in code on 2026-11-10 (see section 5); never deployed |
-| C-12, C-13 (continuity, exit) | Only as "target", not as warranty | No restore has been run against a real system |
+| C-12, C-13 (continuity, exit) | C-13 only as "target", not as warranty. **C-12 not as drafted** | No restore has been run against a real system, and the Terraform vault is in the workload account, not "separate from the production account" |
 | C-15 (certification) | Only the "none" statement | No certificate exists |
 
 ## 3. Clauses
@@ -52,7 +52,7 @@ Square brackets are fields to fill per customer. Quotation of NIS2 or BSIG wordi
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 23(4)(a) NIS2 (24-hour early warning, which the customer must itself give); §32 BSIG; Art. 21(2)(b) | [NIS2-03](03-incident-reporting-procedure.md) sections 3 to 5 and template T-1; [incident response plan](../policies/incident-response-plan.md) | Designed (procedure). Detection: Gated design, GuardDuty, Security Hub, Config and EventBridge-to-SNS Terraform added 2026-11-10, see `Internal-IT/` roots in the gate; never applied. Walked through once in simulated record SIM-INC-001 (scenario 2026-08-12). Not Partial or Implemented |
+| Art. 23(4)(a) NIS2 (24-hour early warning, which the customer must itself give); §32 BSIG; Art. 21(2)(b) | [NIS2-03](03-incident-reporting-procedure.md) sections 3 to 5 and template T-1; [incident response plan](../policies/incident-response-plan.md) | Designed (procedure). Detection: Gated design. The [detection module](../../Internal-IT/platform/foundation/landing-zone/modules/detection/) (GuardDuty, Security Hub, Config, five EventBridge rules into an SNS topic with an e-mail subscription) is planned and scanned in the landing-zone root (local run [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md); the CI job has not run on GitHub); never applied. Walked through once in simulated record [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md) (scenario 2026-08-12). Not Partial or Implemented |
 
 Warning for Sales: do not accept 12-hour clauses. The 24-hour clock in this clause runs from Ayka's awareness; the customer's own 24 hours run from the customer's awareness of the incident at Ayka, which the customer may date from Ayka's notice.
 
@@ -62,7 +62,7 @@ Within **72 hours of becoming aware**, Ayka sends an update: initial assessment 
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 23(4)(b); §32 BSIG | NIS2-03 section 5; template T-1 | Designed (+ simulated record SIM-INC-001 with the 72-hour draft SIM-INC-00x, added 2026-11-10) |
+| Art. 23(4)(b); §32 BSIG | NIS2-03 section 5; template T-1 | Designed (+ simulated record [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md) with the 72-hour draft [SIM-INC-004](../records/simulated/incident/SIM-INC-004-t1-customer-update-72h-draft.md), added 2026-11-10) |
 
 ### C-4 Final report within one month
 
@@ -70,7 +70,7 @@ Not later than **one month after the 72-hour update**, Ayka sends a final report
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 23(4)(d); §32 BSIG | NIS2-03 template T-3 | Designed (+ simulated record SIM-INC-001, one-month draft SIM-INC-00x) |
+| Art. 23(4)(d); §32 BSIG | NIS2-03 template T-3 | Designed (+ simulated record [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md), one-month draft [SIM-INC-005](../records/simulated/incident/SIM-INC-005-t3-final-report-draft.md)) |
 
 ### C-5 Cooperation in the customer's own reporting
 
@@ -96,7 +96,7 @@ Ayka maintains technical and organisational measures covering the ten areas of A
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 21(2)(d), 21(3); §30(2) no. 4 BSIG; GDPR Art. 28(2), (4) | [Processor register](../GDPR/processor-register.md); [vendor management policy](../policies/vendor-management-policy.md) (POL-VEN-01); [supplier review log](../ISMS/08-monitoring-and-measurement/supplier-performance-review.md); [REAL-SUP-001](../records/real/supplier/REAL-SUP-001-supplier-attestations.md) | Designed (register and policy: draft). Public assurance pages of AWS, Microsoft and GitHub read on 2026-11-10; no report obtained. One simulated review SIM-SUP-001 (scenario 2026-07-06) was added 2026-11-10. 30-day notice process: no subscriptions exist |
+| Art. 21(2)(d), 21(3); §30(2) no. 4 BSIG; GDPR Art. 28(2), (4) | [Processor register](../GDPR/processor-register.md); [vendor management policy](../policies/vendor-management-policy.md) (POL-VEN-01); [supplier review log](../ISMS/08-monitoring-and-measurement/supplier-performance-review.md); [REAL-SUP-001](../records/real/supplier/REAL-SUP-001-supplier-attestations.md) | Designed (register and policy: draft). Public assurance pages of AWS, Microsoft and GitHub read on 2026-11-10; no report obtained. One simulated review [SIM-SUP-001](../records/simulated/supplier/SIM-SUP-001-annual-critical-supplier-review.md) (scenario 2026-07-06) was added 2026-11-10. 30-day notice process: no subscriptions exist |
 
 ### C-8 Audit and evidence
 
@@ -106,7 +106,7 @@ Ayka maintains technical and organisational measures covering the ten areas of A
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 21(2)(f), 21(3); §30(2) no. 6 and no. 4 BSIG | [README](../../README.md) compliance gate and evidence bundle; [NIS2-05](05-supply-chain-security.md) A.3; simulated records SIM-AUD-001 (internal audit) and SIM-MR-001 (management review, scenario 2026-10-26), added 2026-11-10 | Partial for the gate evidence (real, checksummed, infrastructure code only). Audit and review: Designed + simulated records. No real audit has happened |
+| Art. 21(2)(f), 21(3); §30(2) no. 6 and no. 4 BSIG | [README](../../README.md) compliance gate and evidence bundle; [NIS2-05](05-supply-chain-security.md) A.3; simulated records [SIM-AUD-001](../records/simulated/audit/SIM-AUD-001-internal-audit-plan-2026.md) (internal audit) and [SIM-MR-001](../records/simulated/management-review/SIM-MR-001-management-review-2026.md) (management review, scenario 2026-10-26), added 2026-11-10 | Partial for the gate evidence (real, checksummed, infrastructure code only). Audit and review: Designed + simulated records. No real audit has happened |
 
 ### C-9 Vulnerability handling
 
@@ -116,7 +116,7 @@ Ayka maintains technical and organisational measures covering the ten areas of A
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 21(2)(e); Art. 21(3) ("vulnerabilities specific to each direct supplier"); §30(2) no. 5 BSIG | [Vulnerability and patch policy](../policies/vulnerability-and-patch-management-policy.md) (targets: critical 7 days, high 30 days, "proposed service targets, not measured performance"); `SECURITY.md`, `.well-known/security.txt` and `Governance/policies/vulnerability-disclosure-policy.md`, added 2026-11-10; CI checks (gitleaks, actionlint, shellcheck, Bandit, pip-audit, SBOM) in `.github/workflows/security-checks.yml`, added 2026-11-10 | Partial for infrastructure-code scanning (gate). Application dependency and code scanning: Designed, first workflow runs not verified in this document. No application exists to patch. Disclosure channel: Designed (files in a public repository; no company domain serves `security.txt`). Penetration test: Planned |
+| Art. 21(2)(e); Art. 21(3) ("vulnerabilities specific to each direct supplier"); §30(2) no. 5 BSIG | [Vulnerability and patch policy](../policies/vulnerability-and-patch-management-policy.md) (targets: critical 7 days, high 30 days, "proposed service targets, not measured performance"); [`SECURITY.md`](../../SECURITY.md), [`.well-known/security.txt`](../../.well-known/security.txt) and the [vulnerability disclosure policy](../policies/vulnerability-disclosure-policy.md), added 2026-11-10; CI checks (gitleaks, actionlint, shellcheck, Bandit, pip-audit, SBOM) in [`security-checks.yml`](../../.github/workflows/security-checks.yml), added 2026-11-10 | Partial for infrastructure-code scanning (gate). Application dependency and code scanning: Designed; the checks ran once locally ([REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md)), not on GitHub, and are not required checks. No application exists to patch. Disclosure channel: Designed (files in a public repository; no company domain serves `security.txt`). Penetration test: Planned |
 
 ### C-10 Data location
 
@@ -124,7 +124,7 @@ Customer data is stored and processed in `eu-central-1` (Frankfurt). Remote acce
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 21(2)(d); GDPR Art. 28, 44 to 46 | [ADR-0003](../ADR/0003-target-region.md); [processor register](../GDPR/processor-register.md); [data-flow and transfer assessment](../GDPR/data-flow-and-transfer-assessment.md) | Gated design. Region moved to `eu-central-1` in the Terraform on 2026-11-10 by parallel work; plan-only, never applied. No EU-location claim may be made to a customer until a real deployment exists |
+| Art. 21(2)(d); GDPR Art. 28, 44 to 46 | [ADR-0003](../ADR/0003-target-region.md); [processor register](../GDPR/processor-register.md); [data-flow and transfer assessment](../GDPR/data-flow-and-transfer-assessment.md) | Gated design. Region moved to `eu-central-1` in the Terraform on 2026-11-10 and checked in source ([REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md)); plan-only, never applied. No EU-location claim may be made to a customer until a real deployment exists |
 
 ### C-11 Access control and authentication
 
@@ -140,7 +140,7 @@ Ayka maintains backups of customer data separate from the production account and
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 21(2)(c); §30(2) no. 3 BSIG | [BC/DR plan](../policies/business-continuity-and-disaster-recovery-plan.md); [backup and restore procedure](../ISMS/06-operational-procedures/backup-and-restore-procedure.md); AWS Backup with vault lock in Terraform, added 2026-11-10 | Gated design (Terraform, plan-only) + simulated record SIM-BCP-001 (restore tabletop). No restore has been run against a real system |
+| Art. 21(2)(c); §30(2) no. 3 BSIG | [BC/DR plan](../policies/business-continuity-and-disaster-recovery-plan.md); [backup and restore procedure](../ISMS/06-operational-procedures/backup-and-restore-procedure.md); AWS Backup with Vault Lock ([backup module](../../Internal-IT/workloads/ayka-portal/modules/backup/)), added 2026-11-10 | Gated design (Terraform, plan-only) + simulated record [SIM-BCP-001](../records/simulated/continuity/SIM-BCP-001-restore-and-dr-tabletop.md) (restore tabletop). **The vault is in the workload account and nothing is copied to another account or Region, so "separate from the production account" is not met.** The restore-and-verify method ran once on a local PostgreSQL container ([REAL-INFRA-002](../records/real/infra/REAL-INFRA-002-restore-test-local-postgres.md)); no restore has been run against a real system |
 
 ### C-13 Exit
 
@@ -156,7 +156,7 @@ Ayka screens staff with access to customer data, binds them to confidentiality a
 
 | Maps to | Backing document | Status |
 |---|---|---|
-| Art. 21(2)(g), (i); Art. 20(2); §30(2) no. 7 and no. 9; §38(3) BSIG (applies to the customer's management, here by analogy) | [Training and awareness programme](../../organization/training-and-awareness.md); [NIS2-04](04-management-accountability.md); simulated records [SIM-NIS2-001](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md) and SIM-PPL-003 (baseline training, added 2026-11-10) | Simulated records only. Nothing real has been delivered |
+| Art. 21(2)(g), (i); Art. 20(2); §30(2) no. 7 and no. 9; §38(3) BSIG (applies to the customer's management, here by analogy) | [Training and awareness programme](../../organization/training-and-awareness.md); [NIS2-04](04-management-accountability.md); simulated records [SIM-NIS2-001](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md) and [SIM-PPL-003](../records/simulated/people/SIM-PPL-003-training-completion.md) (baseline training, added 2026-11-10) | Simulated records only. Nothing real has been delivered |
 
 ### C-15 Certification
 
@@ -180,14 +180,15 @@ Ayka states which certifications it holds. It currently holds none. ISO/IEC 2700
 
 ## 5. Facts added by parallel work on 2026-11-10 that this document relies on
 
-These were written by other work in the same session and are stated here for the owner to verify. None of it was applied to a cloud account.
+These were written by other work in the same session. They were checked against the files on 2026-11-10 (the file exists and says what is stated); a check of a file is not a check of a running system. None of it was applied to a cloud account, and no GitHub run of the new CI jobs exists.
 
-- Terraform for GuardDuty, Security Hub, Config, EventBridge alerts to SNS and AWS Backup with vault lock; Region `eu-central-1`; platform roots in the gate. Used in C-2, C-10, C-12.
+- Terraform for GuardDuty, Security Hub, Config, EventBridge alerts to SNS and AWS Backup with Vault Lock; Region `eu-central-1`; platform roots in the gate ([REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md), [REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md)). Used in C-2, C-10, C-12.
 - `.github/workflows/security-checks.yml`, `SECURITY.md`, `.well-known/security.txt`, `Governance/policies/vulnerability-disclosure-policy.md`. Used in C-9.
-- Simulated records SIM-INC-001, SIM-SUP-001, SIM-PPL-003, SIM-BCP-001, SIM-AUD-001, SIM-MR-001. Used in C-2 to C-4, C-7, C-8, C-12, C-14.
+- Simulated records [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md), [SIM-SUP-001](../records/simulated/supplier/SIM-SUP-001-annual-critical-supplier-review.md), [SIM-PPL-003](../records/simulated/people/SIM-PPL-003-training-completion.md), [SIM-BCP-001](../records/simulated/continuity/SIM-BCP-001-restore-and-dr-tabletop.md), [SIM-AUD-001](../records/simulated/audit/SIM-AUD-001-internal-audit-plan-2026.md), [SIM-MR-001](../records/simulated/management-review/SIM-MR-001-management-review-2026.md). Used in C-2 to C-4, C-7, C-8, C-12, C-14.
 
 ## Revision history
 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 1.0 | 2026-11-10 | CISO role (AI-drafted) | First template |
+| 1.1 | 2026-11-10 | CISO role (AI-drafted) | Placeholders SIM-INC-00x replaced by SIM-INC-004 and SIM-INC-005; C-2, C-9, C-10, C-12 checked against the files and corrected (C-12: vault is not in a separate account); record IDs and file paths linked |

@@ -13,7 +13,7 @@
 
 ## 1. Scenario
 
-Customer A (fictional) is an automotive Tier-2 manufacturer with about 180 staff. In the scenario it counts itself as an important entity under NIS2 and must assess its suppliers. During contract talks its procurement team sends Ayka a security questionnaire and a draft addendum. Ayka's Sales Manager forwards it to the CISO, who answers from the pre-filled response, and the Managing Director decides what Ayka will sign.
+Customer A (fictional) is an automotive Tier-2 manufacturer with about 180 staff. In the scenario it counts itself as an important entity under NIS2 and must assess its suppliers. Customer A is the same fictional customer as in [SIM-INC-001](../incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md) and [SIM-DSR-001](../privacy/SIM-DSR-001-access-and-erasure-request.md), which already had a pilot contract in August 2026 (scenario decision, added 2026-11-10 to remove a conflict between records). The talks of this record are about extending that relationship, and its procurement team sends Ayka a security questionnaire and a draft addendum. Ayka's Sales Manager forwards it to the CISO, who answers from the pre-filled response, and the Managing Director decides what Ayka will sign.
 
 No statement, score or decision of Customer A is invented here: the record covers only Ayka's side, up to sending the answers.
 
@@ -32,7 +32,7 @@ No statement, score or decision of Customer A is invented here: the record cover
 
 | Customer A asked | Ayka's answer | Status label sent |
 |---|---|---|
-| 12-hour incident notice | No; 24 hours from awareness | Designed (+ simulated record SIM-INC-001) |
+| 12-hour incident notice | No; 24 hours from awareness | Designed (+ simulated record [SIM-INC-001](../incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md)) |
 | Data in the EU | Target `eu-central-1`; no claim until deployed | Gated design |
 | MFA for all staff | No; switched off | Designed |
 | ISO/IEC 27001 | None held | Planned |

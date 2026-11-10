@@ -5,7 +5,7 @@
 | Document ID | SOC2-07 |
 | Owner | Cloud Platform Engineering, for the CISO |
 | Approver | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | Observation start | 2026-11-10 |
 | Next review | Monthly, at the monthly change review ([SOC2-08](08-control-designs.md#3-compensating-monthly-change-review-cm-05-g3)) |
 | Status | Draft. Started 2026-11-10. Simulated entity: the period is practice, not a SOC 2 period |
@@ -102,7 +102,7 @@ Reading of the baseline:
 |---|---|
 | Collected | 2026-11-10, repository owner, AI-assisted tool run |
 | `origin/main` | `3e6b06f`, committed 2026-10-14 17:20 +05:30. GitHub reported the same head (`gh api repos/<owner>/<repo>/commits/main`) |
-| Merges since 2026-10-14 | None. The October population is in REAL-SOC2-001 |
+| Merges since 2026-10-14 | None. The October population is in [REAL-SOC2-001](../records/real/soc2/REAL-SOC2-001-change-review-2026-10.md) |
 | Push runs since 2026-10-14 | None. Run 38559367091 is `waiting` |
 | Controls | CM-01 (no change reached `main` outside a pull request: none reached it at all), CM-02, CM-04 |
 
@@ -139,10 +139,12 @@ Controls: CM-02 and MO-01 on a developer machine (re-performance of the gate; th
 - A MEDIUM-path approval (CM-03): none occurred.
 - The `compliance-evidence-regression` artifact content (MO-01): listed, not downloaded.
 - Environment approval history for `manual-apply-approval`: not exported; needed to explain G14.
-- A copy of any artifact outside GitHub: none exists (G7).
+- A copy of any artifact outside GitHub: none exists (G7). The `evidence-archive` root is scanned but has no upload step.
+- Runs of the `Platform Gate`, `Platform Validate` and `Security Checks` jobs on GitHub: none. They exist in `test.yml` and `security-checks.yml` and ran only locally ([REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md), [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md)); they are not required checks, so they are not part of the observed controls in section 1.
 
 ## Revision history
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-11-10 | First issue. Baseline of 20 push runs, entries P-001 to P-003 |
+| 1.1 | 2026-11-10 | Section 7 lists the new CI jobs that have not run on GitHub and the archive without an upload step |

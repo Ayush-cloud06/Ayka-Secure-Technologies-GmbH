@@ -6,8 +6,8 @@
 | Owner | CISO |
 | Contributors | Cloud Platform Engineering, Head of Product |
 | Approver | Managing Director |
-| Version | 1.1 |
-| Prepared as of | 2026-10-06 |
+| Version | 1.2 |
+| Prepared as of | 2026-10-06; infrastructure statements revised 2026-11-10 |
 | Next review | Before engaging a service auditor, and at every significant system change |
 | Status | Draft. Not approved. Prepared for readiness; not part of any SOC 2 report |
 
@@ -36,14 +36,14 @@ Ayka's commitments are made in the Master Subscription Agreement, the Data Proce
 |---|---|
 | Security | Customer data is accessible only to the customer's authorised users and to Ayka personnel who need it to operate the service; administrative access is federated, role-based and requires MFA |
 | Security | Every infrastructure change is reviewed and passes automated security checks before release |
-| Security | Ayka notifies affected customers of a security incident affecting their data without undue delay, and in any case within 48 hours of confirming it, so customers can meet their own 72-hour GDPR Art. 33 deadline |
+| Security | Ayka notifies affected customers of a security incident affecting their data without undue delay, and in any case within 24 hours of becoming aware of it ([NIS2-03](../NIS2/03-incident-reporting-procedure.md)), so customers can meet their own 72-hour GDPR Art. 33 deadline |
 | Availability | Monthly availability target of 99.5 % for the web application, excluding announced maintenance |
 | Availability | Recovery point objective (RPO) of 24 hours and recovery time objective (RTO) of 8 hours for the production database ([BC/DR plan](../policies/business-continuity-and-disaster-recovery-plan.md)) |
 | Confidentiality | Customer data is encrypted in transit (TLS 1.2 or higher) and at rest (AWS KMS) |
 | Confidentiality | Customer data is processed and stored in the EU (AWS `eu-central-1`, Frankfurt) |
 | Confidentiality | Customer data is deleted within 30 days after contract end, and backups age out within a further 35 days |
 
-> **Not yet true.** The Terraform names `ap-south-1` (Mumbai), not `eu-central-1` ([`dev.tfvars`](../../Internal-IT/workloads/ayka-portal/envs/dev.tfvars), [`restrict-region.json`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json)). The EU residency commitment cannot be made until the Region moves (RISK-011 in the [risk register](../ISMS/03-risk-management/risk-register.md)). The contractual documents (MSA, DPA, security page) are not written; the table above is what they would say.
+> **Not yet true.** Since 2026-11-10 the Terraform names `eu-central-1` (Frankfurt) in every root and in the region SCP ([`dev.tfvars`](../../Internal-IT/workloads/ayka-portal/envs/dev.tfvars), [`restrict-region.json`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json); [REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md)). That proves the source, not where data is processed: nothing is deployed, the console-made Identity Center instance is in `ap-south-1` and must be re-created, and the residency decision (ADR-0003, G09) is open. The EU residency commitment cannot be made until a system runs there (RISK-011 in the [risk register](../ISMS/03-risk-management/risk-register.md)). The contractual documents (MSA, DPA, security page) are not written; the table above is what they would say.
 
 ### 2.2 System requirements
 
@@ -94,9 +94,12 @@ All production infrastructure is defined in Terraform. Nothing is configured by 
 
 | Component | Purpose | Defined in | Status |
 |---|---|---|---|
-| AWS Organization with Security, Infrastructure and Workloads OUs | Account separation | [`aws-organization/`](../../Internal-IT/platform/foundation/aws-organization/) | Designed |
-| Service control policies: deny root user actions, deny stopping or deleting CloudTrail, restrict Regions | Organization-wide guardrails | [`modules/scp/`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/) | Designed |
-| Landing zone: per-account CloudTrail (multi-Region, log file validation), protected trail bucket, S3 public access block, `security-alerts` SNS topic, permission boundary | Per-account baseline | [`landing-zone/`](../../Internal-IT/platform/foundation/landing-zone/) | Designed |
+| AWS Organization with Security, Infrastructure and Workloads OUs | Account separation | [`aws-organization/`](../../Internal-IT/platform/foundation/aws-organization/) | Gated design |
+| Service control policies: deny root user actions, deny stopping or deleting CloudTrail, restrict Regions | Organization-wide guardrails | [`modules/scp/`](../../Internal-IT/platform/foundation/aws-organization/modules/scp/) | Gated design |
+| Landing zone: per-account CloudTrail (multi-Region, log file validation), protected trail bucket, S3 public access block, `security-alerts` SNS topic, permission boundary | Per-account baseline | [`landing-zone/`](../../Internal-IT/platform/foundation/landing-zone/) | Gated design |
+| GuardDuty, Security Hub, AWS Config and five EventBridge alert rules publishing to `security-alerts` (e-mail subscription) | Detection | [`modules/detection/`](../../Internal-IT/platform/foundation/landing-zone/modules/detection/) | Gated design |
+| AWS Backup daily plan (35 days) with Vault Lock over the database and the data bucket; same account as the workload, no copy to another account or Region | Backup | [`modules/backup/`](../../Internal-IT/workloads/ayka-portal/modules/backup/) | Gated design |
+| Evidence archive: S3 bucket with Object Lock (COMPLIANCE, 548 days), dedicated KMS key, writer role for the pipeline; no workflow step uploads to it | Retention of CI evidence beyond 90 days | [`evidence-archive/`](../../Internal-IT/platform/foundation/evidence-archive/) | Gated design |
 | VPC across availability zones with public, private and database subnets; VPC flow logs to CloudWatch (365 days) | Network isolation | [`modules/networking/`](../../Internal-IT/workloads/ayka-portal/modules/networking/) | Gated design |
 | Internet-facing ALB with an HTTPS listener (`ELBSecurityPolicy-TLS13-1-2-2021-06`), deletion protection, and an AWS WAF web ACL with AWS managed rule groups; WAF logs kept 365 days | Edge protection | [`modules/compute/alb.tf`](../../Internal-IT/workloads/ayka-portal/modules/compute/alb.tf) | Gated design |
 | ECS Fargate service with CPU target-tracking autoscaling | Application runtime | [`modules/compute/`](../../Internal-IT/workloads/ayka-portal/modules/compute/) | Gated design |
@@ -232,3 +235,4 @@ Not applicable: no report period has started. For a Type II report this section 
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue, readiness draft |
 | 1.1 | 2026-10-14 | Say the carve-out review has not happened. CC6.4 is not treated as met |
+| 1.2 | 2026-11-10 | Customer notice commitment is 24 hours of awareness (NIS2-03). Region paragraph restated: source moved to `eu-central-1`, nothing deployed. Platform roots are Gated design (local run REAL-INFRA-001, jobs not yet run on GitHub); detection, backup and evidence archive rows added |

@@ -113,7 +113,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Processing | Store and display customer users' accounts and the compliance evidence they upload |
 | Data categories | Customer user name, e-mail, role; any personal data inside uploaded evidence |
 | Sub-processors | AWS; see [processor register](processor-register.md) |
-| Third-country transfer | None intended (`eu-central-1`); an applied root naming `ap-south-1` would be a transfer to India ([`dev.tfvars`](../../Internal-IT/workloads/ayka-portal/envs/dev.tfvars); Region of the source: see the [GDPR index](README.md#region)) |
+| Third-country transfer | None intended. The Terraform names `eu-central-1` ([`dev.tfvars`](../../Internal-IT/workloads/ayka-portal/envs/dev.tfvars); see the [GDPR index](README.md#region)). Only the console-made Identity Center instance is in `ap-south-1`; if it held personal data that would be a transfer to India, so it must be re-created in `eu-central-1` first |
 | TOMs | Storage, network and encryption controls that the gate checks on the Terraform plan (Implemented at plan time; nothing deployed), in [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml) |
 
 ## 4. Gaps
@@ -122,7 +122,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 2. [POL-RET-01](../policies/records-and-data-retention-policy.md) now proposes periods. They are not approved. The only configured retention this record relies on is GitHub's 90-day artifact setting. No activity has an implemented deletion job.
 3. Legal bases are reviewed in the [legal-basis register](dpo-and-legal-basis.md) by the repository owner with AI assistance. No counsel has reviewed them.
 4. PA-03 and PP-01 make no EU-location claim while nothing is applied; see the [GDPR index](README.md#region).
-5. PA-05 and PA-06 were missing in version 1.0 and were found by the walk-through in SIM-GDPR-002. Recruitment applicants (HR support role in the personnel register) are still not covered.
+5. PA-05 and PA-06 were missing in version 1.0 and were found by the walk-through in [SIM-GDPR-002](../records/simulated/privacy/SIM-GDPR-002-ropa-annual-review.md). Recruitment applicants (HR support role in the personnel register) are still not covered.
 
 ## 5. Review
 

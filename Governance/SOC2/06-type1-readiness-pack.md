@@ -5,7 +5,7 @@
 | Document ID | SOC2-06 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | As-of date | 2026-11-10 |
 | Next review | Before the auditor is engaged, and at each re-assessment of [SOC2-04](04-readiness-assessment.md) |
 | Status | Draft. Not approved. Walk-through for a fictional entity |
@@ -22,7 +22,7 @@ A Type I report gives an opinion on whether management's description of the syst
 - **where the evidence is**; and
 - the **expected result today**.
 
-The matrix status used is that of version 1.3 (2026-11-10). Fourteen controls are Simulated operation there; they still **fail** here, because a tabletop is not an instance (section 2). Evidence cited as "run artifacts" comes from the GitHub Actions runs listed in the [observation period log](07-observation-period-log.md).
+The matrix status used is that of version 1.4 (2026-11-10). Fourteen controls are Simulated operation there; they still **fail** here, because a tabletop is not an instance (section 2). Evidence cited as "run artifacts" comes from the GitHub Actions runs listed in the [observation period log](07-observation-period-log.md).
 
 ## 2. How the expected result is decided
 
@@ -76,7 +76,7 @@ All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA
 | RA-01 | Risk register reviews in the period | Latest review | Inspection of the dated review and management approval | [Risk register](../ISMS/03-risk-management/risk-register.md) | **fail**: no management approval and the scheduled review of 2026-09-30 is recorded as overdue |
 | RA-02 | Annual assessments | Current assessment | Inspection of the approved assessment and the check records | [Assessment](../policies/fraud-and-insider-risk-assessment.md) | **fail**: draft, not approved, no check has run |
 | RA-03 | Significant changes in the period | 1 change | Inspection of the trigger list and the review before go-live | Risk review records | **fail**: no trigger list; no production release |
-| RA-04 | Entries in `exceptions.yaml` (13) | 2 entries | Inspection for reason, owner and expiry; re-performance: run the evaluator tests with an expired entry | `exceptions.yaml`; `tests/compliance/test_evaluate_results.py`; the report section Excepted Findings | **pass**: all 13 entries have an expiry (2027-03-31); a test shows an expired entry counts again |
+| RA-04 | Entries in `exceptions.yaml` (111, five roots) | 2 entries | Inspection for reason, owner and expiry; re-performance: run the evaluator tests with an expired entry | `exceptions.yaml`; `tests/compliance/test_evaluate_results.py`; the report section Excepted Findings | **pass**: all 111 entries have a reason, an owner and an expiry (21 dates from 2027-01-08 to 2027-11-26); a test shows an expired entry counts again. Caveat: 8 entries expire after 2027-11-10, more than 12 months out, which the monthly review criterion in SOC2-08 section 3.3 would query |
 
 ### Monitoring activities (MO)
 
@@ -104,7 +104,7 @@ All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA
 | AC-05 | Permission sets | Platform administrator set | Inspection of session duration | Identity Center | **cannot test**: not applied |
 | AC-06 | Joiners and leavers in the period | 2 joiners, 2 leavers | Inspection of tickets and identity change commits; compare dates | Ticket system; Git | **fail**: no tickets, no events |
 | AC-07 | Quarterly access reviews | Latest quarter | Inspection of the review record, counts and removals | Access review record | **fail**: no review performed; the collaborator list was never reviewed |
-| AC-08 | Uses of break-glass and the SCP | 1 use (or a test) and the SCP | Inspection of the SCP and the role trust policy; inquiry about the 24-hour review | AWS Organizations; CloudTrail | **cannot test**: not deployed; the alert does not exist |
+| AC-08 | Uses of break-glass and the SCP | 1 use (or a test) and the SCP | Inspection of the SCP and the role trust policy; inquiry about the 24-hour review | AWS Organizations; CloudTrail | **cannot test**: not deployed; the alert exists only as Terraform (Gated design) and has never fired |
 | AC-09 | Repository settings and collaborators | The ruleset and the CODEOWNERS file | Inspection of the ruleset export; observation that a direct push is refused | GitHub ruleset 24482491; `.github/CODEOWNERS` | **pass**: ruleset active since 2026-10-05 with the five required checks |
 | AC-10 | Network resources | 1 VPC, the NACLs and the security groups | Inspection of the deployed network; re-performance of the four gate rules | AWS; gate report | **cannot test**: network is gated design only |
 | AC-11 | Public entry points | The ALB | Inspection of the WAF association and rule groups | AWS WAF | **cannot test**: not deployed |
@@ -120,11 +120,11 @@ All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA
 
 | ID | Population | Sample | Test procedure | Where the evidence is | Expected result today |
 |---|---|---|---|---|---|
-| OP-01 | Runs of the gate | 1 run | Inspection of the compliance summary; re-performance with `run-local-chain.sh` | Run artifacts; local `output/` (not committed) | **pass**: holds for `ayka-portal`; the platform roots are outside the scan (G12) |
+| OP-01 | Runs of the gate | 1 run | Inspection of the compliance summary; re-performance with `run-local-chain.sh` | Run artifacts; local `output/` (not committed) | **pass**: holds for `ayka-portal`. The platform roots are scanned by a job that has not run on GitHub and is not a required check (G12); an auditor would see a local run only |
 | OP-02 | Weekly scan reports | 5 weeks | Inspection of reports and ticket ageing | Scanner output; tickets | **fail**: only infrastructure code is scanned today |
 | OP-03 | Accounts and Regions | 1 account | Inspection of the trail and log file validation | CloudTrail | **cannot test**: not deployed |
 | OP-04 | Log groups and buckets | 3 log sources | Inspection of retention settings | AWS | **cannot test**: gated design; not deployed |
-| OP-05 | Alert rules | Each rule and its test | Inspection of the rule; observation of a test alert | EventBridge; GuardDuty | **cannot test**: not deployed; the Terraform has no publisher to the topic |
+| OP-05 | Alert rules | Each rule and its test | Inspection of the rule; observation of a test alert | EventBridge; GuardDuty | **cannot test**: not deployed. The Terraform has five rules (ALR-01 to ALR-05) and an e-mail subscription; ALR-06, ALR-07 and ALR-09 and any paging do not exist |
 | OP-06 | Incidents in the period | 1 incident | Inspection of the ticket timeline against the plan | Incident tickets | **fail**: no incident handled; the plan is not approved |
 | OP-07 | Severity 2+ incidents and annual exercises | 1 | Inspection of the post-incident review | Review record | **fail**: no exercise held |
 | OP-08 | Daily drift runs | 20 days | Inspection of workflow runs | Drift workflow runs | **cannot test**: manual and refuses without a remote backend; nothing deployed to drift |
@@ -155,7 +155,7 @@ All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA
 |---|---|---|---|---|---|
 | AV-01 | Capacity controls | The autoscaling target, quotas, budgets | Inspection of settings | AWS | **cannot test**: not deployed |
 | AV-02 | Database and load balancer | Both | Inspection of Multi-AZ and the subnets | AWS | **cannot test**: not deployed |
-| AV-03 | Backups and bucket versions | The RDS backup and 1 bucket | Inspection of retention and deletion protection | AWS | **cannot test**: not deployed |
+| AV-03 | Backups and bucket versions | The RDS backup and 1 bucket | Inspection of retention and deletion protection | AWS | **cannot test**: not deployed; AWS Backup and Vault Lock are Terraform only, in the workload account |
 | AV-04 | Restore tests | Latest quarter | Inspection of the test record with measured RPO and RTO | Restore test record | **cannot test**: no database to restore |
 | AV-05 | Monthly availability reports | Latest 3 months | Inspection of probe configuration and reports | Monitoring service | **cannot test**: nothing to monitor |
 
@@ -163,7 +163,7 @@ All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA
 
 | ID | Population | Sample | Test procedure | Where the evidence is | Expected result today |
 |---|---|---|---|---|---|
-| CO-01 | Data stores | 3 resources | Inspection of the `DataClassification` tag | Terraform; AWS | **fail**: no Terraform sets the tag |
+| CO-01 | Data stores | 3 resources | Inspection of the `DataClassification` tag | Terraform; AWS | **fail**: a manual control under an unapproved policy (G9) with no operating instance. Provider `default_tags` now set the tag in every AWS root, but no resource is deployed and no rule requires it |
 | CO-02 | Buckets | All buckets | Inspection of public access block; re-performance of `S3_PUBLIC_ACCESS` | AWS; gate report | **cannot test**: buckets not deployed; the rule alone would pass |
 | CO-03 | Personnel with access | 3 people | Compare NDA date with first access date | NDA index (private) | **fail**: no agreement executed |
 | CO-04 | Contract ends | 1 | Inspection of the deletion ticket and written confirmation | Ticket system | **fail**: no customer has left |
@@ -189,7 +189,7 @@ We confirm, to the best of our knowledge and belief, that:
 
 | Statement | Position |
 |---|---|
-| 1. The description fairly presents the system that was implemented | **False today.** The system is not deployed; the Region in some Terraform roots differs from the stated commitment (G2); the description is a design |
+| 1. The description fairly presents the system that was implemented | **False today.** The system is not deployed; the Terraform Region now matches the stated commitment (`eu-central-1`) but nothing runs there, and the console-made Identity Center instance is in `ap-south-1` (G2); the description is a design |
 | 2. The controls were suitably designed | Partly true for the CI controls. Not shown for the 20 controls that cannot be tested. Segregation of duties in change management is not designed to be met (CM-05) |
 | 3. The controls were implemented | True for 13 controls (section 3). Not true for 32 and not testable for 20 |
 
@@ -236,3 +236,4 @@ These are the customer-side controls of [SOC2-01, section 6](01-system-descripti
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-11-10 | First issue |
+| 1.1 | 2026-11-10 | Matrix 1.4: counts stay 13 pass, 32 fail, 20 cannot test (CO-01 stays fail: manual control, unapproved policy, no instance). RA-04 recounted (111 entries); OP-01, OP-05, AC-08, AV-03 notes updated |

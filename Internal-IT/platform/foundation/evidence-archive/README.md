@@ -13,7 +13,7 @@ Closes the design half of SOC 2 readiness gap G7: GitHub keeps CI artifacts for 
 | Write path | Role `evidence-archive-writer`, assumed through GitHub OIDC from `refs/heads/main` only; `s3:PutObject` under `runs/` and nothing else. The bucket policy denies `PutObject` to every other principal |
 
 Not built:
-- No workflow step uploads to the bucket. The pipeline has no OIDC permission today and plan-only CI stays credential-free (ADR-0013); adding the upload is a separate change.
+- No workflow step uploads to the bucket. The pipeline has no OIDC permission today and plan-only CI stays credential-free (root README, "No cloud credentials in plan-only CI"); adding the upload is a separate change.
 - No server access logging or replication for this bucket (see `exceptions.yaml`).
 - A COMPLIANCE-mode lock cannot be undone. Applying this in a test account creates objects that nobody can delete for 18 months.
 

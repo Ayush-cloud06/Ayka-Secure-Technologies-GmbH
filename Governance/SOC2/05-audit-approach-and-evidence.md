@@ -5,7 +5,7 @@
 | Document ID | SOC2-05 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | 2026-11-10 |
 | Next review | Before the auditor is engaged |
 | Status | Draft. Not approved |
@@ -57,13 +57,13 @@ Automated controls (for example CA-02 fail-closed evaluation, CM-03 severity rou
 
 | Evidence | System of record | Retention needed | Today |
 |---|---|---|---|
-| CI evidence bundles (`compliance-evidence`) | GitHub Actions artifacts | Period + 12 months (18 months minimum) | 90 days: gap G7. The artifacts of the runs of 2026-10-05 expire on 2027-01-03 (read from the GitHub API on 2026-11-10). Plan: copy to an S3 bucket with Object Lock in compliance mode; the Terraform design is plan-only |
+| CI evidence bundles (`compliance-evidence`) | GitHub Actions artifacts | Period + 12 months (18 months minimum) | 90 days: gap G7. The artifacts of the runs of 2026-10-05 expire on 2027-01-03 (read from the GitHub API on 2026-11-10). Plan: copy to an S3 bucket with Object Lock in compliance mode. The `evidence-archive` root is written and scanned (local run [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md)); no workflow step copies to it, so the gap is open |
 | Pull requests, reviews, approvals | GitHub | Life of the repository | Kept |
 | Environment approval history | GitHub deployments | Period + 12 months | Kept by GitHub; export each quarter |
 | Ruleset configuration | GitHub | Change history over the period | Export at start, end and on every change |
-| CloudTrail logs | S3 trail bucket | 1 year online, 6 years archive (HGB/AO for business records where relevant) | Designed only |
+| CloudTrail logs | S3 trail bucket | 1 year online, 6 years archive (HGB/AO for business records where relevant) | Gated design (`landing-zone` scanned locally); not deployed |
 | Access reviews, vendor reviews, restore tests, incident records | Evidence tracker | Period + 12 months, then per the retention policy | No real record. Tabletop walk-throughs only, which do not count |
-| Monthly change review | `Governance/records/real/soc2/` | Period + 12 months | One record: REAL-SOC2-001 (October 2026), reviewer equals author |
+| Monthly change review | `Governance/records/real/soc2/` | Period + 12 months | One record: [REAL-SOC2-001](../records/real/soc2/REAL-SOC2-001-change-review-2026-10.md) (October 2026), reviewer equals author |
 
 ## 7. Record templates
 
@@ -184,3 +184,4 @@ At the end of fieldwork the Managing Director signs a representation letter for 
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
 | 1.1 | 2026-11-10 | Add templates 7.6 (self-assessment workpaper), 7.7 (monthly change review) and 7.8 (device wipe certificate). State the ADR-0006 record stores. Record the real artifact expiry (2027-01-03) for gap G7 |
+| 1.2 | 2026-11-10 | Evidence sources table: archive root scanned, copy step missing; CloudTrail row Gated design |

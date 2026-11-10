@@ -5,7 +5,7 @@
 | Document ID | SOC2-08 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | 2026-11-10 |
 | Next review | With each change to a control in the [control matrix](03-control-matrix.md) |
 | Status | Draft. Not approved |
@@ -14,7 +14,7 @@
 
 ## 1. Purpose and how to read it
 
-Until 2026-11-10, 19 controls in the [control matrix](03-control-matrix.md) were **Planned**: no design existed for them. This document gives each of them a specific design, or points to the document that holds it. With a design in place the matrix status becomes **Designed** (written down, not gated, not deployed). Nothing here moves a control to **Implemented**.
+Until 2026-11-10, 19 controls in the [control matrix](03-control-matrix.md) were **Planned**: no design existed for them. This document gives each of them a specific design, or points to the document that holds it. With a design in place the matrix status became **Designed** (written down, not deployed); some have since become Gated design when their Terraform was scanned (matrix 1.4). Nothing here moves a control to **Implemented**.
 
 Each design states what the control does, who operates it and when, which record it leaves, and the test that decides whether it is *operating*, which is what a Type II auditor would sample. The tests are repeated per control in the [Type I readiness pack](06-type1-readiness-pack.md).
 
@@ -76,7 +76,7 @@ Control CM-05 says the person who approves a change is not its author. The repos
 
 ### 3.5 Honest limit
 
-A review run by the author is a log, not a control with separation of duties. It shows that an independent reviewer could do the same in an hour. The first instance, REAL-SOC2-001 (October 2026, performed 2026-11-10), was run by the repository owner with a tool and states this limit. Improvement that needs the owner: ask a trusted outside person, such as a peer engineer under a confidentiality agreement, to read the monthly record and the sensitive-path diffs. Until then CM-05 stays **Designed**.
+A review run by the author is a log, not a control with separation of duties. It shows that an independent reviewer could do the same in an hour. The first instance, [REAL-SOC2-001](../records/real/soc2/REAL-SOC2-001-change-review-2026-10.md) (October 2026, performed 2026-11-10), was run by the repository owner with a tool and states this limit. Improvement that needs the owner: ask a trusted outside person, such as a peer engineer under a confidentiality agreement, to read the monthly record and the sensitive-path diffs. Until then CM-05 stays **Designed**.
 
 ## 4. Access, devices and vulnerabilities
 
@@ -87,7 +87,7 @@ A review run by the author is a log, not a control with separation of duties. It
 | AC-16 Managed company laptops | The baseline in the [user endpoint device policy](../policies/user-endpoint-device-policy.md), section 3. A device-management product is chosen against four criteria: it reports disk encryption, screen lock, endpoint protection health and patch level per device with a timestamp; it can revoke sessions and wipe; it integrates with the Entra Conditional Access device-compliance signal; it exports the report. Cloud Platform Engineering exports the compliance report monthly. A device that fails for more than five days loses access to Confidential data | Cloud Platform Engineering; monthly | Monthly device compliance report (device ID, timestamp, expected baseline, pass or fail) | Every inventoried device has a passing reading from the last 30 days, or an exception with an expiry within 90 days |
 | AC-18 Laptop wipe before reuse or disposal | Under section 4 of the same policy, a wipe is done by cryptographic erase (destroy the disk key) or the vendor's secure erase, then verified by attempting to read the disk. The certificate has asset ID, method, performer, date, verification, and disposal or reuse destination ([SOC2-05, section 7.8](05-audit-approach-and-evidence.md#78-device-wipe-certificate-ac-18)). Provider-side destruction of production media stays carved out to AWS (AC-17) | IT Support; per disposal or reuse | Wipe certificate | Every device that left company custody or was reissued in the period has a certificate dated before it left |
 | OP-02 Vulnerability scanning of software and the running environment | Scan sources: dependency audit and static analysis in CI for this repository's own code, image scanning in the registry (AC-15), Amazon Inspector for running compute, and provider advisories. Findings are ticketed with severity and a due date from the [vulnerability policy](../policies/vulnerability-and-patch-management-policy.md): critical 7 days, high 30, medium 90. Security Operations reports open and overdue counts monthly. The portal application does not exist in this repository, so today the scope is the repository's own tooling | Product and Engineering for fixing; Security Operations for the report; weekly and per build | Scan reports; ticket list with ageing; monthly report | Every scan source has a report for each week of the period, and no critical or high finding is older than its target without an exception |
-| OP-05 Security alerting | Rules ALR-01 to ALR-07 and ALR-09 of the [logging and monitoring standard](../policies/logging-and-monitoring-standard.md), section 6, are deployed as EventBridge rules, GuardDuty configuration and CloudWatch alarms publishing to the `security-alerts` SNS topic, which pages the on-call engineer. Each rule has a test: perform the triggering action in a sandbox, record the time to alert and who acknowledged. ALR-08 (GitHub audit log) is replaced by the monthly drift check in section 3.3 step 4. Alerts have a ticket, and Security Operations reviews a monthly summary | Security Operations; continuous, test at creation and yearly | Rule configuration; test record per rule; alert tickets | Every rule has a configuration, a test record younger than 12 months, and each alert in the sample has an acknowledged ticket inside its severity's response time |
+| OP-05 Security alerting | Rules ALR-01 to ALR-07 and ALR-09 of the [logging and monitoring standard](../policies/logging-and-monitoring-standard.md), section 6, are deployed as EventBridge rules, GuardDuty configuration and CloudWatch alarms publishing to the `security-alerts` SNS topic (the Terraform in `landing-zone/modules/detection` covers ALR-01 to ALR-05 only; ALR-06, ALR-07 and ALR-09 are not written), which pages the on-call engineer. Each rule has a test: perform the triggering action in a sandbox, record the time to alert and who acknowledged. ALR-08 (GitHub audit log) is replaced by the monthly drift check in section 3.3 step 4. Alerts have a ticket, and Security Operations reviews a monthly summary | Security Operations; continuous, test at creation and yearly | Rule configuration; test record per rule; alert tickets | Every rule has a configuration, a test record younger than 12 months, and each alert in the sample has an acknowledged ticket inside its severity's response time |
 
 ## 5. Availability and vendors
 
@@ -102,3 +102,4 @@ A review run by the author is a log, not a control with separation of duties. It
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-11-10 | First issue: designs for the 19 controls that were Planned, and the compensating monthly change review for G3 |
+| 1.1 | 2026-11-10 | Status wording follows matrix 1.4; OP-05 design notes which rules have Terraform |

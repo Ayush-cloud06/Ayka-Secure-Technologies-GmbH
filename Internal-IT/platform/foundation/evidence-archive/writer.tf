@@ -1,6 +1,6 @@
 # Writer role for the pipeline, assumed through GitHub OIDC from main only.
 # Design only: no workflow in .github/ requests an OIDC token today, and plan-only
-# CI keeps using mock credentials (ADR-0013). Wiring the upload step is a separate change.
+# CI keeps using mock credentials (README, "No cloud credentials in plan-only CI"). Wiring the upload step is a separate change.
 
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"

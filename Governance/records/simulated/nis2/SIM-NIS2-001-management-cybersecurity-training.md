@@ -57,4 +57,4 @@ These findings concern the procedure in the repository and are true of it; they 
 - That an external provider's syllabus matches the four topics; no provider or syllabus was checked.
 - That the knowledge of the Managing Director improved; no test was run.
 - Compliance with §38(3) BSIG, which does not bind Ayka.
-- Anything about the baseline awareness training of all staff, which is the subject of SIM-PPL-003 (a separate record).
+- Anything about the baseline awareness training of all staff, which is the subject of [SIM-PPL-003](../people/SIM-PPL-003-training-completion.md) (a separate record).

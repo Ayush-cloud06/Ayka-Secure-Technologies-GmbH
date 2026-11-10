@@ -1,4 +1,4 @@
-# Accepted findings (ADR-0014). One entry per finding you decided not to fix.
+# Accepted findings. One entry per finding you decided not to fix.
 # The evaluator reports matches under "excepted_findings"; they never count toward the decision.
 # An entry past its expiry date stops matching, and the finding counts again.
 # Never lower a control's severity to get green: record the decision here instead.

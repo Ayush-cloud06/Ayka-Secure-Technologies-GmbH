@@ -5,7 +5,7 @@
 | Document ID | NIS2-09 |
 | Organization | Ayka Secure Technologies GmbH, Stuttgart (simulated case study) |
 | Owner | Compliance Officer (Regulatory Reporting) |
-| Version | 1.0 |
+| Version | 1.1 |
 | Date | 2026-11-10 |
 | Status | Draft. **Not submitted. Not required.** |
 | Classification | Internal |
@@ -41,7 +41,7 @@ Not verified in this session: the portal's actual form fields, whether §33 and 
 | 10 | Member States where services are provided | §33(1) no. 4; §34(1) no. 5 | Germany. Further EU states: **unknown**, no customer exists | Placeholder |
 | 11 | Competent supervisory authorities | §33(1) no. 5 | BSI for the NIS2 duties; the data protection authority is LfDI Baden-Wuerttemberg (GDPR, not part of the NIS2 registration list). Sector regulators for the activities: not determined | Open |
 | 12 | Headcount and size class (not a field in the list read, but the BSI will test it) | §28(2) no. 3 | 24 staff; small enterprise. Turnover and balance sheet not recorded | See NIS2-08 |
-| 13 | Account for the portal | NIS2-01 section 8 | Not requested. Lead time said to be days to weeks (NIS2-01); not verified | Not started |
+| 13 | Account for the portal | NIS2-01 section 8 | Not requested. NIS2-01 1.0 said an ELSTER certificate takes days to weeks by post; that was not verified and NIS2-01 1.1 marks the sign-in method "to verify" | Not started |
 
 ## 3. What would block a real registration today
 
@@ -58,3 +58,4 @@ Trigger T-1 in NIS2-01 section 7 (40 AWU) starts the preparation: request the po
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 1.0 | 2026-11-10 | Compliance Officer role (AI-drafted) | First dry run |
+| 1.1 | 2026-11-10 | Compliance Officer role (AI-drafted) | Row 13 follows NIS2-01 1.1 (sign-in method to verify) |

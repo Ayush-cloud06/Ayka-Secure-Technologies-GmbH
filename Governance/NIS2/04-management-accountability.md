@@ -34,7 +34,7 @@ Delegation: the Managing Director can delegate the work (to the CISO, to enginee
 
 | Duty | Status | Basis |
 |---|---|---|
-| Approve measures | Designed | The policy and NIS2-02 exist; no approval record. A management review is walked through in simulated record SIM-MR-001 (scenario 2026-10-26), added 2026-11-10 |
+| Approve measures | Designed | The policy and NIS2-02 exist; no approval record. A management review is walked through in simulated record [SIM-MR-001](../records/simulated/management-review/SIM-MR-001-management-review-2026.md) (scenario 2026-10-26), added 2026-11-10 |
 | Oversee implementation (quarterly report) | Designed | The report format is described in section 3; no report exists |
 | Train regularly | Simulated operation | [SIM-NIS2-001](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md), scenario 2026-04-20. Nobody has attended a real course |
 | Keep records | Designed | The templates in section 5; section 5.2 has one filled walk-through, not a real entry |

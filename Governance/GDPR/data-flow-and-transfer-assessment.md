@@ -5,7 +5,7 @@
 | Document ID | GDPR-06 |
 | Owner | Compliance & Risk Management |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when a processor, Region or personal-data flow changes |
 | Status | Draft. Not approved. Chapter V position selected as a design decision. Certification and contract terms are to verify. Not legal advice |
@@ -14,7 +14,7 @@ Ayka Secure Technologies GmbH is a simulated company. This record draws the flow
 
 ## 1. How to read the map
 
-Solid lines are processing that happens now. Dashed lines are design. The target Region for personal data that Ayka intends to host is `eu-central-1` ([ADR-0003](../ADR/0003-target-region.md)). What the Terraform source names is stated once, in the [Region section of the GDPR index](README.md#region). If any root still named `ap-south-1` it would not match the target (RISK-011).
+Solid lines are processing that happens now. Dashed lines are design. The target Region for personal data that Ayka intends to host is `eu-central-1` ([ADR-0003](../ADR/0003-target-region.md)). What the Terraform source names is stated once, in the [Region section of the GDPR index](README.md#region). No Terraform root names `ap-south-1` since 2026-11-10; only the console-made Identity Center instance does (RISK-011).
 
 ```mermaid
 flowchart LR
@@ -65,7 +65,7 @@ Chapter V (Art. 44 to 49) applies to a transfer to a controller or processor in 
 | Microsoft (SUP-02), Microsoft Corp. | DF-03 | Data held in the EU Data Boundary where the tenant is in the EU. Remote access or non-EU processing outside the boundary: Art. 45 DPF if certified | Art. 46(2)(c) SCCs in the Microsoft Products and Services DPA | **To verify**: DPF certification, which Entra ID data stays in the boundary, support access. Lab tenant holds no real staff data |
 | GitHub (SUP-03), GitHub, Inc. | DF-01, DF-02 | Art. 45 DPF if GitHub, Inc. is certified. This flow is real now | Art. 46(2)(c) SCCs: module 1 (controller to controller) is the likely fit for a personal account that is governed by the GitHub Privacy Statement; module 2 or 3 if an organization plan with the GitHub DPA is later used | **To verify**: certification, which GitHub terms govern the repository owner's account, whether SCCs are incorporated for that account type |
 
-What the providers' public pages offer, as read in REAL-SUP-001 (second-hand extracts, 2026-11-10): AWS says its DPA applies the SCCs automatically and does not mention the DPF; Microsoft offers SCCs through its data protection terms and its page does not mention the DPF; GitHub's Data Protection Agreement includes the SCCs and lists DPF participation as an alternative basis subject to self-certification. The DPF participant list was opened and showed no data, so no listing was retrieved (open item REAL-SUP-001-O3). Consequence: until O3 is done, the only route with a documented offer for all three is the SCCs. Ayka does not rely on Art. 45 for any of them yet. The primary position stays "DPF where certified" and flips from conditional to relied-on supplier by supplier as the list is checked.
+What the providers' public pages offer, as read in [REAL-SUP-001](../records/real/supplier/REAL-SUP-001-supplier-attestations.md) (second-hand extracts, 2026-11-10): AWS says its DPA applies the SCCs automatically and does not mention the DPF; Microsoft offers SCCs through its data protection terms and its page does not mention the DPF; GitHub's Data Protection Agreement includes the SCCs and lists DPF participation as an alternative basis subject to self-certification. The DPF participant list was opened and showed no data, so no listing was retrieved (open item REAL-SUP-001-O3). Consequence: until O3 is done, the only route with a documented offer for all three is the SCCs. Ayka does not rely on Art. 45 for any of them yet. The primary position stays "DPF where certified" and flips from conditional to relied-on supplier by supplier as the list is checked.
 
 No supplier is assessed on an assumption that an adequacy decision remains valid. The position is written so it survives either outcome: the fallback is named now, not after a ruling.
 
@@ -88,7 +88,7 @@ Scope: DF-01 (real), and DF-03 to DF-05 if the fallback is ever needed. A full a
 
 ### 3.5 India (`ap-south-1`)
 
-There is no adequacy decision for India that this document relies on (**to verify**). A root that named `ap-south-1` and was applied with personal data would be a transfer to a third country needing Art. 46 safeguards and a transfer assessment, and none is prepared. It is not authorised. The approved direction is the target `eu-central-1`. This document creates no exception.
+There is no adequacy decision for India that this document relies on (**to verify**). A resource in `ap-south-1` that held personal data, such as the console-made Identity Center instance, would be a transfer to a third country needing Art. 46 safeguards and a transfer assessment, and none is prepared. It is not authorised. The approved direction is the target `eu-central-1`. This document creates no exception.
 
 ## 4. Status
 
@@ -100,3 +100,4 @@ Designed. The map is written and a Chapter V position is selected per supplier. 
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-11-10 | Chapter V position selected per supplier; transfer impact assessment added; Region fact moved to the GDPR index |
+| 1.2 | 2026-11-10 | Region wording follows the moved source: no root names `ap-south-1`, only the Identity Center instance |

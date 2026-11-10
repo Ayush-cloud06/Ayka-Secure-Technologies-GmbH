@@ -7,7 +7,7 @@
 | Owner | CISO |
 | Prepared by | Compliance Officer (Regulatory Reporting) |
 | Decision by | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Assessment date | 2026-10-06 |
 | Next scheduled review | 2027-04-06, or earlier on any trigger in section 7 |
 | Status | Draft. Not approved: no decision record exists (section 9). |
@@ -45,7 +45,7 @@ The indirect route is the one that matters commercially. Ayka sells to automotiv
 | Commission Implementing Regulation (EU) 2024/2690 | Technical requirements and significant-incident thresholds for cloud computing service providers, MSPs and MSSPs. Applies directly once Ayka is in scope |
 | Commission Recommendation 2003/361/EC | How employees, turnover and balance sheet are counted (§28 BSIG refers to it) |
 
-The German text of §28 BSIG was read from a secondary publication of the statute, not from the official gazette. Check it against the BGBl. version before relying on any single sentence of this document in a dispute.
+The German text of §28 BSIG was first read from a secondary publication. On 2026-11-10 it was also read on the federal publisher's site (gesetze-im-internet.de, `bsig_2025`), and §28(1) no. 4, (2) no. 3, (3) and (4) match this document ([NIS2-08](08-applicability-reassessment-2026-11.md), section 5). That site is still not the BGBl. gazette: check the BGBl. version before relying on any single sentence of this document in a dispute.
 
 ### 2.2 Facts about Ayka
 
@@ -99,7 +99,7 @@ Counting rules to apply at every check:
 
 - Count AWU, not heads: part-time staff and seasonal workers count pro rata; apprentices and students in vocational training do not count; staff on parental leave do not count.
 - AWU is the **annual average** for the reference year, taken from the last approved annual accounts, not the headcount on a given day. Ayka, founded in 2026, has no approved accounts yet; until it does, the figures are a good-faith estimate made during the financial year (Recommendation Annex Art. 4(3)).
-- §28(4) BSIG applies the Recommendation in full except Annex Art. 3(4) (public bodies). So the two-year rule of Annex Art. 4(2) applies: Ayka loses small-enterprise status only when the thresholds are exceeded in **two consecutive** financial years. Hiring the 50th employee does not by itself bring Ayka into scope. Legal scope is determined from the annual figures; the 40-AWU trigger below is for preparation only.
+- §28(4) BSIG applies the Recommendation in full except Annex Art. 3(4) (public bodies). So the two-year rule of Annex Art. 4(2) applies (**to verify**: Art. 4(2) was not re-read on 2026-11-10, [NIS2-08](08-applicability-reassessment-2026-11.md) section 3): Ayka loses small-enterprise status only when the thresholds are exceeded in **two consecutive** financial years. Hiring the 50th employee does not by itself bring Ayka into scope. Legal scope is determined from the annual figures; the 40-AWU trigger below is for preparation only.
 - Linked enterprises (more than 50 % control) and partner enterprises (25 to 50 %) are normally aggregated. §28(4) BSIG makes an exception: their data are not added if Ayka is independent of them in the nature and operation of its IT systems, components and processes, judged on the legal, economic and actual circumstances. A future investment round is therefore a reason to reassess (trigger T-3), not an automatic change of class.
 
 **Step 2 result:** small enterprise. Out of scope.
@@ -138,7 +138,7 @@ The review is scheduled every six months. Each of these triggers forces an earli
 This section keeps the reassessment short. As a cloud computing service provider with 50 to 249 AWU, Ayka would be a **wichtige Einrichtung**. From the day it qualifies under the two-year rule (section 4):
 
 1. **Measures.** §30 BSIG applies, with the detailed technical content taken from Implementing Regulation 2024/2690 and its annex. Starting point: [NIS2-02](02-risk-management-measures.md).
-2. **Registration.** Within three months via the joint BSI/BBK registration portal (§33 BSIG), plus the additional data that §34 requires from cloud providers. The portal sign-in uses the company's *Mein Unternehmenskonto* (ELSTER organisation certificate). Getting that certificate takes days to weeks by post, so request it at trigger T-1, not at 50 AWU. Data needed: legal name and form, address, contact details including an incident contact reachable around the clock, IP ranges in public use, sector and entity type, EU Member States served, and the EU establishments.
+2. **Registration.** No later than three months after the entity first qualifies (§33(1) and §34(1) BSIG), through the registration facility that the BSI and the BBK run jointly; changes within two weeks of knowledge (§33(5)), and for the §34 data within three months of the change (§34(2)). §34 adds data for cloud computing providers, which are on the §60(1) Satz 1 list. Sign-in method: **to verify**. An earlier version of this document named a *Mein Unternehmenskonto* (ELSTER) certificate; §33 as read says only that submission goes through the joint facility. Request whatever access is needed at trigger T-1, not at 50 AWU. Data, as read on 2026-11-10 (§33 from a secondary publication, §34 from the federal publisher's site; detail in [NIS2-09](09-bsi-registration-dry-run.md) section 1): name incl. legal form and commercial register number; address and current contact data (e-mail, telephone), public IP ranges; sector from Annex 1 or 2; EU Member States served; competent supervisory authorities (§33(1)); and under §34 the main EU establishment and other EU sites, entity type, Member States and public IP ranges. An "incident contact reachable around the clock" is **not** in the text read; treat it as **to verify**.
 3. **Reporting.** Significant incidents to the BSI within 24 hours, 72 hours and one month (§32 BSIG). Process already written: [NIS2-03](03-incident-reporting-procedure.md).
 4. **Management.** The Managing Director must approve the measures, oversee them and train regularly (§38 BSIG). See [NIS2-04](04-management-accountability.md).
 5. **Supervision and fines.** The BSI supervises important entities after the fact (on indication of a breach). Fines for important entities go up to EUR 7 m or 1.4 % of worldwide annual turnover, whichever is higher.
@@ -173,3 +173,4 @@ This is a record, so it stays empty until a real decision is taken. No one has a
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 1.0 | 2026-10-06 | Compliance Officer (Regulatory Reporting) | First assessment after the NIS2UmsuCG entered into force |
+| 1.1 | 2026-11-10 | CISO role (AI-drafted) | Corrections listed in NIS2-08 section 5: §28 read on the federal publisher's site; registration data restated from §33 and §34 (24/7 incident contact removed as unsupported, "to verify"; main EU establishment kept under §34); deadlines cited; ELSTER sign-in marked "to verify"; two-year rule marked "to verify". Conclusion unchanged |

@@ -6,7 +6,7 @@
 | Organization | Ayka Secure Technologies GmbH (simulated case study) |
 | Owner | CISO |
 | Contributors | Finance & Procurement Officer (Supplier Risk Coordinator), Sales Manager, Customer Success Manager |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft. Not approved: no approval record exists. |
 | Classification | Internal; Part A section 3 may be shared with customers under NDA |
 
@@ -39,14 +39,14 @@ These are the terms Sales may offer without asking the CISO. Anything stricter n
 
 | Topic | Ayka's standard position | Can Ayka keep it today? |
 |---|---|---|
-| Incident notification | Notice without undue delay and no later than **24 hours** after Ayka becomes aware of an incident affecting the customer's data or services, following [NIS2-03](03-incident-reporting-procedure.md) | **Not yet.** Detection is Gated design: Terraform added 2026-11-10 and never applied ([NIS2-02](02-risk-management-measures.md) No. 2). The clock starts at awareness, and today awareness depends on luck. A walk-through exists (simulated record SIM-INC-001). Do not sign 12-hour clauses; use the carve-out in [NIS2-06](06-customer-security-addendum.md) C-2 |
+| Incident notification | Notice without undue delay and no later than **24 hours** after Ayka becomes aware of an incident affecting the customer's data or services, following [NIS2-03](03-incident-reporting-procedure.md) | **Not yet.** Detection is Gated design: Terraform added 2026-11-10 and never applied ([NIS2-02](02-risk-management-measures.md) No. 2). The clock starts at awareness, and today awareness depends on luck. A walk-through exists (simulated record [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md)). Do not sign 12-hour clauses; use the carve-out in [NIS2-06](06-customer-security-addendum.md) C-2 |
 | Cooperation in the customer's own reporting | Ayka provides the facts the customer needs for its BSI early warning, notification and final report, in the structure of NIS2-03 templates T-2 and T-3 | Yes, as a process |
 | Audit | Evidence on request once a year: policies, the [compliance gate](../../README.md) evidence bundle for any change, supplier list, and this document. Remote audit on 30 days' notice, at the customer's cost if more than once a year | Partly. The gate evidence is real and checksummed; operating records (access reviews, incidents, training) do not exist yet |
 | Certification | No certification today. ISO 27001 is the target; TISAX on demand from the first automotive contract that requires it | Honest answer: none |
 | Contract text | The addendum in [NIS2-06](06-customer-security-addendum.md) | Section 2 of that document says which clauses Ayka can sign today |
 | Subcontractors | List in the [processor register](../GDPR/processor-register.md); 30 days' notice of new sub-processors with a right to object | Yes, as a process |
-| Data location | Customer data processed in the EU (target `eu-central-1`, Frankfurt) | **No.** The Terraform was moved to `eu-central-1` on 2026-11-10 by parallel work (not applied, not independently verified here; RISK-011 in the [risk register](../ISMS/03-risk-management/risk-register.md) remains open). Nothing is deployed, so no contract may promise EU processing |
-| Vulnerabilities | Critical vulnerabilities in Ayka's service fixed or mitigated within 7 days of a fix being available, high within 30 days; customer informed if exploitation affected them | Not yet measured. Infrastructure findings are gated in CI; dependency and code checks were added to CI on 2026-11-10 (first runs not verified here); a disclosure policy and `security.txt` were added the same day |
+| Data location | Customer data processed in the EU (target `eu-central-1`, Frankfurt) | **No.** The Terraform was moved to `eu-central-1` on 2026-11-10 by parallel work (not applied; the source was checked on 2026-11-10 and names no other Region, [REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md); RISK-011 in the [risk register](../ISMS/03-risk-management/risk-register.md) remains open). Nothing is deployed, so no contract may promise EU processing |
+| Vulnerabilities | Critical vulnerabilities in Ayka's service fixed or mitigated within 7 days of a fix being available, high within 30 days; customer informed if exploitation affected them | Not yet measured. Infrastructure findings are gated in CI; dependency and code checks were added to CI on 2026-11-10 (one local run, [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md); none on GitHub; not required checks); a disclosure policy and `security.txt` were added the same day |
 | Exit | Export of customer data in a documented format, then deletion within 30 days, confirmed in writing | Designed only |
 
 ### A.3 Evidence pack for customers
@@ -82,7 +82,7 @@ The supplier IDs match the [processor register](../GDPR/processor-register.md), 
 
 - **Software supply chain in CI**: every third-party GitHub Action is pinned to a commit SHA, and scanner versions and checksums are pinned in [`toolchain.versions`](../../Internal-IT/engineering/ci-cd/toolchain.versions), with a test that keeps CI and local runs in sync. This is the measure most SaaS companies of Ayka's size do not have.
 - **Gate ownership**: [CODEOWNERS](../../.github/CODEOWNERS) puts the control mapping, the exceptions and the evaluator under the owner's review.
-- **Terraform provider lock files** are committed for every root except `entra-id`.
+- **Terraform provider lock files** are committed for every root except `entra-id`, whose lock file is gitignored (checked 2026-11-10).
 
 ### B.3 What is missing
 
@@ -96,7 +96,7 @@ The supplier IDs match the [processor register](../GDPR/processor-register.md), 
 
 ### B.4 Supplier assessment record (template)
 
-One row per supplier per year. No real assessment has been carried out. A walk-through of a review exists as simulated record SIM-SUP-001 (scenario 2026-07-06, added 2026-11-10); it is not an entry here.
+One row per supplier per year. No real assessment has been carried out. A walk-through of a review exists as simulated record [SIM-SUP-001](../records/simulated/supplier/SIM-SUP-001-annual-critical-supplier-review.md) (scenario 2026-07-06, added 2026-11-10); it is not an entry here.
 
 | Supplier ID | Date | Assessor | Attestations reviewed (type, period, auditor) | Exceptions in the report | CUECs mapped (yes/partly/no) | Incidents in the period | Result (accept / accept with actions / reject) | Next review |
 |---|---|---|---|---|---|---|---|---|
@@ -110,3 +110,4 @@ No entries yet.
 |---|---|---|---|
 | 1.0 | 2026-10-06 | CISO | First version |
 | 1.1 | 2026-11-10 | CISO role (AI-drafted) | Status paragraph; links to NIS2-06, NIS2-07, REAL-SUP-001, SIM-NIS2-002; standard positions refreshed for work added 2026-11-10 (detection Terraform, Region, CI checks, disclosure files) |
+| 1.2 | 2026-11-10 | CISO role (AI-drafted) | Region and CI-check statements checked against REAL-INFRA-003 and REAL-SDLC-001; lock-file statement checked; record IDs linked |
