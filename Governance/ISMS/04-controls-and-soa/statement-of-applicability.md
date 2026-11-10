@@ -147,6 +147,7 @@ Every row gives its inclusion rationale, current status, evidence or related des
 |---|---:|
 | Implemented | 0 |
 | Partial | 8 |
+| Simulated operation | 0 |
 | Gated design | 8 |
 | Designed | 77 |
 | Planned | 0 |

@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 SOA = REPO / "Governance/ISMS/04-controls-and-soa/statement-of-applicability.md"
 MAPPING = REPO / "Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml"
 GAPS = SOA.with_name("control-gap-analysis.md")
-STATUS = {"Implemented", "Partial", "Gated design", "Designed", "Planned"}
+STATUS = {"Implemented", "Partial", "Simulated operation", "Gated design", "Designed", "Planned"}
 OWNERS = {
     "Managing Director", "CISO", "Cloud Platform Engineering",
     "Compliance & Risk Management", "Security Operations",
