@@ -8,7 +8,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 GOVERNANCE = REPO / "Governance"
 SIMULATED = sorted(
-    p for p in (GOVERNANCE / "records/simulated").rglob("*.md") if p.name != "README.md"
+    p for p in (GOVERNANCE / "records/simulated").rglob("*.md") if p.name not in {"README.md", "INDEX.md"}
 )
 REAL = sorted(
     p for p in (GOVERNANCE / "records/real").rglob("*.md") if p.name != "README.md"
