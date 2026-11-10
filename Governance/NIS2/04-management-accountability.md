@@ -6,7 +6,7 @@
 | Organization | Ayka Secure Technologies GmbH (simulated case study) |
 | Owner | Managing Director |
 | Prepared by | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft. Not approved: no approval record exists. |
 | Classification | Internal |
 
@@ -29,6 +29,18 @@ Ayka is not a NIS2 entity ([NIS2-01](01-applicability-assessment.md)), so §38 B
 | **Offer training** to staff | NIS2 Art. 20(2) encourages regular training for employees | No | Funds the [training and awareness programme](../../organization/training-and-awareness.md) |
 
 Delegation: the Managing Director can delegate the work (to the CISO, to engineering), but not the accountability. A clear written delegation, adequate resources and actual follow-up are what make delegation defensible. Signing a policy once and never asking about it again is not oversight.
+
+### Status on 2026-11-10
+
+| Duty | Status | Basis |
+|---|---|---|
+| Approve measures | Designed | The policy and NIS2-02 exist; no approval record. A management review is walked through in simulated record SIM-MR-001 (scenario 2026-10-26), added 2026-11-10 |
+| Oversee implementation (quarterly report) | Designed | The report format is described in section 3; no report exists |
+| Train regularly | Simulated operation | [SIM-NIS2-001](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md), scenario 2026-04-20. Nobody has attended a real course |
+| Keep records | Designed | The templates in section 5; section 5.2 has one filled walk-through, not a real entry |
+| D&O insurance | Planned | None recorded (section 6) |
+
+The simulated record raised findings against section 4 (no clock without an approval record; template 5.2 lacks a syllabus-check, learning-check and next-due field; training status is not a standing line of the quarterly report). They are open.
 
 ## 3. Oversight in practice
 
@@ -53,7 +65,7 @@ The quarterly report should fit on two pages. A report that nobody reads gives n
 
 ## 5. Records
 
-These are templates. No training has taken place and no approval has been given.
+These are templates. No real training has taken place and no approval has been given. A filled walk-through of 5.2 is in [SIM-NIS2-001](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md); it is not an entry in this log.
 
 ### 5.1 Approval of measures
 
@@ -82,3 +94,4 @@ Check whether Ayka holds directors' and officers' liability insurance and whethe
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 1.0 | 2026-10-06 | CISO | First version |
+| 1.1 | 2026-11-10 | CISO role (AI-drafted) | Added status table for the duties; pointer to simulated record SIM-NIS2-001 and its open findings |

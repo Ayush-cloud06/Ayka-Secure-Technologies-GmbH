@@ -23,6 +23,12 @@ Status: `Draft` = written, not approved (no real approver exists).
 | NIS2-03 | [Security incident reporting procedure](03-incident-reporting-procedure.md) | Art. 23; §32 BSIG; IR 2024/2690 Art. 3, 4, 7; GDPR Art. 33 | Draft |
 | NIS2-04 | [Management accountability](04-management-accountability.md) | Art. 20; §38 BSIG; §43 GmbHG | Draft |
 | NIS2-05 | [Supply-chain security](05-supply-chain-security.md) | Art. 21(2)(d), 21(3); §30(2) no. 4 BSIG | Draft |
+| NIS2-06 | [Customer security addendum (template)](06-customer-security-addendum.md) | Art. 21(2)(d), 21(3), 23; §30, §32 BSIG | Draft |
+| NIS2-07 | [Supplier questionnaire response](07-supplier-questionnaire-response.md) | Art. 21(2), 21(3) | Draft |
+| NIS2-08 | [Applicability reassessment, November 2026](08-applicability-reassessment-2026-11.md) | §28 BSIG; NIS2-01 section 7 | Draft |
+| NIS2-09 | [BSI registration dry run](09-bsi-registration-dry-run.md) | §33, §34 BSIG; Art. 27 | Draft. Not submitted, not required |
+
+Records tied to this set: [REAL-SUP-001](../records/real/supplier/REAL-SUP-001-supplier-attestations.md) (public supplier pages read on 2026-11-10), [SIM-NIS2-001](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md) (management training walk-through) and [SIM-NIS2-002](../records/simulated/nis2/SIM-NIS2-002-customer-supplier-security-assessment.md) (customer assessment walk-through).
 
 ## How this relates to the rest of the repository
 
@@ -32,18 +38,33 @@ Status: `Draft` = written, not approved (no real approver exists).
 
 ## Where Ayka stands, in one table
 
-| NIS2 measure | Status |
-|---|---|
-| Secure development and change control (infrastructure code) | Implemented |
-| Risk policies, supply chain, effectiveness testing, encryption | Partial |
-| Business continuity, access control, MFA | Designed only; MFA switched off |
-| Incident detection and handling, training | Planned |
+Status on 2026-11-10, per NIS2 Art. 21(2) measure. Detail and evidence in [NIS2-02](02-risk-management-measures.md). Order of strength: Planned < Designed < Gated design < Simulated operation < Partial < Implemented ([ADR-0006](../ADR/0006-simulated-operating-records.md)). Gated design and Simulated operation are not counted as Implemented or Partial.
 
-Biggest gaps: no detection or alerting, no tested backups, MFA not enforced, workload Region outside the EU.
+| Measure | 2026-10-06 | 2026-11-10 |
+|---|---|---|
+| (a) Risk analysis and security policies | Partial | Partial |
+| (b) Incident handling | Planned | Gated design + simulated record SIM-INC-001 |
+| (c) Business continuity, backup | Designed | Gated design + simulated record SIM-BCP-001 |
+| (d) Supply-chain security | Partial | Partial |
+| (e) Secure development, vulnerability handling | Implemented (infrastructure code) | Implemented (infrastructure code); application checks and disclosure files added, not verified |
+| (f) Effectiveness assessment | Partial | Partial (+ simulated records SIM-AUD-001, SIM-MR-001) |
+| (g) Cyber hygiene and training | Planned | [Simulated operation](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md) (training only) |
+| (h) Cryptography | Partial | Partial |
+| (i) HR security, access, assets | Designed (identity) / Implemented (IAM gate) | Unchanged; asset inventory of planned resources exists |
+| (j) MFA, secured communications | Designed, switched off | Designed, **still switched off** (Conditional Access disabled in Terraform) |
+
+Gated design rows depend on Terraform added on 2026-11-10 that has never been applied to any account. Biggest gaps: detection and alerting not running, no tested backups, MFA not enforced. The Region in the Terraform was moved to `eu-central-1` on the same date; no EU-location claim is made until something is deployed.
 
 ## Rules for these documents
 
 - Each measure carries the weakest true label from the [README yardstick](../../README.md#4-capability-status).
-- Records (registrations, incident reports, training attendance, supplier assessments, management decisions) appear as templates with "no entries yet". None has been invented.
+- Records (registrations, incident reports, training attendance, supplier assessments, management decisions) appear as templates with "no entries yet" in the documents. Walk-throughs and real readings are kept in separate, bannered stores under `Governance/records/`; see [ADR-0006](../ADR/0006-simulated-operating-records.md).
 - Legal statements cite the article or paragraph they rest on. Statements about providers' certifications are marked **to verify** until checked against the provider's current documents.
 - Reassess applicability every six months and on the triggers in NIS2-01 section 7.
+
+## Revision history
+
+| Version | Date | Change |
+|---|---|---|
+| 1.0 | 2026-10-06 | Index of NIS2-01 to NIS2-05 |
+| 1.1 | 2026-11-10 | Added NIS2-06 to NIS2-09 and the three records; status table per measure; records rule now points to ADR-0006 |
