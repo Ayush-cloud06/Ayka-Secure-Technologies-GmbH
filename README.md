@@ -91,7 +91,7 @@ The ISMS and SOC 2 documents use a finer control vocabulary (Designed, Gated des
 | Restore test | 📐 Planned: `restore-test.sh local` verified a dump and restore on a local PostgreSQL container; the AWS mode has never run | [REAL-INFRA-002](Governance/records/real/infra/REAL-INFRA-002-restore-test-local-postgres.md) |
 | SOC 2 criteria per finding (control mapping and report) | 📐 Planned: in `control-mapping.yaml` and the report on this branch; not yet in a CI run on GitHub | `control-mapping.yaml`, `generate-report.py` |
 | Drift detection | 📐 Planned: a manual workflow exists and refuses to run without a remote backend | `drift-detection.yml` |
-| Governance ↔ evidence links (SoA) | 📐 Draft documentation: 93 Annex A rows, 0 Implemented, 7 Partial, 30 Simulated operation, 11 Gated design, 45 Designed | [SoA](Governance/ISMS/04-controls-and-soa/statement-of-applicability.md), [evidence index](Governance/ISMS/07-technical-evidence/control-evidence-index.md) |
+| Governance ↔ evidence links (SoA) | 📐 Draft documentation: 93 Annex A rows, 0 Implemented, 7 Partial, 62 Simulated operation, 11 Gated design, 13 Designed | [SoA](Governance/ISMS/04-controls-and-soa/statement-of-applicability.md), [evidence index](Governance/ISMS/07-technical-evidence/control-evidence-index.md) |
 | Remote state and real sandbox apply | 📐 Planned | — |
 
 **Not claimed:** Terragrunt, SIEM integration, a SOC 2 report or attestation, NIST CSF / CIS mappings, zero-trust, continuous monitoring, automated remediation, delegated administration, incident-response workflows, audit-readiness, certification.

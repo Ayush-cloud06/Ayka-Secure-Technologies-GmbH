@@ -15,7 +15,7 @@ Counted from the ten Art. 21(2) measures in the table "Where Ayka stands" below 
 | Open | Planned | 0 |
 | **Total** | | **10** |
 
-Simulated walk-throughs are not operating evidence. The one Implemented measure is secure development for infrastructure code; the four Partial measures are Partial only for the documents and CI parts that really exist. Nothing is deployed.
+Measure (i) has simulated people and access-review records (SIM-PPL-001 to 006, SIM-ACC-001) but keeps the weaker label, so it is counted under Design only; measure (j), MFA, is Designed and switched off. Simulated walk-throughs are not operating evidence. The one Implemented measure is secure development for infrastructure code; the four Partial measures are Partial only for the documents and CI parts that really exist. Nothing is deployed.
 
 ## The short answer
 
@@ -65,7 +65,7 @@ Status on 2026-11-10, per NIS2 Art. 21(2) measure. Detail and evidence in [NIS2-
 | (f) Effectiveness assessment | Partial | Partial (+ simulated records [SIM-AUD-001](../records/simulated/audit/SIM-AUD-001-internal-audit-plan-2026.md), [SIM-MR-001](../records/simulated/management-review/SIM-MR-001-management-review-2026.md)) |
 | (g) Cyber hygiene and training | Planned | [Simulated operation](../records/simulated/nis2/SIM-NIS2-001-management-cybersecurity-training.md) (training only) |
 | (h) Cryptography | Partial | Partial |
-| (i) HR security, access, assets | Designed (identity) / Implemented (IAM gate) | Designed (identity) / Implemented (IAM gate), counted as Designed; `aws-iam-core` is now scanned, Identity Center in source mode, Entra ID by no scanner; asset inventory of planned resources exists |
+| (i) HR security, access, assets | Designed (identity) / Implemented (IAM gate) | Designed (identity) / Implemented (IAM gate) + simulated records [SIM-PPL-001](../records/simulated/people/SIM-PPL-001-joiner-batch.md) to [006](../records/simulated/people/SIM-PPL-006-role-holder-appointments.md) and [SIM-ACC-001](../records/simulated/access/SIM-ACC-001-q2-2026-access-review.md), counted as Designed; `aws-iam-core` is now scanned, Identity Center in source mode, Entra ID by no scanner; asset inventory of planned resources exists |
 | (j) MFA, secured communications | Designed, switched off | Designed, **still switched off** (Conditional Access disabled in Terraform) |
 
 Gated design rows depend on Terraform added on 2026-11-10 that has never been applied to any account. Biggest gaps: detection and alerting not running, no tested backups, MFA not enforced. The Region in the Terraform was moved to `eu-central-1` on the same date and checked in source ([REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md)); no EU-location claim is made until something is deployed, and the backup vault sits in the workload account.
@@ -84,3 +84,4 @@ Gated design rows depend on Terraform added on 2026-11-10 that has never been ap
 | 1.0 | 2026-10-06 | Index of NIS2-01 to NIS2-05 |
 | 1.1 | 2026-11-10 | Added NIS2-06 to NIS2-09 and the three records; status table per measure; records rule now points to ADR-0006 |
 | 1.2 | 2026-11-10 | Completion position added. Documents 01, 02, 03, 05 to 09 revised after checking against the files and records (see their revision tables) |
+| 1.3 | 2026-11-10 | Measure (i) cites the people and access-review tabletops; counts unchanged. Measure (j) unchanged |

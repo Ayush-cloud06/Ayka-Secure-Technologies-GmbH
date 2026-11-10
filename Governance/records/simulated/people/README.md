@@ -14,6 +14,7 @@ Related records held elsewhere, cited by ID only: SIM-GOV-001 (management commit
 | [SIM-PPL-004](SIM-PPL-004-leaver-emp-023.md) | Leaver: EMP-023, last day 2026-05-29, one late GitHub removal | 2026-04-28 to 2026-06-22 | A.6.5, A.5.11, A.5.18, A.8.2, A.7.10; SOC 2 AC-06, AC-18 |
 | [SIM-PPL-005](SIM-PPL-005-mover-emp-019.md) | Mover: EMP-019 to Security Operations | 2026-05-12 to 2026-06-19 | A.5.15, A.5.18, A.8.2, A.6.3; SOC 2 AC-06, AC-07, CE-05 |
 | [SIM-PPL-006](SIM-PPL-006-role-holder-appointments.md) | Role-holder appointments and gap owners G01 to G10 | 2026-03-02 to 2026-03-04 | clause 5.3, A.5.2, A.5.3, A.5.24; SOC 2 CE-03 |
+| [SIM-PPL-007](SIM-PPL-007-disciplinary-case.md) | Disciplinary case after incident INC-2026-001 | 2026-08-27 | A.6.4 |
 
 ## Dependency
 

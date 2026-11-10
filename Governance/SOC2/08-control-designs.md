@@ -5,7 +5,7 @@
 | Document ID | SOC2-08 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | 2026-11-10 |
 | Next review | With each change to a control in the [control matrix](03-control-matrix.md) |
 | Status | Draft. Not approved |
@@ -14,7 +14,7 @@
 
 ## 1. Purpose and how to read it
 
-Until 2026-11-10, 19 controls in the [control matrix](03-control-matrix.md) were **Planned**: no design existed for them. This document gives each of them a specific design, or points to the document that holds it. With a design in place the matrix status became **Designed** (written down, not deployed); some have since become Gated design when their Terraform was scanned (matrix 1.4). Nothing here moves a control to **Implemented**.
+Until 2026-11-10, 19 controls in the [control matrix](03-control-matrix.md) were **Planned**: no design existed for them. This document gives each of them a specific design, or points to the document that holds it. With a design in place the matrix status became **Designed** (written down, not deployed); some have since become Gated design when their Terraform was scanned (matrix 1.4). Since matrix 1.5 some of them (CE-07, IC-02, RA-02, CM-06, RM-02 and others) have been walked as tabletops under [`records/simulated/soc2/`](../records/simulated/soc2/SIM-SOC2-001-job-descriptions-and-performance-review.md) and carry **Simulated operation**; each walk found defects in the design text, listed in its record and not yet fixed here. Nothing here moves a control to **Implemented**.
 
 Each design states what the control does, who operates it and when, which record it leaves, and the test that decides whether it is *operating*, which is what a Type II auditor would sample. The tests are repeated per control in the [Type I readiness pack](06-type1-readiness-pack.md).
 
@@ -103,3 +103,4 @@ A review run by the author is a log, not a control with separation of duties. It
 |---|---|---|
 | 1.0 | 2026-11-10 | First issue: designs for the 19 controls that were Planned, and the compensating monthly change review for G3 |
 | 1.1 | 2026-11-10 | Status wording follows matrix 1.4; OP-05 design notes which rules have Terraform |
+| 1.2 | 2026-11-10 | Matrix 1.5. Records of the walks added to the purpose section; the defects they found are listed in the records and are not yet applied to the designs |

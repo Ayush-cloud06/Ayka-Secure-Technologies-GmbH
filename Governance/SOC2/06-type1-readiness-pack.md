@@ -5,7 +5,7 @@
 | Document ID | SOC2-06 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.1 |
+| Version | 1.2 |
 | As-of date | 2026-11-10 |
 | Next review | Before the auditor is engaged, and at each re-assessment of [SOC2-04](04-readiness-assessment.md) |
 | Status | Draft. Not approved. Walk-through for a fictional entity |
@@ -22,7 +22,7 @@ A Type I report gives an opinion on whether management's description of the syst
 - **where the evidence is**; and
 - the **expected result today**.
 
-The matrix status used is that of version 1.4 (2026-11-10). Fourteen controls are Simulated operation there; they still **fail** here, because a tabletop is not an instance (section 2). Evidence cited as "run artifacts" comes from the GitHub Actions runs listed in the [observation period log](07-observation-period-log.md).
+The matrix status used is that of version 1.5 (2026-11-10). Twenty-three controls are Simulated operation there; they still **fail** here, because a tabletop is not an instance (section 2). Evidence cited as "run artifacts" comes from the GitHub Actions runs listed in the [observation period log](07-observation-period-log.md).
 
 ## 2. How the expected result is decided
 
@@ -41,8 +41,8 @@ The result describes the auditor's test, not the quality of the design. A `fail`
 | Expected result | Controls |
 |---|---:|
 | pass | 13 |
-| fail | 32 |
-| cannot test | 20 |
+| fail | 33 |
+| cannot test | 19 |
 | **Total** | **65** |
 
 All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA-02, IC-01, RA-04, MO-01, AC-09, AC-14, OP-01, CM-01 to CM-04 and CO-05. They cover the change-management and policy-enforcement part of the system, not the service. An auditor asked to opine on the description of the Ayka Portal system would also find the description untrue as of the date, because the system it describes is not running (see section 5).
@@ -101,7 +101,7 @@ All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA
 | AC-02 | AWS access paths | 1 permission set and the IAM user list | Inspection of Identity Center and IAM; re-performance of `IAM_USER_PROHIBITED` on a plan | Identity Center; gate report | **cannot test**: federation is design only; the gate part alone would pass |
 | AC-03 | Administrative sign-ins | 3 administrators | Inspection of the Conditional Access export and the Identity Center MFA setting | Entra ID; Identity Center | **fail**: Conditional Access is disabled on the Free licence, so MFA is not enforced (G4) |
 | AC-04 | Roles and permission sets | 3 roles | Inspection of boundaries and ABAC tags; re-performance of `IAM_WILDCARD_POLICY` | IAM; gate report | **cannot test**: boundaries and ABAC are design only |
-| AC-05 | Permission sets | Platform administrator set | Inspection of session duration | Identity Center | **cannot test**: not applied |
+| AC-05 | Permission sets | Platform administrator set | Inspection of session duration | Identity Center | **fail**: the Terraform contradicts the control. `Platform-Admin` is `PT8H`; the one-hour set `Restricted-Admin` is assigned to no group ([SIM-SOC2-006](../records/simulated/soc2/SIM-SOC2-006-joiner-identity-provisioning-trace.md)). The standard-user 8 hour half is met in source |
 | AC-06 | Joiners and leavers in the period | 2 joiners, 2 leavers | Inspection of tickets and identity change commits; compare dates | Ticket system; Git | **fail**: no tickets, no events |
 | AC-07 | Quarterly access reviews | Latest quarter | Inspection of the review record, counts and removals | Access review record | **fail**: no review performed; the collaborator list was never reviewed |
 | AC-08 | Uses of break-glass and the SCP | 1 use (or a test) and the SCP | Inspection of the SCP and the role trust policy; inquiry about the 24-hour review | AWS Organizations; CloudTrail | **cannot test**: not deployed; the alert exists only as Terraform (Gated design) and has never fired |
@@ -191,7 +191,7 @@ We confirm, to the best of our knowledge and belief, that:
 |---|---|
 | 1. The description fairly presents the system that was implemented | **False today.** The system is not deployed; the Terraform Region now matches the stated commitment (`eu-central-1`) but nothing runs there, and the console-made Identity Center instance is in `ap-south-1` (G2); the description is a design |
 | 2. The controls were suitably designed | Partly true for the CI controls. Not shown for the 20 controls that cannot be tested. Segregation of duties in change management is not designed to be met (CM-05) |
-| 3. The controls were implemented | True for 13 controls (section 3). Not true for 32 and not testable for 20 |
+| 3. The controls were implemented | True for 13 controls (section 3). Not true for 33 and not testable for 19 |
 
 A signable assertion needs the readiness gaps G1, G4, G5 and G14 of [SOC2-04](04-readiness-assessment.md) closed and the people-process controls run at least once with real records. The Managing Director would also sign a management representation letter at the end of fieldwork ([SOC2-05](05-audit-approach-and-evidence.md#8-management-representation-letter)).
 
@@ -237,3 +237,4 @@ These are the customer-side controls of [SOC2-01, section 6](01-system-descripti
 |---|---|---|
 | 1.0 | 2026-11-10 | First issue |
 | 1.1 | 2026-11-10 | Matrix 1.4: counts stay 13 pass, 32 fail, 20 cannot test (CO-01 stays fail: manual control, unapproved policy, no instance). RA-04 recounted (111 entries); OP-01, OP-05, AC-08, AV-03 notes updated |
+| 1.2 | 2026-11-10 | Matrix 1.5: nine controls move from Designed to Simulated operation (CE-07, IC-02, RA-02, AC-01, AC-16, AC-18, CM-06, RM-02, CO-04). A tabletop is not an instance, so each of these still fails or cannot be tested (AC-01 stays cannot test). One result changes for a different reason: AC-05 moves from cannot test to fail, because the existing Terraform contradicts the control (section 2 rule, as for the mutable image tag of AC-15). Counts are now 13 pass, 33 fail, 19 cannot test |

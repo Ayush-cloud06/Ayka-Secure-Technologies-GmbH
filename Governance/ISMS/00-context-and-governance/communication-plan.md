@@ -44,7 +44,7 @@ ISO/IEC 27001:2022 clause 7.4 asks Ayka to decide on internal and external commu
 | IC-E-06 | Security commitments, system description, DPA, sub-processor list, security contact | At contract; on material change | Customers and prospects | Product & Engineering, with the CISO for anything stricter than NIS2-05 A.2 | Contract documents; [processor register](../../GDPR/processor-register.md); security questionnaires per [NIS2-05 A.1](../../NIS2/05-supply-chain-security.md#a1-what-customers-will-ask) | Contract file. No customer exists |
 | IC-E-07 | New or replaced sub-processor | 30 days before the change ([NIS2-05 A.2](../../NIS2/05-supply-chain-security.md#a2-aykas-standard-positions)) | Customers | Compliance & Risk Management | E-mail notice with a right to object | Notice file. None |
 | IC-E-08 | Support cases, abuse reports, incident notices | When a provider's service is affected or needed | AWS, Microsoft, GitHub | Cloud Platform Engineering | Provider support portals; status and security advisory subscriptions (not set up: [NIS2-05 B.3](../../NIS2/05-supply-chain-security.md#b3-what-is-missing)) | Support case IDs in the incident record |
-| IC-E-09 | Vulnerability reports from researchers and the public | On receipt; acknowledge within 5 working days (target) | Reporter | Security Operations | `SECURITY.md` pointing to a monitored security mailbox. Neither exists; GitHub private vulnerability reporting is switched off (read 2026-10-14) | Ticket. None |
+| IC-E-09 | Vulnerability reports from researchers and the public | On receipt; acknowledge within 5 working days (target) | Reporter | Security Operations | `SECURITY.md` pointing to a monitored security mailbox. The file exists since 2026-11-10; the mailbox does not; GitHub private vulnerability reporting is switched off (read 2026-10-14) | Ticket. None |
 | IC-E-10 | Capability status and honest limits of the case study | On each change of the README | Public readers of the repository | Maintainer | Root [README, capability status](../../../README.md#4-capability-status) | Git history |
 | IC-E-11 | Audit evidence and readiness | When an audit is planned | Certification body or TISAX audit provider | CISO | ISMS index, Statement of Applicability, evidence bundles | Audit file. No audit engaged |
 | IC-E-12 | Incident notice under an insurance policy | Per policy terms | Insurer | Managing Director | Per policy | None: no policy recorded |
@@ -56,7 +56,7 @@ ISO/IEC 27001:2022 clause 7.4 asks Ayka to decide on internal and external commu
 | GitHub pull requests and their notifications | Yes | Ruleset `protect-main`; pull request history |
 | GitHub issues on the public repository | Enabled, but not a security channel: anything posted there is public | GitHub API, read 2026-10-14 |
 | GitHub private vulnerability reporting | No: switched off | GitHub API, read 2026-10-14 |
-| `SECURITY.md` | No: no such file in the repository root, `.github/` or `docs/` | Checked 2026-10-14 |
+| `SECURITY.md` | Yes since 2026-11-10: [`SECURITY.md`](../../../SECURITY.md) in the repository root, with a placeholder mailbox that is not monitored | Checked 2026-11-10 |
 | Security mailbox, on-call number | No | [SOC2-03](../../SOC2/03-control-matrix.md#3-information-and-communication-ic) IC-03, Planned |
 | Out-of-band channel if e-mail or Entra ID is compromised | No | [NIS2-03 §8](../../NIS2/03-incident-reporting-procedure.md#8-preconditions-that-do-not-exist-yet) |
 | Customer security contact list | No: no customers | NIS2-03 §8 |

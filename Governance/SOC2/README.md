@@ -5,7 +5,7 @@
 | Document ID | SOC2-00 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.2 |
+| Version | 1.3 |
 | Effective | 2026-11-10 |
 | Next review | 2027-04-06, or when the SOC 2 scope changes |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -14,19 +14,19 @@
 
 ## Completion position
 
-Counted from the 65 rows of the [control matrix](03-control-matrix.md) 1.4 (status on 2026-11-10); the matrix summary and `test_soc2_matrix.py` keep the numbers in step.
+Counted from the 65 rows of the [control matrix](03-control-matrix.md) 1.5 (status on 2026-11-10); the matrix summary and `test_soc2_matrix.py` keep the numbers in step.
 
 | Position | Matrix status | Controls |
 |---|---|---:|
 | Real evidence | Implemented (13) and Partial (10) | 23 |
-| Simulated walk-through | Simulated operation | 14 |
+| Simulated walk-through | Simulated operation | 23 |
 | Gated design | Gated design | 11 |
-| Design only | Designed | 16 |
+| Design only | Designed | 7 |
 | Open | Planned | 0 |
 | Carved out to AWS | Carved out | 1 |
 | **Total** | | **65** |
 
-Simulated walk-throughs are not operating evidence. Real evidence here means a CI run, a test or a configured setting; for a Type I the readiness pack still expects only 13 of the 65 controls to pass, because nothing is deployed.
+Simulated walk-throughs are not operating evidence. Real evidence here means a CI run, a test or a configured setting; for a Type I the readiness pack still expects only 13 of the 65 controls to pass, because nothing is deployed. The seven controls that stay Designed do so because the tabletop would show nothing true: MFA is switched off (AC-03), the code contradicts the one-hour rule (AC-05), the image is an unpinned tag (AC-15), the application scans never ran on GitHub (OP-02), drift needs deployed state (OP-08), uptime needs a running service (AV-05) and the reviewer is the author (CM-05). The tabletop records for the other controls are in [`records/simulated/soc2/`](../records/simulated/soc2/SIM-SOC2-001-job-descriptions-and-performance-review.md) and in the people, access, endpoint, physical and information stores.
 
 ## 1. What SOC 2 is, and why Ayka would do it
 
@@ -109,3 +109,4 @@ The gate's [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code
 | 1.0 | 2026-10-06 | First issue |
 | 1.1 | 2026-11-10 | Add Simulated operation to the status vocabulary. Add SOC2-06 to 08, the code of conduct and the fraud assessment. Rewrite sections 5 and 6 |
 | 1.2 | 2026-11-10 | Add the completion position. Gated design now includes platform roots planned and scanned in plan mode; Designed excludes them. Section 5 states that the mapping carries SOC 2 criteria |
+| 1.3 | 2026-11-10 | Completion position follows matrix 1.5: nine controls move from Designed to Simulated operation (23 and 7). Lists the seven that stay Designed and why |
