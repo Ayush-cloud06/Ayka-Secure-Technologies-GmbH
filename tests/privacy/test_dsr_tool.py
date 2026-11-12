@@ -57,11 +57,12 @@ def subject():
 
 
 def count(conn, table):
-    return conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+    return conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]  # nosec B608 - test helper, table names are literals in this file
 
 
 def snapshot(conn):
-    return {tb: [tuple(r) for r in conn.execute(f"SELECT * FROM {tb} ORDER BY rowid")] for tb in t.SCHEMA}
+    return {tb: [tuple(r) for r in conn.execute(f"SELECT * FROM {tb} ORDER BY rowid")]  # nosec B608 - names from SCHEMA
+            for tb in t.SCHEMA}
 
 
 def test_find_uses_strong_identifiers_across_tables(conn, subject):

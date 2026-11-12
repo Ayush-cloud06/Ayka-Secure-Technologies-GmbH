@@ -18,9 +18,12 @@ Rules built in:
 
 import argparse
 import json
+import re
 import sqlite3
 import sys
 from datetime import datetime, timezone
+
+_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
 # table -> activity, erase strategy, identifier columns (kind), free-text columns
 SCHEMA = {
@@ -113,6 +116,13 @@ def connect(path):
     return conn
 
 
+def _ident(name):
+    """Table and column names cannot be SQL parameters, so only plain identifiers get through."""
+    if not _IDENT.fullmatch(name):
+        raise ValueError(f"not a plain SQL identifier: {name!r}")
+    return name
+
+
 def _table_exists(conn, table):
     return conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone() is not None
 
@@ -123,7 +133,7 @@ def find(conn, subject):
     for table, spec in SCHEMA.items():
         if not _table_exists(conn, table):
             continue
-        for row in conn.execute(f"SELECT rowid AS _rid, * FROM {table}"):
+        for row in conn.execute(f"SELECT rowid AS _rid, * FROM {_ident(table)}"):  # nosec B608 - identifier from SCHEMA, checked by _ident
             strong, weak, free = [], [], []
             for col, kind in spec["columns"].items():
                 if subject.matches(kind, row[col]):
@@ -152,7 +162,8 @@ def export(conn, subject):
     for m in find(conn, subject):
         if m["strength"] != "strong":
             continue
-        row = conn.execute(f"SELECT * FROM {m['table']} WHERE rowid = ?", (m["rowid"],)).fetchone()
+        row = conn.execute(f"SELECT * FROM {_ident(m['table'])} WHERE rowid = ?",  # nosec B608 - identifier from SCHEMA, checked by _ident
+                           (m["rowid"],)).fetchone()
         result.setdefault(m["table"], []).append({k: row[k] for k in row.keys()})
     return {"records": result, "not_searched": NOT_SEARCHED,
             "weak_matches_for_manual_review": [
@@ -196,22 +207,22 @@ def erase(conn, subject, *, request_id, audit_log, controller_instruction=False,
             continue
         if not dry_run:
             if spec["strategy"] == "delete":
-                conn.execute(f"DELETE FROM {m['table']} WHERE rowid = ?", (m["rowid"],))
+                conn.execute(f"DELETE FROM {_ident(m['table'])} WHERE rowid = ?",  # nosec B608 - identifier from SCHEMA, checked by _ident
+                             (m["rowid"],))
             elif spec["strategy"] == "anonymise":
                 sets = dict(spec["anonymise"])
                 for col in spec["freetext"]:
-                    cur = conn.execute(f"SELECT {col} FROM {m['table']} WHERE rowid=?", (m["rowid"],)).fetchone()[0]
+                    cur = _cell(conn, m["table"], col, m["rowid"])
                     sets[col] = _redact_text(cur, terms)
                 _update(conn, m["table"], m["rowid"], sets)
             elif spec["strategy"] == "redact":
                 sets = {}
                 for col in spec["freetext"]:
-                    cur = conn.execute(f"SELECT {col} FROM {m['table']} WHERE rowid=?", (m["rowid"],)).fetchone()[0]
+                    cur = _cell(conn, m["table"], col, m["rowid"])
                     sets[col] = _redact_text(cur, terms)
                 # uploaded_by is a strong id: replace it so the row no longer points at the person
                 for col, kind in spec["columns"].items():
-                    if subject.matches(kind, conn.execute(
-                            f"SELECT {col} FROM {m['table']} WHERE rowid=?", (m["rowid"],)).fetchone()[0]):
+                    if subject.matches(kind, _cell(conn, m["table"], col, m["rowid"])):
                         sets[col] = "erased"
                 _update(conn, m["table"], m["rowid"], sets)
         report["erased"].append({**ref, "strategy": spec["strategy"]})
@@ -230,9 +241,15 @@ def erase(conn, subject, *, request_id, audit_log, controller_instruction=False,
     return report
 
 
+def _cell(conn, table, col, rowid):
+    return conn.execute(f"SELECT {_ident(col)} FROM {_ident(table)} WHERE rowid = ?",  # nosec B608 - identifier from SCHEMA, checked by _ident
+                        (rowid,)).fetchone()[0]
+
+
 def _update(conn, table, rowid, sets):
-    cols = ", ".join(f"{c} = ?" for c in sets)
-    conn.execute(f"UPDATE {table} SET {cols} WHERE rowid = ?", (*sets.values(), rowid))
+    cols = ", ".join(f"{_ident(c)} = ?" for c in sets)
+    conn.execute(f"UPDATE {_ident(table)} SET {cols} WHERE rowid = ?",  # nosec B608 - identifier from SCHEMA, checked by _ident
+                 (*sets.values(), rowid))
 
 
 def build_fixture(conn, data):
@@ -248,8 +265,9 @@ def build_fixture(conn, data):
     for table, cols in ddl.items():
         conn.execute(f"CREATE TABLE {table} ({cols}, legal_hold INTEGER DEFAULT 0, hold_reason TEXT)")
         for row in data.get(table, []):
-            keys = list(row)
-            conn.execute(f"INSERT INTO {table} ({', '.join(keys)}) VALUES ({', '.join('?' * len(keys))})",
+            keys = [_ident(k) for k in row]  # fixture keys come from a file: reject anything odd
+            conn.execute(f"INSERT INTO {_ident(table)} ({', '.join(keys)}) "  # nosec B608 - identifier from SCHEMA, checked by _ident
+                         f"VALUES ({', '.join('?' * len(keys))})",
                          [row[k] for k in keys])
     conn.commit()
 
