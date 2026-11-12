@@ -14,7 +14,7 @@
 #                    from the AWS Backup vault into a new, isolated instance, waits,
 #                    and prints the restored endpoint for the same checksum query.
 #                    Needs real credentials and an applied environment, which this
-#                    repository does not have (plan-only, ADR-0013). It refuses to
+#                    repository does not have (plan-only). It refuses to
 #                    run unless RESTORE_TEST_AWS_CONFIRM=yes is set.
 #
 # Usage:

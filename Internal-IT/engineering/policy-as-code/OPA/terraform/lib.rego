@@ -3,7 +3,7 @@ package policies.terraform.lib
 import future.keywords.in
 
 # Shared plan traversal for every policy package.
-# Syntax stays v0-compatible: conftest v0.45.0 bundles OPA 0.56.0 (ADR-0015).
+# Syntax stays v0-compatible: conftest v0.45.0 bundles OPA 0.56.0 (README, Known limitations).
 
 # Every module in planned_values, keyed by its address ("" for the root module).
 # walk() reaches nested modules (module.a.module.b) as well as the root.

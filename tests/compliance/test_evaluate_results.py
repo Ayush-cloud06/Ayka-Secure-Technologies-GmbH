@@ -215,7 +215,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         self.assertEqual(summary["findings"][0]["control_id"], "EC2_OPEN_SSH")
 
     def test_unmapped_tfsec_low_finding_is_raised_to_medium(self):
-        # ADR-0011 changed the policy on purpose: an unmapped finding is at least MEDIUM.
+        # The policy changed on purpose: an unmapped finding is at least MEDIUM.
         result, summary = self.run_case(
             checkov=CHECKOV_CLEAN,
             tfsec={

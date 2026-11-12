@@ -47,7 +47,7 @@ OPA_NOT_RUN_REASON = (
     "source scan: the OPA rules read a Terraform plan, and this root cannot be "
     "planned offline with mock credentials"
 )
-# ADR-0011: a finding nobody has mapped yet is at least MEDIUM, so a human sees it.
+# A finding nobody has mapped yet is at least MEDIUM, so a human sees it.
 UNMAPPED_MIN_SEVERITY = "MEDIUM"
 SEVERITY_ORDER = ["LOW", "MEDIUM", "HIGH"]
 
@@ -433,7 +433,7 @@ def normalize_workload(value):
 
 
 def load_exceptions(today):
-    """ADR-0014: accepted findings live in one reviewed file, each with an owner and an expiry."""
+    """Accepted findings live in one reviewed file, each with an owner and an expiry."""
     if not EXCEPTIONS_FILE.exists():
         return []
     entries = (load_yaml(EXCEPTIONS_FILE) or {}).get("exceptions") or []
@@ -595,7 +595,7 @@ def build_distinct_findings(findings):
 
 
 def build_summary(findings, excepted=(), mode="plan", workload=None):
-    by_tool_groups = {tool: [] for tool in TOOLS}  # ADR-0011: every scanner is listed, even with 0 findings
+    by_tool_groups = {tool: [] for tool in TOOLS}  # every scanner is listed, even with 0 findings
     for finding in findings:
         by_tool_groups.setdefault(finding["tool"], []).append(finding)
 

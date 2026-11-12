@@ -9,7 +9,7 @@ SCRIPT = REPO_ROOT / "Internal-IT/engineering/ci-cd/scripts/run-tfsec.sh"
 
 
 class RunTfsecWrapperTests(unittest.TestCase):
-    """The wrapper must never invent an empty result (ADR-0011)."""
+    """The wrapper must never invent an empty result."""
 
     def run_wrapper(self, fake_tfsec_body, workload_dir="Internal-IT/workloads/ayka-portal"):
         with tempfile.TemporaryDirectory() as tmp:

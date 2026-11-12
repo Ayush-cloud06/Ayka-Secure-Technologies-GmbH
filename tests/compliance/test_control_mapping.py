@@ -8,7 +8,7 @@ MAPPING = Path(__file__).resolve().parents[2] / "Internal-IT/engineering/policy-
 
 
 class ControlMappingTests(unittest.TestCase):
-    """The mapping decides severity, so it is tested like code (ADR-0014)."""
+    """The mapping decides severity, so it is tested like code."""
 
     @classmethod
     def setUpClass(cls):

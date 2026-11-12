@@ -15,7 +15,7 @@ S=Internal-IT/engineering/ci-cd/scripts
 # Prefer the pinned tools from bootstrap-tools.sh, then refuse to run on drift.
 [ -d .tools/bin ] && export PATH="$PWD/.tools/bin:$PATH"
 bash "$S/check-tool-versions.sh" || exit 3
-# Plan-only: never use your real AWS login, even by accident (ADR-0013).
+# Plan-only: never use your real AWS login, even by accident.
 # TF_VAR_mock_credentials is read by the platform roots (no assume_role, no AWS call);
 # roots that do not declare the variable ignore it.
 mockenv() {
