@@ -5,7 +5,7 @@
 | Document ID | SOC2-00 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.3 |
+| Version | 1.4 |
 | Effective | 2026-11-10 |
 | Next review | 2027-04-06, or when the SOC 2 scope changes |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -85,7 +85,7 @@ Every control carries the weakest status that is true today. The same words are 
 |---|---|
 | **Implemented** | Operates today, and a CI run, a test or a configured setting shows it |
 | **Partial** | Part of the control operates; the rest is a named gap |
-| **Gated design** | Terraform in a root the compliance gate plans and scans with all three tools (`ayka-portal` on every change; the platform roots `aws-organization`, `landing-zone`, `evidence-archive` and `aws-iam-core` through the `Platform Gate` job, which has not run on GitHub and is not a required check; local run [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md)), but that has never been deployed |
+| **Gated design** | Terraform in a root the compliance gate plans and scans with all three tools (`ayka-portal` on every change; the platform roots `aws-organization`, `landing-zone`, `evidence-archive` and `aws-iam-core` through the `Platform Gate` job, which first ran on GitHub on 2026-11-12 ([REAL-SDLC-002](../records/real/sdlc/REAL-SDLC-002-first-github-runs-and-apply-timeout.md)) and is not a required check; local run [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md)), but that has never been deployed |
 | **Designed** | Written down, or written as Terraform that is not planned and scanned by all three tools (`aws-identity-center` and `remote-state` are scanned in source mode without OPA, `entra-id` by no scanner), and not deployed |
 | **Simulated operation** | A design exists and a bannered tabletop record under `records/simulated/` walks it end to end. Not operating evidence ([ADR-0006](../ADR/0006-simulated-operating-records.md)). Order of strength: Planned, Designed, Gated design, Simulated operation, Partial, Implemented. The row must link the record. An Implemented row never cites one, and counts of Implemented and Partial exclude it |
 | **Planned** | Not designed yet. No control is Planned since 2026-11-10 |
@@ -110,3 +110,4 @@ The gate's [`control-mapping.yaml`](../../Internal-IT/engineering/policy-as-code
 | 1.1 | 2026-11-10 | Add Simulated operation to the status vocabulary. Add SOC2-06 to 08, the code of conduct and the fraud assessment. Rewrite sections 5 and 6 |
 | 1.2 | 2026-11-10 | Add the completion position. Gated design now includes platform roots planned and scanned in plan mode; Designed excludes them. Section 5 states that the mapping carries SOC 2 criteria |
 | 1.3 | 2026-11-10 | Completion position follows matrix 1.5: nine controls move from Designed to Simulated operation (23 and 7). Lists the seven that stay Designed and why |
+| 1.4 | 2026-11-12 | Gated design definition: the `Platform Gate` job has run on GitHub (REAL-SDLC-002); still not a required check |

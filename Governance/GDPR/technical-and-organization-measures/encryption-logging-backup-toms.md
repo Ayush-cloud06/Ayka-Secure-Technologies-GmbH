@@ -3,8 +3,8 @@
 - **Organization:** Ayka Secure Technologies GmbH (simulated case study)
 - **Framework:** GDPR Art. 32 (security of processing); Art. 25 where a measure is only a default in design
 - **Document ID:** GDPR-12
-- **Version:** 1.2
-- **Last updated:** 2026-11-10
+- **Version:** 1.3
+- **Last updated:** 2026-11-12
 - **Status:** Draft. Not approved: no approval record exists
 
 ## 1. How to read this document
@@ -12,7 +12,7 @@
 Labels match the [identity and access measures](identity-and-access-toms.md) and the yardstick in the [repository README](../../../README.md#4-capability-status):
 
 - **Implemented**: the check runs in CI, and a run or test shows it working. It still does not prove a deployed store.
-- **Gated design (plan check, [REAL-INFRA-001](../../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md))**: Terraform exists in a root that the gate plans and scans (`ayka-portal`, `landing-zone`, `evidence-archive`), never applied. The scan is a local run of an uncommitted tree; the CI job for the platform roots has not run on GitHub and is not a required check.
+- **Gated design (plan check, [REAL-INFRA-001](../../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md))**: Terraform exists in a root that the gate plans and scans (`ayka-portal`, `landing-zone`, `evidence-archive`), never applied. The scan was first a local run of an uncommitted tree; the CI job for the platform roots first ran on GitHub on 2026-11-12 ([REAL-SDLC-002](../../records/real/sdlc/REAL-SDLC-002-first-github-runs-and-apply-timeout.md)) and is not a required check.
 - **Planned (design-only)**: Terraform or a policy describes the measure. It is not deployed and, where noted, not planned or scanned.
 - **Not designed**: no rule is written.
 
@@ -73,3 +73,4 @@ Not available: a key-usage log, a delivered CloudTrail object, an alert acknowle
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-11-10 | Section 5 added: rights handling and privacy tooling, linked to simulated and real records |
 | 1.2 | 2026-11-10 | Gated design label added for scanned Terraform: CloudTrail, detection and alerting, AWS Backup with Vault Lock, KMS keys, evidence archive. Local restore test recorded (REAL-INFRA-002) |
+| 1.3 | 2026-11-12 | Gated design note: the platform CI job has run on GitHub (REAL-SDLC-002); still not a required check |

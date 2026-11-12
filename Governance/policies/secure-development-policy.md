@@ -5,7 +5,7 @@
 | Document ID | POL-SDL-01 |
 | Owner | Product & Engineering |
 | Approver | Managing Director |
-| Version | 1.2 |
+| Version | 1.3 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when the required checks or the pipeline stages change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -46,14 +46,14 @@ Every change follows these stages. A stage that fails stops the change.
 
 | Stage | What happens | Status | Evidence |
 |---|---|---|---|
-| Requirement | The pull request states what changes, why, its security impact and the risk or ticket it serves | Designed: [POL-CHG-01 §5](change-management-policy.md#5-rules), rule 5; no template | |
+| Requirement | The pull request states what changes, why, its security impact and the risk or ticket it serves | Designed: [POL-CHG-01 §5](change-management-policy.md#5-rules), rule 5; a [pull request template](../../.github/pull_request_template.md) asks for these fields since 2026-11-12, nothing enforces them | |
 | Script validation | `bash -n` on every CI shell script (`validate-scripts`) | Implemented | [`test.yml`](../../.github/workflows/test.yml); [run 37498007502](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/37498007502) |
 | Unit and policy tests | `pytest` on evaluator, wrappers, mapping and governance docs; `opa test` on the Rego rules, failing if no test passes (`unit-tests`) | Implemented | same run |
 | Terraform validate | `terraform fmt -check`, `terraform validate`, `tflint` (`compliance / validate`) | Implemented | [`validate/action.yml`](../../.github/actions/validate/action.yml) |
 | Plan, scan, decide | Plan with mock credentials; Checkov, tfsec, OPA/conftest; evaluator fails closed; evidence bundle with SHA-256 manifest (`compliance / compliance`) | Implemented | CA-01, CA-02; same run |
 | Regression | Insecure scenarios must be rejected with the expected controls (`Control Validation Regression`) | Implemented | MO-01; same run |
 | MEDIUM approval | `medium-risk-approval` environment when a MEDIUM finding exists | Partial: required reviewer configured, self-review allowed | [Environment settings](https://api.github.com/repos/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/environments), rechecked 2026-10-14; only maintainer can approve |
-| Apply | Checksum and commit check, then a simulated apply behind `manual-apply-approval`, only from `main` | Implemented as simulation; never applied | [`run-apply.sh`](../../Internal-IT/engineering/ci-cd/scripts/run-apply.sh); in run 37498007502 the apply waits at the environment |
+| Apply | Checksum and commit check, then a simulated apply behind `manual-apply-approval`, only on a manual dispatch from `main` (since 2026-11-12) | Implemented as simulation; never applied | [`run-apply.sh`](../../Internal-IT/engineering/ci-cd/scripts/run-apply.sh); in run 37498007502 the apply waited at the environment and timed out after 30 days ([REAL-SDLC-002](../records/real/sdlc/REAL-SDLC-002-first-github-runs-and-apply-timeout.md) section 3) |
 
 ### 4.2 Security requirements (A.8.26)
 
@@ -90,10 +90,10 @@ Every change follows these stages. A stage that fails stops the change.
    Status: Implemented (AC-14; [`toolchain.versions`](../../Internal-IT/engineering/ci-cd/toolchain.versions)).
 3. Code uses maintained libraries and supported language versions. Deprecated tools are replaced on a plan ([POL-VUL-01](vulnerability-and-patch-management-policy.md)).
 4. Application code follows the OWASP ASVS level 2 requirements relevant to each feature (version to verify at first use). Status: Planned.
-5. Static analysis (SAST) and dependency scanning (SCA) run on every pull request. Status: Partial. Since 2026-11-10 [`security-checks.yml`](../../.github/workflows/security-checks.yml) runs Bandit, pip-audit and a CycloneDX SBOM over the repository's Python; first local run in [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md). The workflow has not yet run on GitHub and is not a required check. No application code exists.
+5. Static analysis (SAST) and dependency scanning (SCA) run on every pull request. Status: Partial. Since 2026-11-10 [`security-checks.yml`](../../.github/workflows/security-checks.yml) runs Bandit, pip-audit and a CycloneDX SBOM over the repository's Python; first local run in [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md). On GitHub since 2026-11-12, where Bandit rejected one real change before the fix passed (REAL-SDLC-002); zizmor was added the same day. The workflow is not a required check. No application code exists.
 6. Automated secret scanning runs on every push. Status: Partial. gitleaks runs over full history in `security-checks.yml` (same limits as item 5); its default rules did not flag the RISK-001 passwords, so a clean result is not proof.
-   - GitHub secret scanning and push protection are disabled (verified via GitHub API on 2026-10-14).
-   - The [CI/CD architecture](../../Internal-IT/engineering/ci-cd/architecture.md) lists secrets scanning as not built.
+   - GitHub secret scanning and push protection are disabled (verified via GitHub API on 2026-10-14 and 2026-11-12).
+   - The [CI/CD architecture](../../Internal-IT/engineering/ci-cd/architecture.md) lists gitleaks as the only secret scan.
 
 ### 4.5 Security testing in development and acceptance (A.8.29)
 
@@ -103,7 +103,7 @@ Every change follows these stages. A stage that fails stops the change.
 
 ### 4.6 Branch protection and review
 
-Settings rechecked via the GitHub API on 2026-10-14; [ruleset 24482491](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/rules/24482491) and [environments API](https://api.github.com/repos/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/environments):
+Settings rechecked via the GitHub API on 2026-10-14 and, unchanged, on 2026-11-12 (REAL-SDLC-002 section 4); [ruleset 24482491](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/rules/24482491) and [environments API](https://api.github.com/repos/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/environments):
 
 | Setting | Required by policy | Configured | Status |
 |---|---|---|---|
@@ -112,6 +112,7 @@ Settings rechecked via the GitHub API on 2026-10-14; [ruleset 24482491](https://
 | Force-push and deletion of `main` blocked | Yes | Yes (`non_fast_forward`, `deletion`) | Implemented |
 | At least one approving review by someone other than the author | Yes | No: 0 approvals required; single maintainer | Planned (CM-05) |
 | Code-owner review for the gate, CI scripts and `.github/` | Yes | No: [`CODEOWNERS`](../../.github/CODEOWNERS) exists, but the ruleset has `require_code_owner_review: false` | Planned |
+| A MEDIUM decision holds the merge until approved | Yes ([POL-CHG-01 §4](change-management-policy.md#4-change-types)) | No: `compliance / medium-risk-approval` is not a required check, so the pull request can merge while the approval is pending (read from the configuration, not tested) | Planned (O-03) |
 | Approval environments block self-review | Yes | No: `prevent_self_review: false` on both environments; no deployment branch policy (apply is limited to `main` by the job condition) | Partial |
 
 ### 4.7 Separation of development, test and production (A.8.31)
@@ -169,10 +170,11 @@ Exceptions to this policy are approved by the CISO in writing with a reason, com
 |---|---|---|---|
 | No independent reviewer; 0 approvals required; self-review allowed in environments | Planned | Ruleset and environment settings (GitHub API, 2026-10-14) | CM-05, RISK-005 |
 | Code-owner review not required by the ruleset, although POL-CHG-01 §5 rule 4 says it is | Planned | `require_code_owner_review: false` | Open issue for POL-CHG-01 owner |
-| Secret scanning and push protection disabled | Planned | GitHub API, 2026-10-14 | |
-| No SAST, SCA, DAST or penetration test (no application code) | Planned | [CI/CD architecture](../../Internal-IT/engineering/ci-cd/architecture.md) | OP-02 |
+| Secret scanning and push protection disabled | Planned | GitHub API, 2026-11-12 | O-01 |
+| No DAST or penetration test; SAST and SCA cover only the repository's scripts and tests (no application code) | Planned | [`security-checks.yml`](../../.github/workflows/security-checks.yml) | OP-02 |
+| A MEDIUM decision does not hold the merge; platform and security jobs are not required checks | Planned | REAL-SDLC-002 sections 4 and 5 | CM-03, O-03 |
 | Only a `dev` environment; no account separation | Planned | [`envs/`](../../Internal-IT/workloads/ayka-portal/envs/) | |
-| No pull request template for security impact | Planned | `.github/` has none | |
+| The pull request template for security impact is not enforced | Partial | [pull request template](../../.github/pull_request_template.md), added 2026-11-12 | |
 
 ## Revision history
 
@@ -181,3 +183,4 @@ Exceptions to this policy are approved by the CISO in writing with a reason, com
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-10-14 | Point the production-data exception at the data masking standard |
 | 1.2 | 2026-11-10 | Section 4.4: SAST, SCA, SBOM and gitleaks added in CI; GitHub-native secret scanning still off |
+| 1.3 | 2026-11-12 | Security checks have run on GitHub; apply on manual dispatch only; pull request template; a MEDIUM decision does not hold the merge (REAL-SDLC-002). Settings re-read, unchanged |

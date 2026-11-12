@@ -21,7 +21,7 @@ A later change adds a new record. It does not rewrite a Recorded file.
 | [0004](0004-docs-gate.md) | Governance docs fail CI when links break or files are empty | Recorded | `tests/governance/` is part of the pytest gate |
 | [0005](0005-gdpr-roles.md) | Working GDPR roles, not a legal conclusion | Recorded | Controller for repository and designed employment data. Processor for designed customer evidence. Both remain to be confirmed |
 | [0006](0006-simulated-operating-records.md) | Simulated operating records | Recorded | Real and simulated records live in separate bannered stores. "Simulated operation" sits below Partial and never becomes Implemented |
-| [0007](0007-region-migrated-platform-gated.md) | Region migrated in source; platform roots gated | Recorded | Terraform names only eu-central-1; platform roots are scanned (local run so far, not required checks) and count as Gated design with that limit stated |
+| [0007](0007-region-migrated-platform-gated.md) | Region migrated in source; platform roots gated | Recorded | Terraform names only eu-central-1; platform roots are scanned (local run when recorded; first GitHub run 2026-11-12; not required checks) and count as Gated design with that limit stated |
 
 ## Revision history
 
@@ -30,3 +30,4 @@ A later change adds a new record. It does not rewrite a Recorded file.
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-11-10 | Add ADR-0006 |
 | 1.2 | 2026-11-10 | Add ADR-0007; update the 0003 summary |
+| 1.3 | 2026-11-12 | 0007 summary: the platform jobs have run on GitHub (REAL-SDLC-002). Citations of records that do not exist now fail a test |

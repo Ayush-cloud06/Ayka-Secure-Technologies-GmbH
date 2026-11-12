@@ -4,7 +4,7 @@
 - **Framework:** GDPR Art. 30(1) (controller) and Art. 30(2) (processor)
 - **Owner:** GDPR Lead role (EMP-004, fictional), reporting to the CISO role
 - **Version:** 1.1
-- **Last updated:** 2026-11-10
+- **Last updated:** 2026-11-12
 - **Status:** Draft. Not approved: no approval record exists.
 
 ## 1. Reality column
@@ -45,7 +45,7 @@ Real processing is small but not zero: see PA-01 and PA-02.
 | Legal basis | Art. 6(1)(f) legitimate interest in traceable changes ([assessment](legitimate-interests-assessment.md)) |
 | Recipients | GitHub (processor for private data; commit metadata in a public repository is public) |
 | Third-country transfer | United States (GitHub) |
-| Retention | Git history: kept indefinitely by design. CI artifacts: no `retention-days` is set in [`.github/`](../../.github/), so the repository default applies. Measured on 2026-10-14 as 90 days ([ISMS objectives](../ISMS/00-context-and-governance/isms-objectives.md) OBJ-08). [POL-RET-01](../policies/records-and-data-retention-policy.md) proposes at least 18 months outside the pipeline. That copy does not exist |
+| Retention | Git history: kept indefinitely by design. CI artifacts: `retention-days: 90` is set in [`.github/`](../../.github/) since 2026-11-12 (before that the repository default applied, measured on 2026-10-14 as 90 days; [ISMS objectives](../ISMS/00-context-and-governance/isms-objectives.md) OBJ-08). [POL-RET-01](../policies/records-and-data-retention-policy.md) proposes at least 18 months outside the pipeline. That copy does not exist |
 | TOMs | Repository access through GitHub accounts; [segregation of duties](technical-and-organization-measures/segregation-of-duties.md) |
 
 ### PA-03 Security logging

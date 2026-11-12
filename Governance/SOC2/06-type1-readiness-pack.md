@@ -5,7 +5,7 @@
 | Document ID | SOC2-06 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.2 |
+| Version | 1.3 |
 | As-of date | 2026-11-10 |
 | Next review | Before the auditor is engaged, and at each re-assessment of [SOC2-04](04-readiness-assessment.md) |
 | Status | Draft. Not approved. Walk-through for a fictional entity |
@@ -120,7 +120,7 @@ All 13 passes are controls that run in CI or are configured in GitHub: CA-01, CA
 
 | ID | Population | Sample | Test procedure | Where the evidence is | Expected result today |
 |---|---|---|---|---|---|
-| OP-01 | Runs of the gate | 1 run | Inspection of the compliance summary; re-performance with `run-local-chain.sh` | Run artifacts; local `output/` (not committed) | **pass**: holds for `ayka-portal`. The platform roots are scanned by a job that has not run on GitHub and is not a required check (G12); an auditor would see a local run only |
+| OP-01 | Runs of the gate | 1 run | Inspection of the compliance summary; re-performance with `run-local-chain.sh` | Run artifacts; local `output/` (not committed) | **pass**: holds for `ayka-portal`. The platform roots are scanned by a job that is not a required check (G12); an auditor would see one green GitHub run (2026-11-12, REAL-SDLC-002) and a local run |
 | OP-02 | Weekly scan reports | 5 weeks | Inspection of reports and ticket ageing | Scanner output; tickets | **fail**: only infrastructure code is scanned today |
 | OP-03 | Accounts and Regions | 1 account | Inspection of the trail and log file validation | CloudTrail | **cannot test**: not deployed |
 | OP-04 | Log groups and buckets | 3 log sources | Inspection of retention settings | AWS | **cannot test**: gated design; not deployed |
@@ -238,3 +238,4 @@ These are the customer-side controls of [SOC2-01, section 6](01-system-descripti
 | 1.0 | 2026-11-10 | First issue |
 | 1.1 | 2026-11-10 | Matrix 1.4: counts stay 13 pass, 32 fail, 20 cannot test (CO-01 stays fail: manual control, unapproved policy, no instance). RA-04 recounted (111 entries); OP-01, OP-05, AC-08, AV-03 notes updated |
 | 1.2 | 2026-11-10 | Matrix 1.5: nine controls move from Designed to Simulated operation (CE-07, IC-02, RA-02, AC-01, AC-16, AC-18, CM-06, RM-02, CO-04). A tabletop is not an instance, so each of these still fails or cannot be tested (AC-01 stays cannot test). One result changes for a different reason: AC-05 moves from cannot test to fail, because the existing Terraform contradicts the control (section 2 rule, as for the mutable image tag of AC-15). Counts are now 13 pass, 33 fail, 19 cannot test |
+| 1.3 | 2026-11-12 | OP-01: one green GitHub run of the platform jobs exists (REAL-SDLC-002) |

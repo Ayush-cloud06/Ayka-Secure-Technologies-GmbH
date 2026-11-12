@@ -6,7 +6,7 @@
 | Classification | Internal |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.2 |
+| Version | 1.3 |
 | Effective | On approval |
 | Next review | 12 months after approval |
 | Status | Draft. Not approved |
@@ -80,6 +80,8 @@ Each quarter, Compliance and Risk compares the list of merged pull requests with
 
 The repository has one maintainer, so the ruleset requires 0 approvals and the approval environments allow self-review (CM-05 Designed in the [SOC 2 matrix](../SOC2/03-control-matrix.md)). Until a second maintainer exists, the compensating control is a monthly retrospective review of all merged changes by the Managing Director role, designed in [SOC2-08 section 3](../SOC2/08-control-designs.md). It ran once, for October 2026, as [REAL-SOC2-001](../records/real/soc2/REAL-SOC2-001-change-review-2026-10.md): the repository owner was both author and reviewer, so it detects but provides no separation of duties. It found 0 approvals on 17 merged pull requests. The reviewer needs read access to GitHub and the list of merged changes; in the simulated company the Managing Director has neither (SIM-GOV-001 finding 5).
 
+A second gap was read from the configuration on 2026-11-12 ([REAL-SDLC-002](../records/real/sdlc/REAL-SDLC-002-first-github-runs-and-apply-timeout.md) section 5; not tested with a real pull request). An `approval_required` decision leaves all five required checks green, so the elevated path of section 4 holds the simulated apply but not the merge. Requiring the `Gate Summary` check closes it; that is an open owner action (O-03 in [REAL-ISMS-001](../records/real/isms/REAL-ISMS-001-owner-actions-open.md)). The same record explains the red push runs on `main`: the simulated apply waited 30 days for an approval and timed out. It now runs on manual dispatch only.
+
 ## Revision history
 
 | Version | Date | Change |
@@ -87,3 +89,4 @@ The repository has one maintainer, so the ruleset requires 0 approvals and the a
 | 1.0 | 2026-10-06 | First issue |
 | 1.1 | 2026-10-14 | Clarify plan-only scope and independent-review limitation |
 | 1.2 | 2026-11-10 | Section 10: CM-05 status is Designed; the monthly review ran once (REAL-SOC2-001) with reviewer equal to author; reviewer access gap from SIM-GOV-001 finding 5 |
+| 1.3 | 2026-11-12 | Section 10: a MEDIUM decision does not hold the merge; cause of the red push runs (REAL-SDLC-002) |

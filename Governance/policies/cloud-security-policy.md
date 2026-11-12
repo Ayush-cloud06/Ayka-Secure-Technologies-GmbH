@@ -5,7 +5,7 @@
 | Document ID | POL-CLD-01 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.1 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when a cloud provider, Region or AWS account is added |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -181,7 +181,7 @@ Policy exceptions are requested in writing with a reason, compensating control a
 | Source now names `eu-central-1` only; residency decision and Identity Center re-creation open | Open | [REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md) | RISK-011 |
 | Organization, OUs and SCPs are scanned in plan mode (local run, [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md)) but not deployed and not merge-blocking; no member accounts defined | Gated design | [`aws-organization/`](../../Internal-IT/platform/foundation/aws-organization/) | RISK-012 |
 | No remote state backend; drift detection cannot run | Planned | [README §6](../../README.md#6-known-limitations) | RISK-002 |
-| Platform roots: CI jobs defined (plan mode for four roots, source mode for two, Entra ID validate-only), run locally only, not required checks | Gated design | [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md); OP-01 in the [control matrix](../SOC2/03-control-matrix.md) | Owner action O-03 in [REAL-ISMS-001](../records/real/isms/REAL-ISMS-001-owner-actions-open.md) |
+| Platform roots: CI jobs defined (plan mode for four roots, source mode for two, Entra ID validate-only), run locally and, since 2026-11-12, on GitHub (REAL-SDLC-002), not required checks | Gated design | [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md); OP-01 in the [control matrix](../SOC2/03-control-matrix.md) | Owner action O-03 in [REAL-ISMS-001](../records/real/isms/REAL-ISMS-001-owner-actions-open.md) |
 | Config, Security Hub, GuardDuty and EventBridge alert rules exist in the landing zone and are scanned; none is deployed, so no running-state posture monitoring exists | Gated design | [STD-LOG-01 §6](logging-and-monitoring-standard.md#6-alerting) | |
 | No provider attestation retrieved; no exit plan | Planned | [POL-VEN-01 §8](vendor-management-policy.md#8-current-gaps) | |
 | Only a `dev` environment exists (`envs/dev.tfvars`) | Planned | [`envs/`](../../Internal-IT/workloads/ayka-portal/envs/) | |
@@ -192,3 +192,4 @@ Policy exceptions are requested in writing with a reason, compensating control a
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
 | 1.1 | 2026-11-10 | Section 7 and 8: Region migrated in source (REAL-INFRA-003); platform roots and detection scanned locally (REAL-INFRA-001). No gap closes |
+| 1.2 | 2026-11-12 | Section 8: platform jobs have run on GitHub (REAL-SDLC-002); still not required checks |

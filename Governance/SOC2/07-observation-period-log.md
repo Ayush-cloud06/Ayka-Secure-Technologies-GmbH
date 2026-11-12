@@ -5,7 +5,7 @@
 | Document ID | SOC2-07 |
 | Owner | Cloud Platform Engineering, for the CISO |
 | Approver | CISO |
-| Version | 1.1 |
+| Version | 1.2 |
 | Observation start | 2026-11-10 |
 | Next review | Monthly, at the monthly change review ([SOC2-08](08-control-designs.md#3-compensating-monthly-change-review-cm-05-g3)) |
 | Status | Draft. Started 2026-11-10. Simulated entity: the period is practice, not a SOC 2 period |
@@ -135,12 +135,12 @@ Controls: CM-02 and MO-01 on a developer machine (re-performance of the gate; th
 
 ## 7. Not collected yet
 
-- Any run after 2026-10-14: there has been none.
+- Any run after 2026-10-14: runs exist since 2026-11-12 ([REAL-SDLC-002](../records/real/sdlc/REAL-SDLC-002-first-github-runs-and-apply-timeout.md) section 2) but are not yet entered in sections 5 and 6.
 - A MEDIUM-path approval (CM-03): none occurred.
 - The `compliance-evidence-regression` artifact content (MO-01): listed, not downloaded.
-- Environment approval history for `manual-apply-approval`: not exported; needed to explain G14.
+- Environment approval history for `manual-apply-approval`: not exported. G14 is explained without it: the approvals list of a failed run is empty and the job timed out after 30 days (REAL-SDLC-002 section 3).
 - A copy of any artifact outside GitHub: none exists (G7). The `evidence-archive` root is scanned but has no upload step.
-- Runs of the `Platform Gate`, `Platform Validate` and `Security Checks` jobs on GitHub: none. They exist in `test.yml` and `security-checks.yml` and ran only locally ([REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md), [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md)); they are not required checks, so they are not part of the observed controls in section 1.
+- Runs of the `Platform Gate`, `Platform Validate` and `Security Checks` jobs on GitHub: first runs on 2026-11-12 (REAL-SDLC-002), not entered here. Before that they ran only locally ([REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md), [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md)); they are not required checks, so they are not part of the observed controls in section 1.
 
 ## Revision history
 
@@ -148,3 +148,4 @@ Controls: CM-02 and MO-01 on a developer machine (re-performance of the gate; th
 |---|---|---|
 | 1.0 | 2026-11-10 | First issue. Baseline of 20 push runs, entries P-001 to P-003 |
 | 1.1 | 2026-11-10 | Section 7 lists the new CI jobs that have not run on GitHub and the archive without an upload step |
+| 1.2 | 2026-11-12 | Section 7: runs since 2026-11-12 exist and are not entered yet; G14 explained by REAL-SDLC-002 |
