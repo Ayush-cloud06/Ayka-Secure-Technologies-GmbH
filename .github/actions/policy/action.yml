@@ -13,7 +13,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        # conftest v0.45.0 bundles OPA 0.56.0; the rego files use v0 syntax (ADR-0015)
+        # conftest v0.45.0 bundles OPA 0.56.0; the rego files use v0 syntax (README, Known limitations)
         wget -q https://github.com/open-policy-agent/conftest/releases/download/v0.45.0/conftest_0.45.0_Linux_x86_64.tar.gz
         echo "65edcf630f5cd2142138555542f10f8cbc99588e5dfcefbfa1e8074c7cc82c23  conftest_0.45.0_Linux_x86_64.tar.gz" | sha256sum -c -
         tar xzf conftest_0.45.0_Linux_x86_64.tar.gz conftest

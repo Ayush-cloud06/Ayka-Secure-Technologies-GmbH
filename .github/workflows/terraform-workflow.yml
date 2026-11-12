@@ -1,5 +1,7 @@
 name: Terraform Compliance Workflow
 # Reusable workflow: plan, scan, decide, record evidence, simulated apply.
+# The simulated apply runs only on a manual dispatch from main: on a push nobody
+# answers the approval prompt, GitHub times it out after 30 days and the run ends red.
 
 on:
   workflow_call:
@@ -24,7 +26,7 @@ on:
         type: string
         default: 'plan'
       simulate_apply:
-        description: 'Run the simulated apply job on main after a passing decision'
+        description: 'Allow the simulated apply job (manual dispatch on main, after a passing decision)'
         required: false
         type: boolean
         default: true
@@ -49,9 +51,12 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
 
       - name: Terraform Validate
         uses: ./.github/actions/validate
@@ -62,6 +67,7 @@ jobs:
   compliance:
     needs: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       schema_version: ${{ steps.decision.outputs.schema_version }}
       decision: ${{ steps.decision.outputs.decision }}
@@ -69,7 +75,9 @@ jobs:
       unmapped_findings: ${{ steps.decision.outputs.unmapped_findings }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
 
       - name: Terraform Plan
         if: ${{ inputs.scan_mode == 'plan' }}
@@ -112,28 +120,36 @@ jobs:
     needs: compliance
     if: ${{ needs.compliance.outputs.approval_required == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: medium-risk-approval
     steps:
       - name: Await Manual Approval
+        env:
+          DECISION: ${{ needs.compliance.outputs.decision }}
+          SCHEMA_VERSION: ${{ needs.compliance.outputs.schema_version }}
+          UNMAPPED: ${{ needs.compliance.outputs.unmapped_findings }}
         run: |
           echo "Medium severity findings require manual approval."
-          echo "Compliance decision: ${{ needs.compliance.outputs.decision }}"
-          echo "Summary schema version: ${{ needs.compliance.outputs.schema_version }}"
-          echo "Unmapped findings: ${{ needs.compliance.outputs.unmapped_findings }}"
+          echo "Compliance decision: $DECISION"
+          echo "Summary schema version: $SCHEMA_VERSION"
+          echo "Unmapped findings: $UNMAPPED"
 
   apply:
     needs: [compliance, medium-risk-approval]
     if: |
-      always() && inputs.simulate_apply &&
+      always() && inputs.simulate_apply && github.event_name == 'workflow_dispatch' &&
       (needs.compliance.outputs.decision == 'pass' || needs.medium-risk-approval.result == 'success') &&
       github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment:
       name: manual-apply-approval
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
 
       - name: Verify Integrity and Simulated Apply
         uses: ./.github/actions/apply

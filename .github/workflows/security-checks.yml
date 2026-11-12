@@ -9,14 +9,23 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # Weekly (Monday 05:17 UTC): a new advisory against a pinned dependency shows up
+  # without waiting for the next change (POL-VUL-01 2).
+  schedule:
+    - cron: '17 5 * * 1'
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   secret-scan:
     name: Secret scan (gitleaks)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code (full history)
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -36,6 +45,7 @@ jobs:
   workflow-and-script-lint:
     name: actionlint and shellcheck
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -63,9 +73,32 @@ jobs:
       - name: shellcheck (CI scripts)
         run: shellcheck --severity=warning Internal-IT/engineering/ci-cd/scripts/*.sh
 
+  workflow-security:
+    name: zizmor (workflow security)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Install zizmor (pinned)
+        run: pip install zizmor==1.30.1
+
+      - name: zizmor (workflows, composite actions, Dependabot config)
+        # Offline: no token and no API calls. Rule settings are in .github/zizmor.yml.
+        run: zizmor --offline --config .github/zizmor.yml .github
+
   python-security:
     name: Bandit and pip-audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -92,6 +125,7 @@ jobs:
   sbom:
     name: SBOM (CycloneDX)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -116,4 +150,20 @@ jobs:
         with:
           name: sbom-cyclonedx
           path: sbom.cdx.json
+          retention-days: 90
           if-no-files-found: error
+
+  # One check that stands for this workflow, so the ruleset can require a single name.
+  security-summary:
+    name: Security Summary
+    if: always()
+    needs: [secret-scan, workflow-and-script-lint, workflow-security, python-security, sbom]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every security job succeeded
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$RESULTS" | jq -e 'all(.[]; .result == "success")' > /dev/null

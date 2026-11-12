@@ -1,6 +1,6 @@
 name: Drift Detection (manual)
 
-# ADR-0008: manual-only until ayka-portal has a remote backend and real applied resources.
+# Manual-only until ayka-portal has a remote backend and real applied resources.
 # Without state, every run would report all resources as "to add", which is not drift.
 on:
   workflow_dispatch:
@@ -11,12 +11,15 @@ permissions:
 jobs:
   detect-drift:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       matrix:
         workload: ['Internal-IT/workloads/ayka-portal']
     steps:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
 
       - name: Require a remote backend
         working-directory: ${{ matrix.workload }}
@@ -34,6 +37,8 @@ jobs:
 
       - name: Terraform Init and Plan
         working-directory: ${{ matrix.workload }}
+        env:
+          WORKLOAD: ${{ matrix.workload }}
         run: |
           terraform init -input=false
           set +e
@@ -42,6 +47,6 @@ jobs:
           set -e
           case "$code" in
             0) echo "No drift." ;;
-            2) echo "::error::Drift detected in ${{ matrix.workload }}"; exit 1 ;;
+            2) echo "::error::Drift detected in $WORKLOAD"; exit 1 ;;
             *) echo "::error::terraform plan failed (exit $code)"; exit 1 ;;
           esac

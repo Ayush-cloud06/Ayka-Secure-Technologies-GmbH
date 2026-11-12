@@ -18,12 +18,21 @@ env:
 permissions:
   contents: read
 
+# A newer push to the same pull request replaces the older run. Runs on main and manual
+# runs are never cancelled or queued behind each other: each keeps its own evidence.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   validate-scripts:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
       - name: Validate CI shell scripts
         run: |
           for file in Internal-IT/engineering/ci-cd/scripts/*.sh; do
@@ -33,9 +42,12 @@ jobs:
   unit-tests:
     needs: validate-scripts
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
@@ -64,7 +76,7 @@ jobs:
       workload_dir: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
       terraform_version: 1.7.5
 
-  # Platform roots (SOC 2 G12). A separate job, so the required check names of
+  # Platform roots (SOC 2 G12). A separate job, so the check names of
   # `compliance` and `regression` do not change. Plan mode: offline plan with mock
   # credentials, all three tools. Source mode: the root needs a real login to plan
   # (Azure, Identity Center lookups), so Checkov and tfsec scan the source and OPA
@@ -110,6 +122,7 @@ jobs:
     name: Platform Validate (no scanner coverage)
     needs: unit-tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -117,7 +130,9 @@ jobs:
           - Internal-IT/platform/domains/identity/entra-id
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
 
       - name: Terraform Validate
         uses: ./.github/actions/validate
@@ -129,11 +144,14 @@ jobs:
     name: Control Validation Regression
     needs: unit-tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     # Only run regression if we're not already running it as the primary workload
     if: ${{ github.event.inputs.workload_dir != 'Internal-IT/workloads/control-validation-scenarios' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
 
       - name: Terraform Validate (Regression)
         uses: ./.github/actions/validate
@@ -171,3 +189,22 @@ jobs:
       - name: Check Regression Results
         shell: bash
         run: bash Internal-IT/engineering/ci-cd/scripts/check-regression.sh
+
+  # One check that stands for the whole pipeline, so the ruleset can require a single
+  # name instead of every matrix leg. It also waits for `compliance` and `platform` to
+  # finish, including a pending medium-risk approval: required, it keeps a pull request
+  # with a MEDIUM finding unmergeable until a reviewer approves.
+  gate-summary:
+    name: Gate Summary
+    if: always()
+    needs: [validate-scripts, unit-tests, compliance, platform, platform-validate-only, regression]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every gate job succeeded (regression may be skipped on purpose)
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$RESULTS" | jq -e 'del(.regression) | all(.[]; .result == "success")' > /dev/null
+          echo "$RESULTS" | jq -e '.regression.result == "success" or .regression.result == "skipped"' > /dev/null

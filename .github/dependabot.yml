@@ -4,6 +4,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Wait a week before proposing a new release, so a bad or hijacked one is likely
+    # pulled first.
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "ci"
     open-pull-requests-limit: 5
@@ -12,6 +16,8 @@ updates:
     directory: /tests
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "deps"
     open-pull-requests-limit: 5

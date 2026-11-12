@@ -1,0 +1,6 @@
+# zizmor settings (security-checks.yml, job "zizmor (workflow security)").
+rules:
+  # zizmor suggests `$/...` for local actions and workflows. The pinned actionlint
+  # (1.7.12) has not been checked against that syntax, so `./...` stays for now.
+  self-repository:
+    disable: true

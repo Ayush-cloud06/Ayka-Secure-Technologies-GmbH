@@ -25,7 +25,11 @@ runs:
 
     - name: Terraform fmt check
       shell: bash
-      run: terraform fmt -check -recursive "${{ inputs.workload_dir }}"
+      env:
+        # Passed through the environment, never pasted into the script: the value can
+        # come from a manual dispatch input.
+        WORKLOAD_DIR: ${{ inputs.workload_dir }}
+      run: terraform fmt -check -recursive "$WORKLOAD_DIR"
 
     - name: Terraform init for validation
       shell: bash

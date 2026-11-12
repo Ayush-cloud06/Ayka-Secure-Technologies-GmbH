@@ -31,7 +31,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.workload_dir }}
       env:
-        # ADR-0013: plan-only work never logs in to AWS. The provider's skip_* flags
+        # Plan-only work never logs in to AWS. The provider's skip_* flags
         # stop it from calling AWS; these values only satisfy its credential check.
         AWS_ACCESS_KEY_ID: mock
         AWS_SECRET_ACCESS_KEY: mock
