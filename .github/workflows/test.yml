@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Validate CI shell scripts
         run: |
           for file in Internal-IT/engineering/ci-cd/scripts/*.sh; do
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Python
         uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
@@ -117,7 +117,7 @@ jobs:
           - Internal-IT/platform/domains/identity/entra-id
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Terraform Validate
         uses: ./.github/actions/validate
@@ -133,7 +133,7 @@ jobs:
     if: ${{ github.event.inputs.workload_dir != 'Internal-IT/workloads/control-validation-scenarios' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Terraform Validate (Regression)
         uses: ./.github/actions/validate
