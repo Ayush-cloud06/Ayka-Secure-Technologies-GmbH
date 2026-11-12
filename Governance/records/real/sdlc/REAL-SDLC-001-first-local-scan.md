@@ -36,7 +36,7 @@ Reproduce: install the pinned versions above and run the commands from the repos
 
 ## Limits
 
-- This was a **local run**. The workflow has **not yet run on GitHub**; whether the runner, network downloads and the artifact upload work there is unverified. Open until the first Actions run exists, then link its run ID here.
+- This was a **local run**. The workflow has **not yet run on GitHub**; whether the runner, network downloads and the artifact upload work there is unverified. Open until the first Actions run exists, then link its run ID here. **Update 2026-11-12:** the workflow ran on GitHub. Run [43207474861](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/43207474861) failed on Bandit findings and run [43207830148](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/actions/runs/43207830148) passed after the fix; see [REAL-SDLC-002](REAL-SDLC-002-first-github-runs-and-apply-timeout.md).
 - The checks are not yet required checks in the `protect-main` ruleset. Adding them is an owner action in GitHub settings and is **open**.
 - No application code exists, so SAST and SCA cover only the repository's scripts and tests.
 - The shellcheck release has no published checksum file; its digest in the workflow was computed from the downloaded asset (trust on first use).
