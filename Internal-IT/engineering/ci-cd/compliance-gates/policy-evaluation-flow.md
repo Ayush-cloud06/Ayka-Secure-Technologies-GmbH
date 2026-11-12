@@ -1,30 +1,37 @@
-# Policy Evaluation Flow
+# Policy evaluation flow
 
-This document describes the active  evaluation flow for the compliance pipeline.
+The order of steps in one gate run. Severity rules, fail-closed conditions and exceptions are in [enforcement levels](enforcement-levels.md).
 
-## Flow
+## Flow (plan mode)
 
-1. Terraform plan JSON is exported to `output/tfplan.json`.
+1. `terraform plan` runs with mock credentials and no cloud login; the plan is exported to `output/tfplan.json`.
 2. Checkov scans the plan and writes `output/checkov-result.json`.
-3. tfsec scans the workload and writes `output/tfsec-result.json`.
-4. Conftest evaluates OPA policies and writes `output/opa-result.json`.
-5. `evaluate-results.py` normalizes all findings into one shared model.
-6. The evaluator applies metadata from [control-mapping.yaml](../../policy-as-code/metadata/control-mapping.yaml).
-7. The evaluator writes `output/compliance-summary.json`.
-8. GitHub Actions reads only the summary outputs for gating and approval routing.
-9. Raw scanner JSON and the summary artifact are exported as evidence.
+3. tfsec scans the source of the same root and writes `output/tfsec-result.json`.
+4. conftest evaluates the Rego rules on the plan and writes `output/opa-result.json`.
+5. [`evaluate-results.py`](../scripts/evaluate-results.py) checks each input and stops if one is missing, malformed, errored or empty.
+6. It turns all findings into one shared model and applies [`control-mapping.yaml`](../../policy-as-code/metadata/control-mapping.yaml).
+7. It sets aside findings matched by an active entry in [`exceptions.yaml`](../../policy-as-code/metadata/exceptions.yaml).
+8. It decides on what remains and writes `output/compliance-summary.json`.
+9. GitHub Actions reads only the summary's outputs to route the run.
+10. The report, the raw scanner JSON, a run manifest and SHA-256 checksums of every file are uploaded as the evidence artifact, also when the run fails.
 
-## OPA Mapping Logic
+In source mode there is no step 1 or 4: Checkov reads the source, OPA does not run, and the summary records that under `tools_not_run`.
 
-OPA findings are resolved in this order:
+## OPA mapping order
 
-1. Match a control ID prefix in the message, for example `[S3_PUBLIC_ACCESS]`.
-2. If no prefix exists, match the OPA namespace and message text using `message_patterns` in `control-mapping.yaml`.
-3. If neither match succeeds, record the finding as unmapped and assign fallback severity.
+1. A control ID prefix in the message, for example `[S3_PUBLIC_ACCESS]`.
+2. Otherwise the OPA package and message text, matched against `message_patterns` in the mapping.
+3. Otherwise the finding is unmapped and counts as `MEDIUM`.
 
-## Decision Logic
+## Decision
 
-1. Any `HIGH` finding sets `decision` to `fail`.
-2. If there is no `HIGH` finding but there is at least one `MEDIUM` finding, set `decision` to `approval_required`.
-3. If only `LOW` findings exist, set `decision` to `pass`.
-4. Unmapped findings do not currently create a separate gate, but they are surfaced explicitly for Level 2 coverage tracking.
+1. Any `HIGH` finding: `fail`.
+2. No `HIGH` but at least one `MEDIUM`: `approval_required`.
+3. Only `LOW`, or nothing: `pass`.
+
+An unmapped finding is at least `MEDIUM`, so it leads to `approval_required` or `fail`, never to a silent `pass`.
+
+## After the decision
+
+- `approval_required` starts the `medium-risk-approval` job, which waits for a reviewer.
+- The simulated apply runs only on a manual dispatch from `main`, after `pass` or an approved medium decision. It verifies the checksums and that the bundle belongs to the commit, then prints `SIMULATED APPLY`.
