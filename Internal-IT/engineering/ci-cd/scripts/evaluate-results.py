@@ -39,6 +39,14 @@ TF_ADDRESS = re.compile(
 )
 OPA_CONTROL_PREFIX = re.compile(r"^\[(?P<control_id>[A-Z0-9_]+)\]\s*(?P<message>.*)$")
 TOOLS = ("checkov", "opa", "tfsec")
+# "plan": all three tools judge a Terraform plan (the default, and the only mode for workloads).
+# "source": the root cannot be planned without real credentials, so Checkov and tfsec
+# scan the source and OPA does not run. It must be asked for explicitly; anything else stops.
+SCAN_MODES = ("plan", "source")
+OPA_NOT_RUN_REASON = (
+    "source scan: the OPA rules read a Terraform plan, and this root cannot be "
+    "planned offline with mock credentials"
+)
 # ADR-0011: a finding nobody has mapped yet is at least MEDIUM, so a human sees it.
 UNMAPPED_MIN_SEVERITY = "MEDIUM"
 SEVERITY_ORDER = ["LOW", "MEDIUM", "HIGH"]
@@ -406,6 +414,24 @@ def address_in(message):
     return match.group(1) if match else None
 
 
+def scan_mode():
+    mode = os.environ.get("COMPLIANCE_SCAN_MODE", "plan")
+    if mode not in SCAN_MODES:
+        print(f"Invalid COMPLIANCE_SCAN_MODE {mode!r}: expected one of {list(SCAN_MODES)}", file=sys.stderr)
+        sys.exit(1)
+    return mode
+
+
+def normalize_workload(value):
+    """WORKLOAD_DIR as written by CI or by hand: no leading ./ and no trailing /."""
+    if not value:
+        return None
+    value = str(value).strip()
+    while value.startswith("./"):
+        value = value[2:]
+    return value.rstrip("/") or None
+
+
 def load_exceptions(today):
     """ADR-0014: accepted findings live in one reviewed file, each with an owner and an expiry."""
     if not EXCEPTIONS_FILE.exists():
@@ -424,11 +450,20 @@ def load_exceptions(today):
     return active
 
 
-def split_excepted(findings, exceptions):
+def exception_applies(entry, finding, workload):
+    """An entry with a `workload` only matches findings of that workload. Without a known
+    workload such an entry never matches, so a missing WORKLOAD_DIR cannot hide a finding."""
+    if entry["policy_id"] != finding["source"] or entry["resource"] != finding["resource"]:
+        return False
+    scoped = normalize_workload(entry.get("workload"))
+    return scoped is None or scoped == workload
+
+
+def split_excepted(findings, exceptions, workload=None):
     kept, excepted = [], []
     for finding in findings:
         match = next(
-            (e for e in exceptions if e["policy_id"] == finding["source"] and e["resource"] == finding["resource"]),
+            (e for e in exceptions if exception_applies(e, finding, workload)),
             None,
         )
         if match:
@@ -469,6 +504,7 @@ def build_control_summary(findings):
         control = control_findings[0].get("control", {})
         by_control[control_id] = {
             "title": control.get("title"),
+            "frameworks": control.get("frameworks", {}),
             "severity": control_findings[0]["severity"],
             "total_findings": len(control_findings),
             "tools": sorted({finding["tool"] for finding in control_findings}),
@@ -558,7 +594,7 @@ def build_distinct_findings(findings):
     return distinct
 
 
-def build_summary(findings, excepted=()):
+def build_summary(findings, excepted=(), mode="plan", workload=None):
     by_tool_groups = {tool: [] for tool in TOOLS}  # ADR-0011: every scanner is listed, even with 0 findings
     for finding in findings:
         by_tool_groups.setdefault(finding["tool"], []).append(finding)
@@ -569,7 +605,10 @@ def build_summary(findings, excepted=()):
     unmapped_findings = [finding for finding in findings if not finding["mapped"]]
 
     summary = {
-        "schema_version": "2.1",
+        "schema_version": "2.2",
+        "scan_mode": mode,
+        "workload_dir": workload,
+        "tools_not_run": {"opa": OPA_NOT_RUN_REASON} if mode == "source" else {},
         "decision": "pass",
         "approval_required": False,
         "decision_basis": {
@@ -593,6 +632,8 @@ def build_summary(findings, excepted=()):
         "findings": findings,
         "excepted_findings": list(excepted),
     }
+    for tool in summary["tools_not_run"]:
+        summary["by_tool"][tool]["not_run"] = True
     for finding in excepted:
         summary["by_tool"][finding["tool"]].setdefault("excepted_findings", 0)
         summary["by_tool"][finding["tool"]]["excepted_findings"] += 1
@@ -607,8 +648,11 @@ def build_summary(findings, excepted=()):
 
 
 def main():
+    mode = scan_mode()
+    workload = normalize_workload(os.environ.get("WORKLOAD_DIR"))
     checkov_data = load_json(CHECKOV_FILE)
-    opa_data = load_json(OPA_FILE)
+    # In source mode OPA has no plan to read; its result file is not read at all.
+    opa_data = load_json(OPA_FILE) if mode == "plan" else None
     tfsec_data = load_json(TFSEC_FILE)
     control_mapping_data = load_yaml(CONTROL_MAPPING_FILE)
 
@@ -623,16 +667,17 @@ def main():
     validate_control_mapping(controls)
     validate_checkov(checkov_data)
     validate_tfsec(tfsec_data)
-    validate_opa(opa_data, opa_package_index)
+    if mode == "plan":
+        validate_opa(opa_data, opa_package_index)
 
     findings = (
         normalize_checkov(checkov_data, controls, checkov_index)
-        + normalize_opa(opa_data, controls, opa_control_index, opa_package_index)
+        + (normalize_opa(opa_data, controls, opa_control_index, opa_package_index) if mode == "plan" else [])
         + normalize_tfsec(tfsec_data, controls, tfsec_index)
     )
 
-    findings, excepted = split_excepted(findings, load_exceptions(date.today()))
-    summary = build_summary(findings, excepted)
+    findings, excepted = split_excepted(findings, load_exceptions(date.today()), workload)
+    summary = build_summary(findings, excepted, mode, workload)
     SUMMARY_FILE.parent.mkdir(parents=True, exist_ok=True)
     SUMMARY_FILE.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 

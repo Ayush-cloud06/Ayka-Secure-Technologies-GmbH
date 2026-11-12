@@ -80,7 +80,8 @@ ISMS Ownership
 - EMP-002 Chief Information Security Officer
 
 Internal Audit Responsibility
-- EMP-004 Compliance Analyst
+- EMP-004 Compliance Analyst (programme owner)
+- EMP-021 Compliance Officer (lead auditor for areas EMP-004 works in)
 
 Incident Response Coordination
 - EMP-005 Security Operations Analyst

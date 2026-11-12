@@ -5,7 +5,7 @@
 | Document ID | ISMS-01-01 |
 | Owner | HR & Administration |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or a contract, legal or information-classification change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -16,7 +16,7 @@
 
 Draft template supporting ISO/IEC 27001:2022 A.6.6 and [classification policy](../../policies/data-classification-and-confidentiality-policy.md). No agreement has been executed. HR & Administration must obtain review of the actual relationship and applicable law before use; an NDA is not a data-processing agreement, employment contract or IP assignment.
 
-Complete the fields below in an approved private contract system. Store no names, signatures or executed contracts in this public repository. The signed NDA index remains Planned until actual agreements exist.
+Complete the fields below in an approved private contract system. Store no names, signatures or executed contracts in this public repository. A real signed NDA index does not exist; it belongs in that private system. A simulated example of the index, with fictional staff and no signatures, is [SIM-PPL-002](../../records/simulated/people/SIM-PPL-002-nda-index.md).
 
 ## 2. Agreement fields
 
@@ -44,10 +44,11 @@ Complete the fields below in an approved private contract system. Store no names
 
 HR & Administration checks completeness; the information owner checks scope; Compliance & Risk Management checks legal/processor overlaps; the authorised signatories execute the reviewed agreement. Record agreement ID, parties, purpose, executed date, versions, expiry, reviewer and secure storage location. Verify before access is granted and on role/contract change; remind leavers of continuing obligations.
 
-No entries yet: the company and staff are simulated. Do not fill the register with fictional signatures or dates. Status: Designed, evidenced by this template and [onboarding/offboarding](onboarding-and-offboarding-procedure.md); execution and verification are Planned.
+No real entries: the company and staff are simulated. Do not fill this register with fictional signatures or dates; walk-throughs go to the separate simulated store under [ADR-0006](../../ADR/0006-simulated-operating-records.md). Status: Designed, evidenced by this template and [onboarding/offboarding](onboarding-and-offboarding-procedure.md); real execution and verification have not happened.
 
 ## Revision history
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Point to the simulated NDA index SIM-PPL-002 and state that real entries do not exist |

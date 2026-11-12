@@ -5,6 +5,10 @@ inputs:
   workload_dir:
     description: 'Terraform workload directory that tfsec scans'
     required: true
+  scan_mode:
+    description: 'plan (Checkov reads the plan) or source (Checkov reads the source; no plan exists)'
+    required: false
+    default: 'plan'
 
 runs:
   using: 'composite'
@@ -27,6 +31,9 @@ runs:
 
     - name: Run Checkov
       shell: bash
+      env:
+        COMPLIANCE_SCAN_MODE: ${{ inputs.scan_mode }}
+        WORKLOAD_DIR: ${{ inputs.workload_dir }}
       run: bash Internal-IT/engineering/ci-cd/scripts/run-checkov.sh
 
     - name: Run tfsec

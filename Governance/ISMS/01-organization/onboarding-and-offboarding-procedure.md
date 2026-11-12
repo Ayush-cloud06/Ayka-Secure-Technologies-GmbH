@@ -5,7 +5,7 @@
 | Document ID | ISMS-ORG-04 |
 | Owner | HR & Administration |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or role change, personnel incident or identity change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -20,7 +20,7 @@ Coordinate people, equipment and access under [POL-AC-01](../../policies/access-
 
 | Stage | Responsible role | Completion evidence |
 |---|---|---|
-| Confirm engagement | HR & Administration | Authorized engagement/start date, role, appropriate screening decision, confidentiality terms using [NDA template](nda-template.md), and restricted record reference |
+| Confirm engagement | HR & Administration | Authorized engagement/start date, role, screening result against the [screening criteria](personnel-screening-criteria.md), confidentiality terms using [NDA template](nda-template.md), and restricted record reference |
 | Prepare workspace | Cloud Platform Engineering | Authorized device/asset assignment, security configuration check, recovery/contact information and asset-owner record |
 | Prepare access | Receiving function owner and CISO where privileged | Task-based request, least-privilege approval, expiry and independent approver using the [user access procedure](../06-operational-procedures/user-access-procedure.md) |
 | Induct | HR & Administration with Security Operations | Policy acknowledgement and completed baseline security training before access; incident reporting, acceptable use, remote working and data handling covered |
@@ -53,3 +53,4 @@ One restricted lifecycle record links trigger/time, employee or contractor refer
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-10-14 | Point the joiner stage at the screening criteria. No screen has been performed |

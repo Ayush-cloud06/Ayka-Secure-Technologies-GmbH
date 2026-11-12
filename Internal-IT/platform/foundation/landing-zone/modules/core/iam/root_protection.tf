@@ -6,6 +6,6 @@
 # the baseline expectation and document the security posture
 
 output "root_account_id" {
-  value       = data.aws_caller_identity.current.account_id
+  value       = var.account_id
   description = "AWS Account ID. Root user must be protected with MFA and no access keys."
 }

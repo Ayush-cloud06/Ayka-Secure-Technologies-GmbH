@@ -5,7 +5,7 @@
 | Document ID | POL-PRIV-01 |
 | Owner | Compliance & Risk Management |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.3 |
 | Effective | On approval |
 | Next review | 12 months after approval, or a new processing purpose, processor, transfer or personal-data incident |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -38,7 +38,7 @@ Legal basis, DPO requirement, DPIA necessity and transfer mechanism require asse
 - Use named, least-privilege access under [access control](access-control-policy.md). Review both customer access boundaries and administrative access. Do not use live personal data in development or test.
 - Use approved encryption under [cryptography](cryptography-policy.md). Pseudonymised data remains protected; encryption does not by itself remove privacy obligations.
 - Publish no real personnel, customer, incident or request records to this public repository. Templates contain no real identities or signatures. Existing personnel entries are labelled fictional; verify any disputed identity before retaining it.
-- Target hosting is `eu-central-1`, while Terraform still names `ap-south-1` (RISK-011). No EU-location promise may be made until actual hosting, support access and transfers are assessed.
+- Target hosting is `eu-central-1`; since 2026-11-10 the Terraform source names only that Region ([REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md)). Nothing is deployed (RISK-011). No EU-location promise may be made until actual hosting, support access and transfers are assessed.
 - Process customer data only on documented instructions, with agreed assistance, return/deletion and subprocessor arrangements. Escalate a suspected unlawful instruction for legal assessment before acting.
 
 ## 4. Requests, incidents and evidence
@@ -50,7 +50,7 @@ Legal basis, DPO requirement, DPIA necessity and transfer mechanism require asse
 | Contract end or verified deletion request | Apply [retention](records-and-data-retention-policy.md); address versions, backups, logs and subprocessors; identify lawful holds | Deletion record states what was removed, exceptions and remaining backup expiry; no absolute deletion claim before verification |
 | New purpose or material design change | Repeat section 2, update notices and processing record before use | Decision and change evidence |
 
-The detailed rights-request procedure, DPIA screening, transfer assessment and DPO decision remain Planned in the [GDPR index](../GDPR/README.md). These require completion before relevant real processing begins.
+The rights-request procedure, DPIA screening, transfer assessment and DPO decision are drafted in the [GDPR index](../GDPR/README.md). Since 2026-11-10 the index also holds a transfer position, a legitimate-interests assessment, a compact DPIA for security logging and a reasoned DPO decision (designate an external officer; none is appointed). Worked examples are simulated records under [records/simulated/privacy](../records/simulated/privacy/SIM-DSR-001-access-and-erasure-request.md) ([ADR-0006](../ADR/0006-simulated-operating-records.md)). No real request, approval or appointment exists, and no lawyer has reviewed the conclusions. Repeat the screening before relevant real processing begins. Retention periods are proposed in the [retention policy](records-and-data-retention-policy.md) and are not approved.
 
 ## 5. Sources, current status and review
 
@@ -63,3 +63,6 @@ Status: Designed, evidenced by this policy, the [processing record](../GDPR/reco
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-10-14 | Point section 4 at the drafted privacy records. They are not completed activities |
+| 1.2 | 2026-11-10 | Section 4: point at the completed drafts and the simulated records |
+| 1.3 | 2026-11-10 | Region statement updated after REAL-INFRA-003; header version corrected (it still read 1.1 after the 1.2 change) |

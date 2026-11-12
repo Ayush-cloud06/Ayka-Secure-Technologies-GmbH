@@ -8,6 +8,7 @@ controls:
     domain: compute_security
     frameworks:
       iso27001: ["A.8.20", "A.8.21"]
+      soc2: ["CC6.1", "CC6.6"]
     enforcement:
       tool: opa
       control_id: EC2_OPEN_SSH
@@ -34,6 +35,7 @@ controls:
     domain: storage_security
     frameworks:
       iso27001: ["A.8.12", "A.8.24"]
+      soc2: ["CC6.1", "CC6.6", "C1.1"]
     enforcement:
       tool: opa
       control_id: S3_PUBLIC_ACCESS
@@ -66,6 +68,7 @@ controls:
     domain: instance_hardening
     frameworks:
       iso27001: ["A.8.9", "A.8.20"]
+      soc2: ["CC6.6", "CC7.1"]
     enforcement:
       tool: opa
       control_id: EC2_MISSING_IMDSV2
@@ -93,6 +96,7 @@ controls:
     domain: storage_resilience
     frameworks:
       iso27001: ["A.8.13", "A.5.30"]
+      soc2: ["A1.2"]
     enforcement:
       tool: checkov
       control_id: S3_VERSIONING_DISABLED
@@ -115,6 +119,7 @@ controls:
     domain: asset_management
     frameworks:
       iso27001: ["A.5.9"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: opa
       control_id: EC2_MISSING_TAGS
@@ -136,6 +141,7 @@ controls:
     domain: storage_security
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.1", "C1.1"]
     enforcement:
       tool: opa
       control_id: S3_ENCRYPTION_MISSING
@@ -162,6 +168,7 @@ controls:
     domain: storage_encryption
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: opa
       control_id: EC2_ROOT_VOLUME_UNENCRYPTED
@@ -186,6 +193,7 @@ controls:
     domain: perimeter_security
     frameworks:
       iso27001: ["A.8.20"]
+      soc2: ["CC6.6"]
     enforcement:
       tool: opa
       control_id: EC2_HTTP_OPEN
@@ -210,6 +218,7 @@ controls:
     domain: production_readiness
     frameworks:
       iso27001: ["A.5.30"]
+      soc2: ["A1.1"]
     enforcement:
       tool: opa
       control_id: EC2_PROD_UNDERSIZED_INSTANCE
@@ -231,6 +240,7 @@ controls:
     domain: production_readiness
     frameworks:
       iso27001: ["A.5.30"]
+      soc2: ["A1.1"]
     enforcement:
       tool: opa
       control_id: EC2_PROD_SPOT_USAGE
@@ -252,6 +262,7 @@ controls:
     domain: egress_control
     frameworks:
       iso27001: ["A.8.20", "A.8.21"]
+      soc2: ["CC6.6"]
     enforcement:
       tool: tfsec
       policy_id: AVD-AWS-0104
@@ -273,6 +284,7 @@ controls:
     domain: change_clarity
     frameworks:
       iso27001: ["A.5.37"]
+      soc2: ["CC6.6", "CC8.1"]
     enforcement:
       tool: tfsec
       policy_id: AVD-AWS-0124
@@ -291,6 +303,7 @@ controls:
     domain: storage_visibility
     frameworks:
       iso27001: ["A.8.15", "A.8.16"]
+      soc2: ["CC7.2"]
     enforcement:
       tool: tfsec
       policy_id: AVD-AWS-0089
@@ -312,6 +325,7 @@ controls:
     domain: storage_encryption
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.1", "C1.1"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_145
@@ -330,6 +344,7 @@ controls:
     domain: edge_protection
     frameworks:
       iso27001: ["A.8.20", "A.8.21"]
+      soc2: ["CC6.6", "CC7.1"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_28
@@ -348,6 +363,7 @@ controls:
     domain: transport_security
     frameworks:
       iso27001: ["A.8.20", "A.8.21", "A.8.24"]
+      soc2: ["CC6.7"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_2
@@ -371,6 +387,7 @@ controls:
     domain: access_control
     frameworks:
       iso27001: ["A.8.2", "A.8.3"]
+      soc2: ["CC6.1", "CC6.3"]
     enforcement:
       tool: opa
       control_id: IAM_WILDCARD_POLICY
@@ -397,6 +414,7 @@ controls:
     domain: access_control
     frameworks:
       iso27001: ["A.8.2"]
+      soc2: ["CC6.1", "CC6.3"]
     enforcement:
       tool: opa
       control_id: IAM_INLINE_POLICY_USAGE
@@ -418,6 +436,7 @@ controls:
     domain: identity_governance
     frameworks:
       iso27001: ["A.5.17", "A.8.2"]
+      soc2: ["CC6.1", "CC6.2"]
     enforcement:
       tool: opa
       control_id: IAM_USER_PROHIBITED
@@ -440,6 +459,7 @@ controls:
     domain: authentication
     frameworks:
       iso27001: ["A.8.5"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: opa
       control_id: IAM_USER_MFA_MISSING
@@ -462,6 +482,7 @@ controls:
     domain: network_governance
     frameworks:
       iso27001: ["A.8.20"]
+      soc2: ["CC6.6"]
     enforcement:
       tool: opa
       control_id: VPC_DEFAULT_PROHIBITED
@@ -483,6 +504,7 @@ controls:
     domain: network_visibility
     frameworks:
       iso27001: ["A.8.15", "A.8.16"]
+      soc2: ["CC7.2"]
     enforcement:
       tool: opa
       control_id: VPC_FLOW_LOGS_MISSING
@@ -507,6 +529,7 @@ controls:
     domain: perimeter_security
     frameworks:
       iso27001: ["A.8.20", "A.8.21"]
+      soc2: ["CC6.6"]
     enforcement:
       tool: opa
       control_id: ROUTE_TABLE_PUBLIC_IGW
@@ -528,6 +551,7 @@ controls:
     domain: network_hardening
     frameworks:
       iso27001: ["A.8.20", "A.8.21"]
+      soc2: ["CC6.6"]
     enforcement:
       tool: opa
       control_id: NETWORK_ACL_UNRESTRICTED_INGRESS
@@ -549,6 +573,7 @@ controls:
     domain: log_protection
     frameworks:
       iso27001: ["A.8.15", "A.8.16", "A.8.24"]
+      soc2: ["CC6.1", "CC7.2"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_158
@@ -567,6 +592,7 @@ controls:
     domain: secret_protection
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_149
@@ -585,6 +611,7 @@ controls:
     domain: event_protection
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_26
@@ -603,6 +630,7 @@ controls:
     domain: resource_management
     frameworks:
       iso27001: ["A.8.15", "A.5.15"]
+      soc2: ["CC6.6"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_5
@@ -621,6 +649,7 @@ controls:
     domain: storage_resilience
     frameworks:
       iso27001: ["A.8.13", "A.5.30"]
+      soc2: ["A1.2"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_144
@@ -639,6 +668,7 @@ controls:
     domain: storage_security
     frameworks:
       iso27001: ["A.8.12", "A.8.24"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_65
@@ -657,6 +687,7 @@ controls:
     domain: encryption_governance
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_64
@@ -675,6 +706,7 @@ controls:
     domain: edge_protection
     frameworks:
       iso27001: ["A.8.20", "A.8.21"]
+      soc2: ["CC7.1"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_192
@@ -696,6 +728,7 @@ controls:
     domain: database_security
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: checkov
       policy_id: CKV_AWS_354
@@ -714,6 +747,7 @@ controls:
     domain: storage_visibility
     frameworks:
       iso27001: ["A.8.15", "A.8.16"]
+      soc2: ["CC7.2"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_62
@@ -732,6 +766,7 @@ controls:
     domain: secret_protection
     frameworks:
       iso27001: ["A.5.17", "A.8.2"]
+      soc2: ["CC6.1"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_57
@@ -750,6 +785,7 @@ controls:
     domain: database_security
     frameworks:
       iso27001: ["A.8.24"]
+      soc2: ["CC6.7"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_69
@@ -768,6 +804,7 @@ controls:
     domain: storage_resilience
     frameworks:
       iso27001: ["A.8.13"]
+      soc2: ["C1.2"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_61
@@ -786,6 +823,7 @@ controls:
     domain: edge_visibility
     frameworks:
       iso27001: ["A.8.15", "A.8.16"]
+      soc2: ["CC7.2"]
     enforcement:
       tool: checkov
       policy_id: CKV2_AWS_31

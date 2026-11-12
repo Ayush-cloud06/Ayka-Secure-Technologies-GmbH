@@ -1,5 +1,7 @@
 # Platform Compliance Mapping
 
+> **Status note (2026-11-10):** nothing in this folder has been applied by the pipeline. "Implemented" below means "written in Terraform", which ADR-0001 calls Designed (or Gated design once the platform checks are required). Detection (GuardDuty, Security Hub, AWS Config, EventBridge alerts) and 18-month Object Lock log retention were added on 2026-11-10; see [README](README.md).
+
 This document maps **implemented controls in `Internal-IT/platform/foundation/`** to major compliance frameworks.
 
 Scope covered:
@@ -44,7 +46,7 @@ Important:
 | CloudTrail log-file validation | CloudTrail integrity validation | A.8.15 | DE.CM | CC7.2 | Art. 5(1)(f), Art. 32 | Implemented |
 | Prevent CloudTrail disable/delete (SCP + boundary denies) | CloudTrail protection controls | A.8.15, A.8.16 | PR.PS, DE.CM | CC7.2 | Art. 32 | Implemented |
 | S3 public access blocked (bucket and account level) | S3 public access controls | A.8.9, A.8.10 | PR.DS | CC6.6, CC7.1 | Art. 25, Art. 32 | Implemented |
-| CloudTrail bucket encryption at rest (SSE-S3) | Encryption at rest baseline | A.8.24 (use of cryptography) | PR.DS | CC6.7 | Art. 32(1)(a) | Implemented |
+| CloudTrail bucket encryption at rest (SSE-KMS, landing-zone key since 2026-11-10) | Encryption at rest baseline | A.8.24 (use of cryptography) | PR.DS | CC6.7 | Art. 32(1)(a) | Implemented |
 | Break-glass admin with MFA condition | Privileged access control | A.5.15, A.5.18 | PR.AA, RS.RP | CC6.2, CC7.3 | Art. 32 | Implemented |
 | Security alerting via SNS | Monitoring and event notification | A.8.16 | DE.CM, RS.AN | CC7.2, CC7.3 | Art. 33 readiness support | Implemented |
 | SIEM forwarding path (Firehose to S3 target) | Centralized log pipeline intent | A.8.15, A.8.16 | DE.CM, DE.AE | CC7.2 | Art. 30, Art. 32 | Implemented (requires SIEM target governance) |
@@ -104,7 +106,7 @@ Mapped obligations (technical/organizational controls):
 
 1. `landing-zone/modules/core/iam/root_protection.tf` documents root hardening but cannot enforce root MFA and root key deletion in Terraform.
 2. No immutable retention/WORM or object-lock policy is configured for CloudTrail logs.
-3. No KMS CMK is configured for CloudTrail bucket encryption (currently SSE-S3/AES256).
+3. ~~No KMS CMK is configured for CloudTrail bucket encryption.~~ Fixed 2026-11-10: the trail and the log bucket use the landing-zone KMS key.
 4. No AWS Config conformance packs/rules are defined here for continuous compliance checks.
 5. No explicit GuardDuty/Security Hub/Config enablement in this folder (outside scope or pending).
 6. `landing-zone/modules/siem/main.tf` contains `Version = "2012=10-17"` in trust policy JSON and should be corrected to `"2012-10-17"` before production apply.

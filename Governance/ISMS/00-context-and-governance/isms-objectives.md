@@ -5,7 +5,7 @@
 | Document ID | ISMS-00-06 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, at each management review, or when an objective is met, missed or no longer measurable |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -70,7 +70,7 @@ What each objective needs, and whether it exists. Resource decisions are the Man
 | OBJ-06 | `compliance-evidence` artifact; alert configuration (none) | Parsed `output/compliance-summary.json` for run 37498007502; source/hash in [evidence index](../07-technical-evidence/control-evidence-index.md) | (a) 3 active LOW findings for `CLOUDWATCH_LOG_GROUP_KMS_ENCRYPTION`; the other listed logging controls have no active finding in this snapshot. (b) No tested alert route exists |
 | OBJ-07 | Access review records | Checked for records | No access review record exists (RISK-010) |
 | OBJ-08 | GitHub repository setting | `gh api .../actions/permissions/artifact-and-log-retention` | 90 days, the maximum this repository allows |
-| OBJ-09 | Terraform source | `rg -l ap-south-1` over `*.tf`, `*.tfvars` and JSON in `Internal-IT/` | 10 Terraform files and 1 SCP document ([`restrict-region.json`](../../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json)) name `ap-south-1` |
+| OBJ-09 | Terraform source | `rg -l ap-south-1` over `*.tf`, `*.tfvars` and JSON in `Internal-IT/` | 2026-10-14: 10 Terraform files and 1 SCP document ([`restrict-region.json`](../../../Internal-IT/platform/foundation/aws-organization/modules/scp/restrict-region.json)) named `ap-south-1`. Re-measured 2026-11-10 with `grep -rn ap-south` over the same file types: 0 ([REAL-INFRA-003](../../records/real/infra/REAL-INFRA-003-region-migration-verification.md)). Target met in source; it says nothing about where data is processed, since nothing is deployed |
 | OBJ-10 | [Risk register review history](../03-risk-management/risk-register.md#review-history) | Read the dated entries | Prior entries 2026-08-23, 2026-09-28 and 2026-10-05 were within 92 days. Current review status must be read from the linked register; document edits alone are not a management risk review |
 | OBJ-11 | Training records ([training programme §5](../../../organization/training-and-awareness.md#5-training-records)) | Checked for records | No training record exists (RISK-010) |
 
@@ -85,3 +85,4 @@ What each objective needs, and whether it exists. Resource decisions are the Man
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | OBJ-09 re-measured after the Region migration in source |

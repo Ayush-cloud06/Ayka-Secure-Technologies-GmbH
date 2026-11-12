@@ -5,8 +5,8 @@
 | Document ID | SOC2-02 |
 | Owner | Compliance and Risk |
 | Approver | CISO |
-| Version | 1.0 |
-| Status as of | 2026-10-06 |
+| Version | 1.2 |
+| Status as of | 2026-11-10 |
 | Criteria version | AICPA TSP section 100, 2017 Trust Services Criteria (with revised points of focus, 2022) |
 | Status | Draft. Not approved |
 
@@ -70,21 +70,21 @@ Criteria are paraphrased in a few words to keep the table readable; the authorit
 
 | Criterion | In short | Ayka controls | ISO/IEC 27001:2022 | Readiness |
 |---|---|---|---|---|
-| CC6.1 | Logical access security over protected assets | AC-01 to AC-05, AC-08, AC-09, AC-13, AC-14 | A.5.15, A.8.2, A.8.3, A.8.4, A.8.5, A.8.24 | Partly ready: repository access Implemented; workforce identity and MFA Designed |
+| CC6.1 | Logical access security over protected assets | AC-01 to AC-05, AC-08, AC-09, AC-13, AC-14 | A.5.15, A.8.2, A.8.3, A.8.4, A.8.5, A.8.24 | Partly ready: repository access Implemented; AC-04 and AC-08 Gated design; workforce identity and MFA Designed |
 | CC6.2 | Register and authorise users before issuing credentials; remove them | AC-01, AC-06, AC-07 | A.5.16, A.5.18 | Not ready |
 | CC6.3 | Role-based, least-privilege access with segregation of duties | AC-04, AC-06, AC-07 | A.5.15, A.5.18, A.8.2 | Not ready |
-| CC6.4 | Restrict physical access | AC-17 (carved out to AWS) | A.7.1 to A.7.4 | Ready through CSOC, subject to VM-02 |
+| CC6.4 | Restrict physical access | AC-17 (carved out to AWS) | A.7.1 to A.7.4 | Not ready: the carve-out is described; no provider report has been reviewed (VM-02) |
 | CC6.5 | Dispose of assets only once data cannot be recovered | AC-16, AC-18 | A.7.10, A.7.14, A.8.10 | Not ready for laptops; carved out for production |
 | CC6.6 | Protect against threats from outside the boundary | AC-10, AC-11, CO-02 | A.8.20, A.8.21, A.8.23 | Partly ready: gate rules Implemented, network Gated design |
 | CC6.7 | Restrict transmission and movement of information | AC-12, AC-13 | A.5.14, A.8.24 | Partly ready (Gated design) |
-| CC6.8 | Prevent or detect unauthorised or malicious software | AC-11, AC-14, AC-15, AC-16 | A.8.7, A.8.19 | Partly ready: pipeline supply chain Implemented; images and endpoints Planned |
+| CC6.8 | Prevent or detect unauthorised or malicious software | AC-11, AC-14, AC-15, AC-16 | A.8.7, A.8.19 | Partly ready: pipeline supply chain Implemented; images and endpoints Designed |
 
 ### CC7 System operations
 
 | Criterion | In short | Ayka controls | ISO/IEC 27001:2022 | Readiness |
 |---|---|---|---|---|
-| CC7.1 | Detect configuration changes and new vulnerabilities | OP-01, OP-02, OP-08, CA-01, MO-01 | A.8.8, A.8.9 | Partly ready: IaC scanning Implemented; runtime and dependency scanning Planned |
-| CC7.2 | Monitor components for anomalies | OP-03, OP-04, OP-05, AV-05 | A.8.15, A.8.16 | Not ready: logs designed, no alerting |
+| CC7.1 | Detect configuration changes and new vulnerabilities | OP-01, OP-02, OP-08, CA-01, MO-01 | A.8.8, A.8.9 | Partly ready: IaC scanning Implemented; runtime and dependency scanning Designed |
+| CC7.2 | Monitor components for anomalies | OP-03, OP-04, OP-05, AV-05 | A.8.15, A.8.16 | Partly ready (Gated design): CloudTrail, workload logs and detection rules are Terraform the gate scans; nothing is deployed, no alert has fired, there is no paging and AV-05 is Designed |
 | CC7.3 | Evaluate security events to decide if they are incidents | OP-05, OP-06, IC-03 | A.5.25 | Not ready |
 | CC7.4 | Respond to incidents | OP-06 | A.5.24, A.5.26 | Not ready |
 | CC7.5 | Recover from incidents | OP-07, RM-01 | A.5.27, A.5.29 | Not ready |
@@ -106,7 +106,7 @@ Criteria are paraphrased in a few words to keep the table readable; the authorit
 
 | Criterion | In short | Ayka controls | ISO/IEC 27001:2022 | Readiness |
 |---|---|---|---|---|
-| A1.1 | Manage and monitor capacity | AV-01, AV-05 | A.8.6 | Not ready |
+| A1.1 | Manage and monitor capacity | AV-01, AV-05 | A.8.6 | Partly ready (Gated design): autoscaling, quotas and budgets are scanned Terraform; nothing is deployed and AV-05 is Designed |
 | A1.2 | Environmental protection, backup and recovery infrastructure | AV-02, AV-03, AC-17 | A.8.13, A.8.14, A.7.5 | Partly ready (Gated design) |
 | A1.3 | Test recovery procedures | AV-04, RM-01 | A.5.30, A.8.13 | Not ready |
 
@@ -128,9 +128,9 @@ Criteria are paraphrased in a few words to keep the table readable; the authorit
 
 | Readiness | Criteria (of 38 in scope) |
 |---|---:|
-| Ready | 2 (CC2.1, CC5.2), plus CC6.4 through the AWS carve-out |
-| Partly ready | 17 |
-| Not ready | 18 |
+| Ready | 2 (CC2.1, CC5.2) |
+| Partly ready | 19 |
+| Not ready | 17 |
 
 What this says in one line: Ayka's change management and configuration controls are close to audit grade because they run in CI on every change; everything that needs a running system or people doing recurring work (access reviews, alerting, incident handling, vendor reviews, restore tests) is not yet in place.
 
@@ -147,3 +147,5 @@ Of the 65 control rows in the matrix, all but RM-02 (insurance) map to an ISO/IE
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-06 | First issue |
+| 1.1 | 2026-10-14 | CC6.4 is Not ready until a provider report is reviewed. Ready stays 2. Not ready becomes 19 |
+| 1.2 | 2026-11-10 | CC7.2 moves from Not ready to Partly ready: OP-03, OP-04 and OP-05 are now Gated design (matrix 1.4). A1.1 moves too (AV-01 Gated design, AV-05 Designed, same structure as CC7.2). Partly ready 19, Not ready 17, Ready 2. CC7.3 stays Not ready: alerts exist only as Terraform and OP-06 and IC-03 are simulated |

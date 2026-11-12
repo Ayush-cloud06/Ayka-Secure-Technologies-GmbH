@@ -6,7 +6,7 @@
 | Organization | Ayka Secure Technologies GmbH (simulated case study) |
 | Owner | CISO |
 | Contributors | Finance & Procurement Officer (Supplier Risk Coordinator), Sales Manager, Customer Success Manager |
-| Version | 1.0 |
+| Version | 1.2 |
 | Status | Draft. Not approved: no approval record exists. |
 | Classification | Internal; Part A section 3 may be shared with customers under NDA |
 
@@ -14,6 +14,8 @@ Supply-chain security runs in two directions at Ayka:
 
 - **Part A, Ayka as a supplier.** In-scope customers must manage the security of their direct suppliers (NIS2 Art. 21(2)(d) and 21(3); §30(2) no. 4 BSIG). This is where NIS2 reaches Ayka today.
 - **Part B, Ayka's own suppliers.** AWS, Microsoft and GitHub. Ayka would owe this assessment by law only if it came into scope, but customers will ask how Ayka manages its own supply chain as part of Part A.
+
+**Status on 2026-11-10.** Added since version 1.0: the [customer security addendum](06-customer-security-addendum.md) (NIS2-06), the [pre-filled questionnaire response](07-supplier-questionnaire-response.md) (NIS2-07), a walk-through of a customer assessment ([SIM-NIS2-002](../records/simulated/nis2/SIM-NIS2-002-customer-supplier-security-assessment.md)) and the first reading of the providers' public assurance pages ([REAL-SUP-001](../records/real/supplier/REAL-SUP-001-supplier-attestations.md)). The measure stays **Partial**: no provider report has been obtained.
 
 ## Part A: Ayka as a supplier to NIS2 entities
 
@@ -37,13 +39,14 @@ These are the terms Sales may offer without asking the CISO. Anything stricter n
 
 | Topic | Ayka's standard position | Can Ayka keep it today? |
 |---|---|---|
-| Incident notification | Notice without undue delay and no later than **24 hours** after Ayka becomes aware of an incident affecting the customer's data or services, following [NIS2-03](03-incident-reporting-procedure.md) | **Not yet.** Ayka has no detection capability ([NIS2-02](02-risk-management-measures.md) No. 2). The clock starts at awareness, and today awareness depends on luck. Do not sign 12-hour clauses |
+| Incident notification | Notice without undue delay and no later than **24 hours** after Ayka becomes aware of an incident affecting the customer's data or services, following [NIS2-03](03-incident-reporting-procedure.md) | **Not yet.** Detection is Gated design: Terraform added 2026-11-10 and never applied ([NIS2-02](02-risk-management-measures.md) No. 2). The clock starts at awareness, and today awareness depends on luck. A walk-through exists (simulated record [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md)). Do not sign 12-hour clauses; use the carve-out in [NIS2-06](06-customer-security-addendum.md) C-2 |
 | Cooperation in the customer's own reporting | Ayka provides the facts the customer needs for its BSI early warning, notification and final report, in the structure of NIS2-03 templates T-2 and T-3 | Yes, as a process |
 | Audit | Evidence on request once a year: policies, the [compliance gate](../../README.md) evidence bundle for any change, supplier list, and this document. Remote audit on 30 days' notice, at the customer's cost if more than once a year | Partly. The gate evidence is real and checksummed; operating records (access reviews, incidents, training) do not exist yet |
 | Certification | No certification today. ISO 27001 is the target; TISAX on demand from the first automotive contract that requires it | Honest answer: none |
+| Contract text | The addendum in [NIS2-06](06-customer-security-addendum.md) | Section 2 of that document says which clauses Ayka can sign today |
 | Subcontractors | List in the [processor register](../GDPR/processor-register.md); 30 days' notice of new sub-processors with a right to object | Yes, as a process |
-| Data location | Customer data processed in the EU (target `eu-central-1`, Frankfurt) | **No.** The Terraform still targets `ap-south-1` (RISK-011 in the [risk register](../ISMS/03-risk-management/risk-register.md)). Must be fixed before any contract promises EU processing |
-| Vulnerabilities | Critical vulnerabilities in Ayka's service fixed or mitigated within 7 days of a fix being available, high within 30 days; customer informed if exploitation affected them | Not yet measured. Infrastructure findings are gated in CI; application dependency scanning does not exist |
+| Data location | Customer data processed in the EU (target `eu-central-1`, Frankfurt) | **No.** The Terraform was moved to `eu-central-1` on 2026-11-10 by parallel work (not applied; the source was checked on 2026-11-10 and names no other Region, [REAL-INFRA-003](../records/real/infra/REAL-INFRA-003-region-migration-verification.md); RISK-011 in the [risk register](../ISMS/03-risk-management/risk-register.md) remains open). Nothing is deployed, so no contract may promise EU processing |
+| Vulnerabilities | Critical vulnerabilities in Ayka's service fixed or mitigated within 7 days of a fix being available, high within 30 days; customer informed if exploitation affected them | Not yet measured. Infrastructure findings are gated in CI; dependency and code checks were added to CI on 2026-11-10 (one local run, [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md); none on GitHub; not required checks); a disclosure policy and `security.txt` were added the same day |
 | Exit | Export of customer data in a documented format, then deletion within 30 days, confirmed in writing | Designed only |
 
 ### A.3 Evidence pack for customers
@@ -55,7 +58,8 @@ What Ayka can send to a customer's supplier-risk team today, and what it must no
 | This NIS2 document set and the [ISMS index](../ISMS/README.md) showing what is draft and what is planned | That Ayka is certified, audited or "NIS2 compliant" |
 | A recent `compliance-evidence` bundle from the pipeline, with the manifest and checksums | That the platform is running in production with these controls |
 | The [S3 encryption control chain](../ISMS/04-controls-and-soa/control-chain-s3-encryption.md) as an example of risk-to-evidence tracing | Penetration test results (none exist) |
-| The processor register with the providers' own certifications, once retrieved | EU-only data processing (not true yet) |
+| The processor register and [REAL-SUP-001](../records/real/supplier/REAL-SUP-001-supplier-attestations.md), which says what the providers' public pages state (no report, no certificate dates) | EU-only data processing (not true yet) |
+| The [questionnaire response](07-supplier-questionnaire-response.md) with its status labels | Any answer without its status label |
 
 Saying "not yet, and here is the plan" costs a deal less often than a customer's auditor later finding that a "yes" was false.
 
@@ -78,13 +82,13 @@ The supplier IDs match the [processor register](../GDPR/processor-register.md), 
 
 - **Software supply chain in CI**: every third-party GitHub Action is pinned to a commit SHA, and scanner versions and checksums are pinned in [`toolchain.versions`](../../Internal-IT/engineering/ci-cd/toolchain.versions), with a test that keeps CI and local runs in sync. This is the measure most SaaS companies of Ayka's size do not have.
 - **Gate ownership**: [CODEOWNERS](../../.github/CODEOWNERS) puts the control mapping, the exceptions and the evaluator under the owner's review.
-- **Terraform provider lock files** are committed for every root except `entra-id`.
+- **Terraform provider lock files** are committed for every root except `entra-id`, whose lock file is gitignored (checked 2026-11-10).
 
 ### B.3 What is missing
 
 | Gap | Consequence | Action | Owner |
 |---|---|---|---|
-| No attestation retrieved for any supplier | Ayka cannot answer a customer's "how do you assess your suppliers?" with evidence | Download and date the reports listed in B.1; record their period and any exceptions noted by the auditor | Supplier Risk Coordinator |
+| Public pages read, no attestation retrieved for any supplier | Ayka can say what the providers publish ([REAL-SUP-001](../records/real/supplier/REAL-SUP-001-supplier-attestations.md)) but cannot show a report, its period or its exceptions. Entra ID coverage under SOC 2 is not established by the pages read | Download and date the reports listed in B.1 (needs an AWS account and a Microsoft sign-in); record their period and any exceptions noted by the auditor | Supplier Risk Coordinator |
 | No review of the complementary user entity controls (CUECs) in the SOC 2 reports | The providers' reports assume Ayka does certain things (MFA, logging, key management); nobody has checked that Ayka does | Map each CUEC to an Ayka control or a gap in NIS2-02 | CISO |
 | Concentration risk on AWS in one Region | A Regional outage or account compromise stops the whole service | Decide and document acceptance or a recovery Region in the BCP | Managing Director, on CISO's proposal |
 | No supplier notification subscriptions | Ayka would learn of a supplier incident from the news | Subscribe to AWS Health, Microsoft service health for Entra ID, GitHub status and security advisories | Security Operations |
@@ -92,7 +96,7 @@ The supplier IDs match the [processor register](../GDPR/processor-register.md), 
 
 ### B.4 Supplier assessment record (template)
 
-One row per supplier per year. No assessment has been carried out.
+One row per supplier per year. No real assessment has been carried out. A walk-through of a review exists as simulated record [SIM-SUP-001](../records/simulated/supplier/SIM-SUP-001-annual-critical-supplier-review.md) (scenario 2026-07-06, added 2026-11-10); it is not an entry here.
 
 | Supplier ID | Date | Assessor | Attestations reviewed (type, period, auditor) | Exceptions in the report | CUECs mapped (yes/partly/no) | Incidents in the period | Result (accept / accept with actions / reject) | Next review |
 |---|---|---|---|---|---|---|---|---|
@@ -105,3 +109,5 @@ No entries yet.
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 1.0 | 2026-10-06 | CISO | First version |
+| 1.1 | 2026-11-10 | CISO role (AI-drafted) | Status paragraph; links to NIS2-06, NIS2-07, REAL-SUP-001, SIM-NIS2-002; standard positions refreshed for work added 2026-11-10 (detection Terraform, Region, CI checks, disclosure files) |
+| 1.2 | 2026-11-10 | CISO role (AI-drafted) | Region and CI-check statements checked against REAL-INFRA-003 and REAL-SDLC-001; lock-file statement checked; record IDs linked |

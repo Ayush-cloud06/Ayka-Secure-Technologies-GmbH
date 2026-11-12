@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 SOA = REPO / "Governance/ISMS/04-controls-and-soa/statement-of-applicability.md"
 MAPPING = REPO / "Internal-IT/engineering/policy-as-code/metadata/control-mapping.yaml"
 GAPS = SOA.with_name("control-gap-analysis.md")
-STATUS = {"Implemented", "Partial", "Gated design", "Designed", "Planned"}
+STATUS = {"Implemented", "Partial", "Simulated operation", "Gated design", "Designed", "Planned"}
 OWNERS = {
     "Managing Director", "CISO", "Cloud Platform Engineering",
     "Compliance & Risk Management", "Security Operations",
@@ -76,6 +76,17 @@ def test_gate_mapping_is_bidirectionally_traceable():
     assert Counter(row[0] for row in gap_rows) == Counter({key: 1 for key in mapped})
     for row in gap_rows:
         assert set(re.findall(r"`([A-Z][A-Z0-9_]+)`", row[1])) == mapped[row[0]]
+
+
+def test_simulated_operation_rows_link_an_existing_record():
+    # ADR-0006: the row must name the walk-through itself, not the folder.
+    for row in control_rows():
+        if row[3] != "Simulated operation":
+            continue
+        targets = re.findall(r"\]\(([^)]*records/simulated/[^)]*SIM-[^)]+\.md)\)", row[4])
+        assert targets, f"{row[0]}: link the SIM-*.md record in the evidence column"
+        for target in targets:
+            assert (SOA.parent / target).is_file(), f"{row[0]}: {target} does not exist"
 
 
 def test_status_summary_matches_selection_rows():

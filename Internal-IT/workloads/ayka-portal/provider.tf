@@ -23,10 +23,12 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Environment = var.environment
-      Workload    = "ayka-portal"
-      ManagedBy   = "terraform"
-      Project     = "internal-it"
+      Environment        = var.environment
+      Owner              = var.owner
+      DataClassification = var.data_classification
+      Workload           = "ayka-portal"
+      ManagedBy          = "terraform"
+      Project            = "internal-it"
     }
   }
 }

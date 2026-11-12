@@ -5,7 +5,7 @@
 | Document ID | POL-SDL-01 |
 | Owner | Product & Engineering |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.2 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when the required checks or the pipeline stages change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -90,8 +90,8 @@ Every change follows these stages. A stage that fails stops the change.
    Status: Implemented (AC-14; [`toolchain.versions`](../../Internal-IT/engineering/ci-cd/toolchain.versions)).
 3. Code uses maintained libraries and supported language versions. Deprecated tools are replaced on a plan ([POL-VUL-01](vulnerability-and-patch-management-policy.md)).
 4. Application code follows the OWASP ASVS level 2 requirements relevant to each feature (version to verify at first use). Status: Planned.
-5. Static analysis (SAST) and dependency scanning (SCA) run on every pull request once application code exists. Status: Planned.
-6. Automated secret scanning runs on every push. Status: Planned.
+5. Static analysis (SAST) and dependency scanning (SCA) run on every pull request. Status: Partial. Since 2026-11-10 [`security-checks.yml`](../../.github/workflows/security-checks.yml) runs Bandit, pip-audit and a CycloneDX SBOM over the repository's Python; first local run in [REAL-SDLC-001](../records/real/sdlc/REAL-SDLC-001-first-local-scan.md). The workflow has not yet run on GitHub and is not a required check. No application code exists.
+6. Automated secret scanning runs on every push. Status: Partial. gitleaks runs over full history in `security-checks.yml` (same limits as item 5); its default rules did not flag the RISK-001 passwords, so a clean result is not proof.
    - GitHub secret scanning and push protection are disabled (verified via GitHub API on 2026-10-14).
    - The [CI/CD architecture](../../Internal-IT/engineering/ci-cd/architecture.md) lists secrets scanning as not built.
 
@@ -126,7 +126,7 @@ Settings rechecked via the GitHub API on 2026-10-14; [ruleset 24482491](https://
 1. Test and development use synthetic data. Status: Implemented for the [configuration regression scenarios](../../Internal-IT/workloads/control-validation-scenarios/) (CO-05); this is not evidence of an operating application test-data control.
 2. Production customer data is never copied to a non-production environment ([POL-DATA-01 §5.2](data-classification-and-confidentiality-policy.md#52-protection), item 4). If a defect can only be reproduced with production data:
    - the CISO approves in writing;
-   - the data is masked or reduced first;
+   - the data is masked or reduced first, using the [data masking standard](data-masking-standard.md);
    - the test runs inside the production account;
    - the copy is deleted after the test, with a record.
 3. Test data that resembles personal data is clearly fictional. The [RoPA](../GDPR/record-of-processing-activities.md) records an open decision on the personnel data in the repository (section 4, item 1).
@@ -179,3 +179,5 @@ Exceptions to this policy are approved by the CISO in writing with a reason, com
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-10-14 | Point the production-data exception at the data masking standard |
+| 1.2 | 2026-11-10 | Section 4.4: SAST, SCA, SBOM and gitleaks added in CI; GitHub-native secret scanning still off |

@@ -6,21 +6,21 @@
 | Organization | Ayka Secure Technologies GmbH (simulated case study) |
 | Owner | Security Operations Analyst (Incident Coordinator) |
 | Approver | CISO |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
-| Status | Draft. Not approved: no approval record exists. Never exercised. |
+| Status | Draft. Not approved: no approval record exists. Never exercised for real; walked through once as a tabletop ([SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md), not operating evidence) |
 | Classification | Internal |
 
 ## 1. Purpose and when it applies
 
-This procedure decides **who must be told about a security incident, by when, and with what content**. It does not describe how to contain or fix an incident; that belongs in the incident response procedure, which is still planned ([ISMS index](../ISMS/README.md), area 06).
+This procedure decides **who must be told about a security incident, by when, and with what content**. It does not describe how to contain or fix an incident; that belongs in the [incident response plan](../policies/incident-response-plan.md) (POL-IR-01). A simulated walk-through of sections 3 to 6 and templates T-1 to T-4 exists: [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md) with the filled drafts [SIM-INC-002](../records/simulated/incident/SIM-INC-002-t1-customer-notice-24h-draft.md), [SIM-INC-003](../records/simulated/incident/SIM-INC-003-t2-bsi-field-list-not-submitted.md), [SIM-INC-004](../records/simulated/incident/SIM-INC-004-t1-customer-update-72h-draft.md), [SIM-INC-005](../records/simulated/incident/SIM-INC-005-t3-final-report-draft.md) and [SIM-INC-006](../records/simulated/incident/SIM-INC-006-t4-incident-and-breach-log.md). It is a tabletop with fictional staff, not an exercise and not operating evidence; its findings are applied in version 1.1.
 
 Three reporting regimes can apply to the same incident. Today only two of them bind Ayka:
 
 | Regime | Applies today? | Recipient | Clock |
 |---|---|---|---|
 | Customer contracts (and GDPR Art. 33(2) as a processor) | **Yes**, once Ayka has customers | Each affected customer | Ayka's commitment: within 24 hours of awareness (section 5) |
-| GDPR Art. 33 as a controller (employee data) | **Yes** | LfDI Baden-Württemberg | 72 hours after awareness |
+| GDPR Art. 33 as a controller (employee and source-control/CI data) | **Yes** | LfDI Baden-Württemberg | Without undue delay and, where feasible, within 72 hours of awareness; give reasons for any delay |
 | NIS2 Art. 23 / §32 BSIG | **No** ([NIS2-01](01-applicability-assessment.md)). Voluntary reporting to the BSI is possible | BSI | 24 hours / 72 hours / 1 month |
 
 The BSI steps are written out in full anyway. Ayka's customers need Ayka to report fast enough for **their** 24-hour early warning, so Ayka has to run on the NIS2 clock even when the law does not require it. And if Ayka comes into scope, this procedure must work on day one.
@@ -29,11 +29,11 @@ The BSI steps are written out in full anyway. Ayka's customers need Ayka to repo
 
 | Role | Holder (personnel register) | Responsibility in this procedure |
 |---|---|---|
-| Incident Coordinator | Security Operations Analyst (EMP-005); deputy: Security Engineer (EMP-014) | Opens the incident log, starts the clocks, drafts every report, tracks deadlines |
-| Decision-maker on significance and reporting | CISO (EMP-002); deputy: Managing Director | Decides whether the incident is significant and which reports go out; signs them off |
+| Incident Coordinator | Security Operations Analyst (EMP-005); deputy: SOC Analyst (EMP-020), as appointed in [SIM-PPL-006](../records/simulated/people/SIM-PPL-006-role-holder-appointments.md) | Opens the incident log, starts the clocks, drafts every report, tracks deadlines |
+| Decision-maker on significance and reporting | CISO (EMP-002); deputy: Managing Director ([SIM-PPL-006](../records/simulated/people/SIM-PPL-006-role-holder-appointments.md) names no deputy for the CISO; its deputy Incident Commander is EMP-005) | Decides whether the incident is significant and which reports go out; signs them off |
 | Managing Director | EMP-001 | Informed of every significant incident within 4 hours; approves customer communication that admits a breach of contract |
 | GDPR Lead | Compliance Analyst (EMP-004) | Judges personal-data impact; drafts the Art. 33 notification |
-| Customer communication | Customer Success Manager (EMP-010) | Sends customer notices drafted by the Incident Coordinator; keeps the customer contact list current |
+| Customer communication | Customer Success Manager (EMP-010) | Sends customer notices drafted by the Incident Coordinator. Records each customer's security contact (name, role, 24-hour phone, e-mail) **at contract signature**, in a mandatory field of the contract; keeps the customer contact list current. A contract is not signed without the entry |
 | Regulatory reporting | Compliance Officer (EMP-021) | Holds the BSI portal access once registered; submits BSI reports |
 
 With 24 people, several of these are part-time hats. If both a role holder and the deputy are unreachable for more than one hour, the next person in the chain takes the role, in this order: CISO, Managing Director, Security Engineer.
@@ -42,7 +42,7 @@ With 24 people, several of these are part-time hats. If both a role holder and t
 
 All deadlines run from **awareness** (*Kenntnis*). Ayka is aware of a significant incident when, after an initial assessment, it has a reasonable degree of certainty that a significant incident has happened. Awareness is **not** the moment the incident started, and not the moment an alert fired. It also cannot be postponed by not looking: the initial assessment of an alert or report must start without delay and should take no more than four hours.
 
-The Incident Coordinator writes the awareness time in the incident log (template T-4) and every later deadline is calculated from it.
+The Incident Coordinator writes the awareness time in the incident log (template T-4) and in every customer notice (template T-1, field "Awareness (T0)", separate from the time of detection), and every later deadline is calculated from it.
 
 ## 4. Is it significant?
 
@@ -79,7 +79,7 @@ flowchart TD
     D --> E{"Significant?<br/>section 4"}
     E -->|no| F["Handle internally;<br/>customer notice only if<br/>their data or service affected"]
     E -->|yes| G["T0 + 24 h<br/>customer notice<br/>BSI early warning*"]
-    G --> H["T0 + 72 h<br/>BSI notification*<br/>GDPR Art. 33 if personal data"]
+    G --> H["T0 + 72 h<br/>customer update<br/>BSI notification*"]
     H --> I["+ 1 month<br/>BSI final report*<br/>customer closing report"]
     D --> P{"Personal data<br/>affected?"}
     P -->|yes| Q["Section 6:<br/>GDPR route in parallel"]
@@ -91,6 +91,7 @@ flowchart TD
 |---|---|---|---|---|
 | Without undue delay, at most **24 h** | Customer incident notice | Affected customers, through their designated security contact | What happened as far as known; services and data affected; whether a malicious act is suspected; what the customer should do now; next update time | Customer Success Manager |
 | At most **24 h** | Early warning (*Frühwarnung*) | BSI, through the BSI reporting portal | Whether the incident is suspected to be caused by unlawful or malicious acts; whether it could have cross-border impact | Compliance Officer |
+| At most **72 h** | Customer update | Affected customers | Update of the first notice: initial assessment of severity and impact, what changed, and where personal data is affected the Art. 33(3) content the customer needs for its own notification (template T-1) | Customer Success Manager |
 | At most **72 h** | Incident notification (*Meldung*) | BSI | Update of the early warning; initial assessment of severity and impact; indicators of compromise where available | Compliance Officer |
 | On request | Intermediate report | BSI | Status updates the BSI asks for | Compliance Officer |
 | **1 month** after the 72-hour notification | Final report (*Abschlussmeldung*) | BSI and, in summary, affected customers | Detailed description with severity and impact; type of threat or root cause; mitigation applied and ongoing; cross-border impact | Compliance Officer; customer version by Customer Success |
@@ -107,7 +108,8 @@ Run in parallel with section 5. The GDPR Lead takes the lead.
 
 | Ayka's role | Data | Duty | Deadline |
 |---|---|---|---|
-| Controller | Employee identity and access data | Notify the LfDI Baden-Württemberg (Art. 33(1)) unless the breach is unlikely to result in a risk to people; tell the people affected if the risk is high (Art. 34) | 72 hours from awareness |
+| Controller | Employee identity and access data; contributor names, emails, GitHub usernames, PR comments and CI logs (PA-02) | Notify the LfDI Baden-Württemberg (Art. 33(1)) unless the breach is unlikely to result in a risk to people | Without undue delay and, where feasible, within 72 hours of becoming aware; give reasons for any delay |
+| Controller | Employee identity and access data; contributor names, emails, GitHub usernames, PR comments and CI logs (PA-02) | Tell the people affected when the risk is high (Art. 34) | Without undue delay |
 | Processor | Customer data in the SaaS platform | Notify the customer as controller without undue delay (Art. 33(2)); the customer decides on its own notifications | Ayka commits to 24 hours, the same as the customer incident notice |
 
 Every personal-data breach goes into the breach log, including those not notified (Art. 33(5)). The log is template T-4 with the GDPR fields filled.
@@ -127,12 +129,12 @@ This procedure is only as good as Ayka's ability to notice an incident. Today:
 
 | Precondition | State | Reference |
 |---|---|---|
-| Detection: GuardDuty, alerting rules, someone receiving alerts | **Missing.** The `security-alerts` SNS topic exists in Terraform, but nothing publishes to it | [NIS2-02](02-risk-management-measures.md) No. 2 |
-| Logs to investigate with | CloudTrail with log file validation is designed, not deployed | [landing zone logging](../../Internal-IT/platform/foundation/landing-zone/modules/core/logging/cloudtrail.tf) |
-| Customer security contact list | No customers yet | Customer Success Manager |
-| BSI portal access | Not needed while out of scope; *Mein Unternehmenskonto* to be requested at 40 employees | [NIS2-01](01-applicability-assessment.md) section 8 |
+| Detection: GuardDuty, alerting rules, someone receiving alerts | **Not running.** Terraform for GuardDuty, Security Hub, Config and five EventBridge rules into the `security-alerts` topic exists and is scanned by the gate (Gated design) but was never applied; the topic has an e-mail subscription, no paging and no on-call rota | [NIS2-02](02-risk-management-measures.md) No. 2 |
+| Logs to investigate with | CloudTrail with log file validation is Gated design (scanned, never applied) | [landing zone logging](../../Internal-IT/platform/foundation/landing-zone/modules/core/logging/cloudtrail.tf) |
+| Customer security contact list | No customer exists. The entry is made at contract signature (section 2); in the tabletop the contact was not on file and finding it took five hours | Customer Success Manager |
+| BSI portal access | Not needed while out of scope; Access to be requested at 40 employees; the sign-in method (*Mein Unternehmenskonto*) is **to verify** | [NIS2-01](01-applicability-assessment.md) section 8 |
 | Out-of-band communication if Entra ID or company e-mail is compromised | **Not defined.** Phone tree on paper is the minimum | NIS2-02 No. 10 |
-| Exercise | Never run | Section 10 |
+| Exercise | Never run with real staff; one tabletop walk-through | Section 10 |
 
 ## 9. Templates
 
@@ -146,8 +148,15 @@ Subject: [Ayka Security Notice] <short title> – <date>
 Incident reference:   AYK-INC-<yyyy>-<nnn>
 Status:               Investigating / Contained / Resolved
 Detected:             <date, time, timezone>
+Awareness (T0):       <date, time, timezone>   (deadlines run from this, not from "Detected")
 Services affected:    <service and tier>
 Your data affected:   Yes / No / Under investigation – <categories>
+If personal data (content the customer needs for Art. 33(3) GDPR):
+  Nature of the breach: <what happened; categories and approximate number of
+                        people and of records>
+  Likely consequences:  <what could happen to the people concerned>
+  Measures taken or proposed: <containment and mitigation>
+  Contact point:        <Incident Coordinator, as below>
 Suspected malicious:  Yes / No / Unknown
 What happened:        <two or three factual sentences; no speculation>
 What we have done:    <containment steps>
@@ -156,13 +165,15 @@ Next update:          <date, time>
 Contact:              <Incident Coordinator, phone, e-mail>
 ```
 
+The 72-hour customer update reuses this template and states what changed since the first notice.
+
 ### T-2 BSI early warning and notification (field list)
 
 The BSI reporting portal defines the form. Prepare these answers before opening it:
 
 | Field | Early warning (24 h) | Notification (72 h) |
 |---|---|---|
-| Entity, registration number, contact reachable 24/7 | Required | Required |
+| Entity, registration number, contact reachable 24/7 (the 24/7 element is **to verify** against the BSI form; not found in §33 as read, [NIS2-08](08-applicability-reassessment-2026-11.md) section 5) | Required | Required |
 | Awareness time (T0) and detection method | Required | Required |
 | Suspected unlawful or malicious cause | Required | Update |
 | Possible cross-border impact | Required | Update |
@@ -182,11 +193,11 @@ The BSI reporting portal defines the form. Prepare these answers before opening 
 
 ### T-4 Incident and breach log
 
-| Ref | Opened | T0 (awareness) | Summary | Significant (S-ref) | Personal data | Customer notice sent | BSI early warning | BSI notification | GDPR Art. 33 | Final report | Closed | Owner |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | | | | | |
+| Ref | Opened | T0 (awareness) | Summary | Significant (S-ref) | Personal data | Ayka's role (controller or processor) | Reason for not notifying a regulator or the people concerned (Art. 33(5)) | Customer notice sent | BSI early warning | BSI notification | GDPR Art. 33 | Final report | Closed | Owner |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| | | | | | | | | | | | | | | |
 
-No entries yet.
+No entries yet. Events judged "not an incident" or "not a breach" also get a row, with the reasoning. A filled example, clearly simulated, is [SIM-INC-006](../records/simulated/incident/SIM-INC-006-t4-incident-and-breach-log.md); it is not an entry in this log.
 
 ## 10. Exercise
 
@@ -196,10 +207,11 @@ Run one tabletop exercise per year and after every change to this procedure. A g
 |---|---|---|---|---|---|
 | | | | | | |
 
-No exercise held yet.
+No exercise held yet. A tabletop walk-through with fictional staff is [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md); it is not an entry in this table.
 
 ## Revision history
 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 1.0 | 2026-10-06 | Incident Coordinator | First version, aligned with §32 BSIG and IR 2024/2690 thresholds |
+| 1.1 | 2026-11-10 | CISO role (AI-drafted) | Applies findings of the simulated walk-through [SIM-INC-001](../records/simulated/incident/SIM-INC-001-inc-2026-001-customer-export-in-public-ci.md): the incident response plan is named instead of "planned"; customer security contact recorded at contract signature; customer update at 72 h; T-1 has a separate awareness time and the Art. 33(3) fields; T-4 has the processor/controller role and the reason for not notifying; deputy Incident Coordinator is EMP-020 (SIM-PPL-006); preconditions table refreshed. Not applied: on-call rota, Art. 28(10) path, evidence-preservation order, management-notification time |

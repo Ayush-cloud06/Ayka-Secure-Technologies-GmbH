@@ -5,7 +5,7 @@
 | Document ID | POL-CRY-01 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when an algorithm is deprecated, a data store is added or a key is compromised |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -91,7 +91,7 @@ Every store of Confidential or Restricted data is encrypted with a customer-mana
    - AWS service principals are limited by `aws:SourceAccount` or `aws:SourceArn`;
    - service principals do not name a Region other than the approved one.
 
-   Today the policy grants `kms:*` to the account root (delegation to IAM). It gives S3 use of the key with no source condition, and names `logs.ap-south-1.amazonaws.com` (RISK-011). Gated design; the three rules are not met.
+   Today the policy grants `kms:*` to the account root (delegation to IAM). It gives S3 use of the key with no source condition. The logs principal is derived from the validated `aws_region` (`eu-central-1`) since 2026-11-10. Gated design; the administrator/user split and source conditions are not met.
 5. **Deletion.** Scheduling a key for deletion is a change under [POL-CHG-01](change-management-policy.md) with CISO approval. Production keys use a 30-day deletion window. Today the window is 7 days, which is acceptable for the dev workload only.
 6. **Inventory.** Terraform identifies intended keys and aliases. Before operation, maintain an actual key inventory with owner, purpose, resources, administrators/users, creation/rotation/deletion dates and recovery dependencies; verify it against the service configuration.
 
@@ -146,8 +146,8 @@ Exceptions are approved by the CISO in writing with a reason, compensating contr
 | Evidence bucket has no TLS-only bucket policy | Open | `storage/main.tf` | |
 | Self-signed ALB certificate; private key in state | Open | `alb.tf` | RISK-002 |
 | TLS ends at the ALB; ALB to ECS is HTTP | Open decision | `alb.tf` | |
-| One CMK for all services; key policy lacks source conditions and admin/user split; hard-coded `ap-south-1` | Open | `kms.tf` | RISK-011 |
-| CloudTrail bucket uses SSE-S3, no CMK | Designed | `trail_bucket.tf` | |
+| One CMK for all services; key policy lacks source conditions and admin/user split | Open | `kms.tf` | |
+| CloudTrail bucket encryption: source now sets SSE-KMS with the landing-zone key (`trail_bucket.tf`), scanned locally, not deployed | Gated design | `trail_bucket.tf`, [REAL-INFRA-001](../records/real/infra/REAL-INFRA-001-gate-run-all-roots.md) | |
 | No remote, encrypted Terraform state; generated secrets and keys sit in state | Planned | | RISK-002 |
 | Database secret rotation off (dev exception) | Accepted until 2027-03-31 | `exceptions.yaml` | |
 | No laptop full-disk encryption control | Planned | AC-16 | |
@@ -157,3 +157,4 @@ Exceptions are approved by the CISO in writing with a reason, compensating contr
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Remove the stale `ap-south-1` key-policy statement (REAL-INFRA-003); CloudTrail bucket now SSE-KMS in source |

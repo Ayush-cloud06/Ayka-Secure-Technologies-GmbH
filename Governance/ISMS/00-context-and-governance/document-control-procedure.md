@@ -5,7 +5,7 @@
 | Document ID | ISMS-00-07 |
 | Owner | CISO |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or when the repository host, the ruleset or the number of maintainers changes |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -29,8 +29,8 @@ How Ayka creates, updates, approves, publishes, protects, retains and withdraws 
 
 ## 3. Document register and identification
 
-- The [ISMS index](../README.md) is the document register: every ISMS document with its area, status (Draft, Covered elsewhere, Planned) and evidence note. Owner and review date are in each document's header table. Policies are also listed in the [policy index](../../policies/README.md).
-- A document exists only when its file exists and the register links it. A `Planned` row is an intention, not a document.
+- The [ISMS index](../README.md) is the document register: every ISMS document with its area, status (Draft, Covered elsewhere, Simulated operation, Planned) and evidence note. Owner and review date are in each document's header table. Policies are also listed in the [policy index](../../policies/README.md).
+- A document exists only when its file exists and the register links it. A `Planned` row is an intention, not a document. A `Simulated operation` row links a bannered walk-through under `Governance/records/simulated/` ([ADR-0006](../../ADR/0006-simulated-operating-records.md)); it is a worked example, not a record of a real event.
 - Each controlled document starts with the header table: Document ID, Owner (a role, never a person), Approver, Version, Effective, Next review, Status. Older documents (for example the [scope](scope.md) and the [information security policy](information-security-policy.md)) use a bold-field header instead; they are brought into the table format at their next revision.
 - Document IDs: `ISMS-<area>-<nn>` for ISMS documents (area = folder number), `POL-<topic>-<nn>` and `STD-<topic>-<nn>` for policies and standards, `NIS2-<nn>` and `SOC2-<nn>` in those folders.
 
@@ -50,6 +50,7 @@ How Ayka creates, updates, approves, publishes, protects, retains and withdraws 
 | Technical checks | The five required checks pass, including the docs gate (section 8) | Implemented: merge is blocked until they pass |
 | Content review | A reviewer other than the author reads the change and approves the pull request | Unavailable today: one maintainer; required approving reviews remain 0 ([ruleset](https://github.com/Ayush-cloud06/Ayka-Secure-Technologies-GmbH/rules/24482491), rechecked 2026-10-14) |
 | Approval of the document | The approver named in the header (usually the Managing Director) approves; the approval is recorded as a dated pull-request approval or a dated entry in the document's decision record, and the Status changes to "Approved" with the date | No approval has been recorded for the simulated company. Drafts remain "Draft. Not approved". Nobody may write an approval, signature or date that did not happen |
+| Header update after approval | Within 5 business days of the approval the document owner changes Status to "Approved", sets Effective and Next review, links the approval record in the revision history, and updates the register row | Not yet exercised for real. Added after SIM-GOV-001 finding 1: in the walk-through every document still read "Draft. Not approved" after the approval meeting |
 | Effective date | "On approval" until an approval is recorded | All documents stay "On approval" |
 
 This is the main gap in document control. It is recorded as RISK-005 and objective [OBJ-03](isms-objectives.md).
@@ -72,6 +73,7 @@ A document can state a requirement without showing that it operates. Owners must
 - **Availability (7.5.3 a):** documents are readable by anyone at github.com and in every clone. Internal links are relative, so they work in a clone and on GitHub.
 - **Protection (7.5.3 b):** only the maintainer account can change `main`, and only through a pull request with the required checks. Confidentiality is not protected: the repository is public (section 9).
 - **Communication of changes:** see the [communication plan](communication-plan.md).
+- **Evidence of publication to staff:** for each approved policy version, HR & Administration keeps a dated acknowledgement list (person, policy ID, version, date acknowledged) outside this public repository. A version that staff must follow is not "published to staff" until that list exists. Added after SIM-GOV-001 finding 2.
 
 ## 8. Automated and manual checks
 
@@ -150,3 +152,4 @@ Significant changes (scope, policy, roles, risk criteria) are presented at the n
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Add the register status Simulated operation (ADR-0006). Section 5: header update within 5 business days after approval (SIM-GOV-001 finding 1). Section 7: acknowledgement list as evidence of publication (SIM-GOV-001 finding 2) |

@@ -5,7 +5,7 @@
 | Document ID | ISMS-AUD-03 |
 | Owner | Compliance & Risk Management |
 | Approver | Managing Director |
-| Version | 1.0 |
+| Version | 1.1 |
 | Effective | On approval |
 | Next review | 12 months after approval, or audit criteria or control design change |
 | Status | Draft. Not approved: no approval record exists (simulated company) |
@@ -14,7 +14,7 @@ Ayka Secure Technologies GmbH is a simulated company; this document does not est
 
 ## 1. Use and result rules
 
-These are unexecuted test prompts for the [audit programme](audit-programme.md) and [audit plan](audit-plan.md), not an audit report. For every test record criterion, evidence reference/date, population/sample, actual steps and result. Allowed results: Not tested, Conforming within tested scope, Potential nonconformity, Observation, or Not applicable with justification. All prompts below are **Not tested** until an appointed auditor performs and records the work.
+These are unexecuted test prompts for the [audit programme](audit-programme.md) and [audit plan](audit-plan.md), not an audit report. For every test record criterion, evidence reference/date, population/sample, actual steps and result. Allowed results: Not tested, Not tested: auditor conflict (the assigned auditor is not independent of this test; name who covers it), Conforming within tested scope, Potential nonconformity, Observation, or Not applicable with justification. Where one prompt covers several controls or populations, record a result per control or population. All prompts below are **Not tested** until an appointed auditor performs and records the work.
 
 Never infer an approved policy from a file's existence, independent review from a role label, live control behavior from Terraform, or historical period effectiveness from one CI run. Verify exact normative requirements using the authorized source for the audit.
 
@@ -61,3 +61,4 @@ For each performed test use: engagement ID; checklist ID; requirement/version; p
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 2026-10-14 | First issue |
+| 1.1 | 2026-11-10 | Result "Not tested: auditor conflict" and one result per control or population (simulated walk-through SIM-AUD-002, findings 1 and 2) |

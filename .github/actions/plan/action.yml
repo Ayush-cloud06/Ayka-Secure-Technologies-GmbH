@@ -21,7 +21,11 @@ runs:
     - name: Terraform init
       shell: bash
       working-directory: ${{ inputs.workload_dir }}
-      run: terraform init -input=false
+      # A root with a remote backend (S3) is planned against a throw-away local state:
+      # no cloud login, and never the real state. *_override.tf is gitignored.
+      run: |
+        printf 'terraform {\n  backend "local" {\n    path = "%s/plan-only.tfstate"\n  }\n}\n' "$RUNNER_TEMP" > ci_backend_override.tf
+        terraform init -input=false -reconfigure
 
     - name: Terraform Plan
       shell: bash
@@ -32,7 +36,9 @@ runs:
         AWS_ACCESS_KEY_ID: mock
         AWS_SECRET_ACCESS_KEY: mock
         AWS_EC2_METADATA_DISABLED: "true"
-      run: terraform plan -input=false -refresh=false -out=tfplan.binary
+        # Platform roots: no assume_role and no AWS call. Roots without the variable ignore it.
+        TF_VAR_mock_credentials: "true"
+      run: terraform plan -input=false -refresh=false -lock=false -out=tfplan.binary
 
     - name: Export Terraform Plan JSON
       shell: bash

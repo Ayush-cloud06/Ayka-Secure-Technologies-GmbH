@@ -58,7 +58,7 @@ TFSEC_CLEAN = {"results": []}
 class EvaluateResultsRegressionTests(unittest.TestCase):
     maxDiff = None
 
-    def run_case(self, *, checkov, tfsec, opa, exceptions=None, mapping=CONTROL_MAPPING):
+    def run_case(self, *, checkov, tfsec, opa, exceptions=None, mapping=CONTROL_MAPPING, extra_env=None):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
             output_dir = temp_path / "output"
@@ -70,9 +70,10 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
             (output_dir / "tfsec-result.json").write_text(
                 json.dumps(tfsec), encoding="utf-8"
             )
-            (output_dir / "opa-result.json").write_text(
-                json.dumps(opa), encoding="utf-8"
-            )
+            if opa is not None:
+                (output_dir / "opa-result.json").write_text(
+                    json.dumps(opa), encoding="utf-8"
+                )
 
             control_mapping_file = temp_path / "control-mapping.yaml"
             control_mapping_file.write_text(mapping, encoding="utf-8")
@@ -92,6 +93,9 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
                     "COMPLIANCE_EXCEPTIONS_FILE": str(exceptions_file),
                 }
             )
+            for key in ("COMPLIANCE_SCAN_MODE", "WORKLOAD_DIR"):
+                env.pop(key, None)
+            env.update(extra_env or {})
 
             result = subprocess.run(
                 ["python3", str(SCRIPT_PATH)],
@@ -370,7 +374,7 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         coverage = summary["metadata_coverage"]
         self.assertIsNone(coverage["findings_mapped_percentage"])
         self.assertIn("not detection coverage", coverage["description"])
-        self.assertEqual(summary["schema_version"], "2.1")
+        self.assertEqual(summary["schema_version"], "2.2")
 
     OPEN_SSH_TFSEC = {"results": [{"rule_id": "AVD-AWS-0107", "resource": "module.sg", "severity": "HIGH"}]}
 
@@ -413,6 +417,79 @@ class EvaluateResultsRegressionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIsNone(summary)
         self.assertIn("missing ['owner']", result.stderr)
+
+    # Workload-scoped exceptions (platform roots share resource addresses across roots).
+    def scoped_exception_yaml(self, workload):
+        return self.exception_yaml("2999-12-31") + f"    workload: {workload}\n"
+
+    def test_scoped_exception_matches_its_own_workload(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=self.OPEN_SSH_TFSEC, opa=OPA_CLEAN,
+            exceptions=self.scoped_exception_yaml("Internal-IT/workloads/a"),
+            extra_env={"WORKLOAD_DIR": "./Internal-IT/workloads/a/"},
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(summary["decision_basis"]["excepted_findings"], 1)
+        self.assertEqual(summary["workload_dir"], "Internal-IT/workloads/a")
+
+    def test_scoped_exception_does_not_leak_into_another_workload(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=self.OPEN_SSH_TFSEC, opa=OPA_CLEAN,
+            exceptions=self.scoped_exception_yaml("Internal-IT/workloads/a"),
+            extra_env={"WORKLOAD_DIR": "Internal-IT/workloads/b"},
+        )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(summary["decision"], "fail")
+
+    def test_scoped_exception_never_matches_without_a_workload(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=self.OPEN_SSH_TFSEC, opa=OPA_CLEAN,
+            exceptions=self.scoped_exception_yaml("Internal-IT/workloads/a"),
+        )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(summary["decision_basis"]["excepted_findings"], 0)
+
+    # Source scan mode (platform roots that cannot be planned offline).
+    def test_plan_mode_still_requires_opa_result(self):
+        result, summary = self.run_case(checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=None)
+        self.assertEqual(result.returncode, 1)
+        self.assertIsNone(summary)
+
+    def test_source_mode_runs_without_opa_and_says_so(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=None,
+            extra_env={"COMPLIANCE_SCAN_MODE": "source"},
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(summary["scan_mode"], "source")
+        self.assertIn("opa", summary["tools_not_run"])
+        self.assertTrue(summary["by_tool"]["opa"]["not_run"])
+
+    def test_source_mode_ignores_an_opa_file_instead_of_trusting_it(self):
+        dirty = [{"namespace": "policies.terraform.aws_ec2", "failures": [
+            {"msg": "[EC2_OPEN_SSH] sg allows ssh (22) from the internet"}]}]
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=dirty,
+            extra_env={"COMPLIANCE_SCAN_MODE": "source"},
+        )
+        self.assertEqual(summary["by_tool"]["opa"]["total_findings"], 0)
+
+    def test_source_mode_still_rejects_an_empty_checkov_scan(self):
+        result, summary = self.run_case(
+            checkov={"passed": 0, "failed": 0, "resource_count": 0}, tfsec=TFSEC_CLEAN, opa=None,
+            extra_env={"COMPLIANCE_SCAN_MODE": "source"},
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertIsNone(summary)
+
+    def test_unknown_scan_mode_fails_closed(self):
+        result, summary = self.run_case(
+            checkov=CHECKOV_CLEAN, tfsec=TFSEC_CLEAN, opa=OPA_CLEAN,
+            extra_env={"COMPLIANCE_SCAN_MODE": "skip"},
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertIsNone(summary)
+        self.assertIn("Invalid COMPLIANCE_SCAN_MODE", result.stderr)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,9 @@ SCIM ensures identity lifecycle (create, update, disable) is centrally managed i
 
 ## Region
 
-ap-south-1
+Target Region: `eu-central-1` (ADR-0003).
+
+Historical note: the instance configured through the console in 2026 was created in `ap-south-1`. Identity Center cannot move between Regions, so that instance has to be deleted and re-created in `eu-central-1` before go-live; the region SCP would block it otherwise.
 
 ---
 

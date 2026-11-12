@@ -59,30 +59,6 @@ resource "aws_iam_policy" "workload_operator_policy" {
 
 
 
-# Security Audit Policy
-data "aws_iam_policy_document" "security_audit_policy" {
-
-  statement {
-
-    sid    = "SecurityAuditRead"
-    effect = "Allow"
-
-    actions = [
-      "cloudtrail:DescribeTrails",
-      "cloudtrail:GetTrailStatus",
-      "guardduty:*",
-      "config:*",
-      "securityhub:*",
-      "iam:Get*",
-      "iam:List*"
-    ]
-    resources = ["*"]
-  }
-}
-
-resource "aws_iam_policy" "security_audit_policy" {
-  name        = "SecurityAuditExtended"
-  description = "Extended security visibility policy"
-
-  policy = data.aws_iam_policy_document.security_audit_policy.json
-}
+# Security Audit: the AWS managed SecurityAudit policy (read-only, maintained by AWS)
+# replaces the former custom policy that granted guardduty:*, config:* and securityhub:*.
+# See cross-account-roles.tf.

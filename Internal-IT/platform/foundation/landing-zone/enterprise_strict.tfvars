@@ -1,4 +1,4 @@
-aws_region           = "ap-south-1"
+aws_region           = "eu-central-1"
 security_alert_email = "secops@aykasecure.com"
 
 # Account IDs for org-style multi-account deployment.

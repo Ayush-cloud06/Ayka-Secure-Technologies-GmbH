@@ -1,4 +1,7 @@
-data "aws_caller_identity" "current" {}
+variable "account_id" {
+  description = "12-digit ID of this account"
+  type        = string
+}
 
 # ---- Admin Role ( used by humans via SSO / assume-role) ----
 
@@ -10,7 +13,7 @@ resource "aws_iam_role" "admin_role" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        AWS = "arn:aws:iam::${var.account_id}:root"
       }
       Action = "sts:AssumeRole"
     }]

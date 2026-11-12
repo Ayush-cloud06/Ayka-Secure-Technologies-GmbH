@@ -64,6 +64,67 @@ jobs:
       workload_dir: ${{ github.event.inputs.workload_dir || 'Internal-IT/workloads/ayka-portal' }}
       terraform_version: 1.7.5
 
+  # Platform roots (SOC 2 G12). A separate job, so the required check names of
+  # `compliance` and `regression` do not change. Plan mode: offline plan with mock
+  # credentials, all three tools. Source mode: the root needs a real login to plan
+  # (Azure, Identity Center lookups), so Checkov and tfsec scan the source and OPA
+  # does not run; the summary and report say so. No simulated apply for these.
+  platform:
+    name: Platform Gate
+    needs: unit-tests
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - root: Internal-IT/platform/foundation/aws-organization
+            artifact: compliance-evidence-aws-organization
+            mode: plan
+          - root: Internal-IT/platform/foundation/landing-zone
+            artifact: compliance-evidence-landing-zone
+            mode: plan
+          - root: Internal-IT/platform/foundation/evidence-archive
+            artifact: compliance-evidence-evidence-archive
+            mode: plan
+          - root: Internal-IT/platform/domains/identity/aws-iam-core
+            artifact: compliance-evidence-aws-iam-core
+            mode: plan
+          - root: Internal-IT/platform/foundation/remote-state
+            artifact: compliance-evidence-remote-state
+            mode: source
+          - root: Internal-IT/platform/domains/identity/aws-identity-center
+            artifact: compliance-evidence-aws-identity-center
+            mode: source
+    uses: ./.github/workflows/terraform-workflow.yml
+    with:
+      workload_dir: ${{ matrix.root }}
+      terraform_version: 1.7.5
+      artifact_name: ${{ matrix.artifact }}
+      scan_mode: ${{ matrix.mode }}
+      simulate_apply: false
+
+  # Entra ID (azuread provider): Checkov 3.3.20 and tfsec 1.28.14 have no rules for
+  # azuread, so a source scan reports resource_count 0 and the fail-closed evaluator
+  # rightly refuses it. Gated here by fmt, validate and tflint only; its Conditional
+  # Access, user and group settings are not checked by any scanner.
+  platform-validate-only:
+    name: Platform Validate (no scanner coverage)
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        root:
+          - Internal-IT/platform/domains/identity/entra-id
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Terraform Validate
+        uses: ./.github/actions/validate
+        with:
+          workload_dir: ${{ matrix.root }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
   regression:
     name: Control Validation Regression
     needs: unit-tests
@@ -98,6 +159,8 @@ jobs:
         id: evaluate_regression
         uses: ./.github/actions/decision
         continue-on-error: true
+        with:
+          workload_dir: ${{ env.REGRESSION_DIR }}
 
       - name: Compliance Evidence (Regression)
         uses: ./.github/actions/evidence

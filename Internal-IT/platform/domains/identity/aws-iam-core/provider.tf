@@ -1,4 +1,6 @@
 terraform {
+  required_version = ">= 1.7.0"
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -6,6 +8,22 @@ terraform {
     }
   }
 }
+
 provider "aws" {
-  region = "ap-south-1"
+  region = var.aws_region
+
+  # Plan-only CI sets TF_VAR_mock_credentials=true: the provider then makes no AWS call.
+  skip_credentials_validation = var.mock_credentials
+  skip_requesting_account_id  = var.mock_credentials
+  skip_metadata_api_check     = var.mock_credentials
+
+  default_tags {
+    tags = {
+      Environment        = var.environment
+      Owner              = "identity-owner"
+      DataClassification = "Internal"
+      ManagedBy          = "terraform"
+      Workload           = "aws-iam-core"
+    }
+  }
 }

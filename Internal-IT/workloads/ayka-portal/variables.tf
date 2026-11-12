@@ -10,8 +10,14 @@ variable "account_id" {
 }
 
 variable "aws_region" {
-  type    = string
-  default = "ap-south-1"
+  description = "Target Region. ADR-0003 fixes eu-central-1 for personal data; another Region needs a recorded exception first."
+  type        = string
+  default     = "eu-central-1"
+
+  validation {
+    condition     = var.aws_region == "eu-central-1"
+    error_message = "aws_region must be eu-central-1 (ADR-0003, EU data residency)."
+  }
 }
 
 variable "environment" {
@@ -31,7 +37,7 @@ variable "vpc_cidr" {
 
 variable "availability_zones" {
   type    = list(string)
-  default = ["ap-south-1a", "ap-south-1b"]
+  default = ["eu-central-1a", "eu-central-1b"]
 }
 
 variable "public_subnet_cidrs" {
@@ -57,6 +63,17 @@ variable "bucket_suffix" {
 variable "owner" {
   type    = string
   default = "internal-it"
+}
+
+variable "data_classification" {
+  description = "Default DataClassification tag (data classification policy, section 4). Customer data is Confidential by default."
+  type        = string
+  default     = "Confidential"
+
+  validation {
+    condition     = contains(["Public", "Internal", "Confidential", "Restricted"], var.data_classification)
+    error_message = "data_classification must be Public, Internal, Confidential or Restricted."
+  }
 }
 
 variable "cost_center" {

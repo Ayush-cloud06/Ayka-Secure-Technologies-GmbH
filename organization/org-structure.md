@@ -12,11 +12,13 @@ Managing Director (CEO)
   ├── Compliance & Risk Management
   └── Security Operations
 
-Head of Product
-└── Product & Engineering Team
+Product Manager (EMP-006, reports to the Managing Director)
+└── Product requirements; the engineers report through the Cloud Platform Engineer to the CISO
 
-Head of Sales & Customer Success
-└── Sales & Client Support
+Sales Manager (EMP-009, reports to the Managing Director)
+└── Sales & Client Support, including the Customer Success Manager (EMP-010)
+
+There is no "Head of Product" or "Head of Sales & Customer Success" post in the [personnel register](personnel-register.md). Documents that named those posts now name the Product Manager and the Sales Manager (SIM-PPL-006 finding 2, simulated walk-through). The SOC 2 documents still say "Head of Product".
 
 ## 2. Governance Separation
 

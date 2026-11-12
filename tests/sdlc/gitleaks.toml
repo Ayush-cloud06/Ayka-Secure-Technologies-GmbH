@@ -1,0 +1,10 @@
+# Used by .github/workflows/security-checks.yml. Extends the gitleaks default rules.
+title = "Ayka gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Documented fake AWS key used as a test fixture to prove the inventory redacts secret-shaped values"
+paths = ['''tests/compliance/test_asset_inventory\.py''']
+regexes = ['''AKIAABCDEFGHIJKLMNOP''']

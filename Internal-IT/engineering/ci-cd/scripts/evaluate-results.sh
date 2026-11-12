@@ -9,7 +9,14 @@ CHECKOV_FILE="$OUTPUT_DIR/checkov-result.json"
 OPA_FILE="$OUTPUT_DIR/opa-result.json"
 TFSEC_FILE="$OUTPUT_DIR/tfsec-result.json"
 
-for file in "$CHECKOV_FILE" "$OPA_FILE" "$TFSEC_FILE"; do
+# Source mode (COMPLIANCE_SCAN_MODE=source) has no plan, so OPA does not run.
+# The evaluator rejects any other mode value.
+required=("$CHECKOV_FILE" "$TFSEC_FILE")
+if [ "${COMPLIANCE_SCAN_MODE:-plan}" != "source" ]; then
+  required+=("$OPA_FILE")
+fi
+
+for file in "${required[@]}"; do
   if [ ! -f "$file" ]; then
     echo "Required result file missing: $file"
     exit 1

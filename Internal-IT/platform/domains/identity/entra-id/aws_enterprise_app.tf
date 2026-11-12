@@ -11,6 +11,11 @@ data "azuread_service_principal" "aws_sso" {
   display_name = "AWS IAM Identity Center (successor to AWS Single Sign-On)"
 }
 
+output "aws_sso_service_principal_object_id" {
+  description = "Object ID of the existing Identity Center enterprise application"
+  value       = data.azuread_service_principal.aws_sso.object_id
+}
+
 # -------- VARIABLES --------
 /*
 variable "aws_reply_urls" {

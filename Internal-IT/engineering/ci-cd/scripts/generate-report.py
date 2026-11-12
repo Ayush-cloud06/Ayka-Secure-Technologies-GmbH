@@ -2,6 +2,28 @@ import json
 import os
 import sys
 
+def criterion_sort_key(criterion):
+    """CC1.1 < CC6.1 < CC6.10 < A1.2 < C1.1: series first, then numbers."""
+    prefix = criterion.rstrip("0123456789.")
+    numbers = [int(n) for n in criterion[len(prefix):].split(".") if n.isdigit()]
+    order = {"CC": 0, "A": 1, "C": 2, "PI": 3, "P": 4}
+    return (order.get(prefix, 9), prefix, numbers)
+
+
+def soc2_criteria(summary):
+    """SOC 2 criterion -> control IDs, from counted and excepted mapped findings."""
+    criteria = {}
+    findings = list(summary.get('mapped_findings', [])) + list(summary.get('excepted_findings', []))
+    for finding in findings:
+        control = finding.get('control') or {}
+        for criterion in (control.get('frameworks') or {}).get('soc2', []):
+            criteria.setdefault(criterion, set()).add(finding.get('control_id') or control.get('id'))
+    for cid, details in (summary.get('by_control') or {}).items():
+        for criterion in (details.get('frameworks') or {}).get('soc2', []):
+            criteria.setdefault(criterion, set()).add(cid)
+    return criteria
+
+
 def generate_markdown_report(summary_path, output_path):
     if not os.path.exists(summary_path):
         print(f"Error: {summary_path} not found")
@@ -17,7 +39,21 @@ def generate_markdown_report(summary_path, output_path):
     report.append(f"# Compliance Report {decision_color}")
     report.append(f"**Decision:** {decision}")
     report.append(f"**Schema Version:** {summary.get('schema_version', '1.0')}")
+    if summary.get('workload_dir'):
+        report.append(f"**Workload:** `{summary['workload_dir']}`")
+    mode = summary.get('scan_mode', 'plan')
+    if mode == 'source':
+        report.append("**Scan mode:** source (no Terraform plan; Checkov and tfsec read the source)")
+    else:
+        report.append(f"**Scan mode:** {mode}")
     report.append("")
+    if summary.get('tools_not_run'):
+        report.append("## Tools Not Run")
+        report.append("A tool listed here produced no result for this run. Its controls are **not** checked here.")
+        report.append("")
+        for tool, reason in summary['tools_not_run'].items():
+            report.append(f"- **{tool}:** {reason}")
+        report.append("")
     
     report.append("## Summary Totals")
     totals = summary.get('totals', {})
@@ -59,13 +95,29 @@ def generate_markdown_report(summary_path, output_path):
     if not by_control:
         report.append("_No findings reported._")
     else:
-        report.append("| Control ID | Title | Severity | Findings | Resources |")
-        report.append("|------------|-------|----------|----------|-----------|")
+        report.append("| Control ID | Title | Severity | ISO 27001 | SOC 2 | Findings | Resources |")
+        report.append("|------------|-------|----------|-----------|-------|----------|-----------|")
         for cid, details in by_control.items():
             resources = ", ".join(details.get('resources', []))
             if len(resources) > 100:
                 resources = resources[:97] + "..."
-            report.append(f"| {cid} | {details.get('title')} | {details.get('severity')} | {details.get('total_findings')} | {resources} |")
+            fw = details.get('frameworks') or {}
+            iso = ", ".join(fw.get('iso27001', [])) or "-"
+            soc2 = ", ".join(fw.get('soc2', [])) or "-"
+            report.append(f"| {cid} | {details.get('title')} | {details.get('severity')} | {iso} | {soc2} | {details.get('total_findings')} | {resources} |")
+    report.append("")
+
+    criteria = soc2_criteria(summary)
+    report.append("## SOC 2 Criteria Touched")
+    report.append("_Criteria of controls with a counted or excepted finding in this run. Supported by the plan check, not met by it._")
+    report.append("")
+    if not criteria:
+        report.append("_No mapped finding in this run._")
+    else:
+        report.append("| Criterion | Controls |")
+        report.append("|-----------|----------|")
+        for criterion in sorted(criteria, key=criterion_sort_key):
+            report.append(f"| {criterion} | {', '.join(sorted(criteria[criterion]))} |")
     report.append("")
 
     if summary.get('unmapped_findings'):

@@ -15,7 +15,7 @@ resource "aws_iam_role" "security_audit_role" {
 
 resource "aws_iam_role_policy_attachment" "security_audit_attachment" {
   role       = aws_iam_role.security_audit_role.name
-  policy_arn = aws_iam_policy.security_audit_policy.arn
+  policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
 
 

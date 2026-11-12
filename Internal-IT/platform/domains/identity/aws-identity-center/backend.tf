@@ -1,3 +1,4 @@
+# Remote state created by ../../../foundation/remote-state (see foundation/README.md).
 terraform {
   backend "s3" {
     bucket         = "ayka-terraform-state"

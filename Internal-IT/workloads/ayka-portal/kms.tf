@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "kms_workload" {
     resources = ["*"]
     principals {
       type        = "Service"
-      identifiers = ["logs.ap-south-1.amazonaws.com"]
+      identifiers = ["logs.${var.aws_region}.amazonaws.com"]
     }
   }
 }

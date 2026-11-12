@@ -1,6 +1,11 @@
-variable "environment" {
-  description = "Environment name (security, dev, prod)"
+variable "account_id" {
+  description = "12-digit ID of the account this landing zone is applied to"
   type        = string
+}
+
+variable "log_retention_days" {
+  description = "Retention and Object Lock period of the log bucket, in days"
+  type        = number
 }
 
 variable "aws_region" {
